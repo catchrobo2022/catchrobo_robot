@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Constants -->
+  <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
+  <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
+
+  <!-- Link & Joint -->
+  <xacro:macro name="arm" params="prefix parent *joint_origin">
+
+    <joint name="${prefix}arm/root" type="fixed">
+      <xacro:insert_block name="joint_origin" />
+      <parent link="${parent}" />
+      <child link="${prefix}arm/link0" />
+    </joint>
+    
+    <link name="${prefix}arm/link0">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/visual/link0.stl" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/collision/link0.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}arm/joint1" type="prismatic">
+      <parent link="${prefix}arm/link0"/>
+      <child link="${prefix}arm/link1"/>
+      <origin xyz="0 0 0.1" rpy="0 ${90*M_PI/180} 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0" upper="1.5" effort="10" velocity="5" acceleration="5"/>
+    </joint>  
+
+    <link name="${prefix}arm/link1">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/visual/link1.stl" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/collision/link1.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}arm/joint2" type="prismatic">
+      <parent link="${prefix}arm/link1"/>
+      <child link="${prefix}arm/link2_1"/>
+      <origin xyz="-0.1 0 0" rpy="${-90*M_PI/180} 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-0.5" upper="0.5" effort="10" velocity="5" acceleration="5"/>
+    </joint>  
+
+    <link name="${prefix}arm/link2_1">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/visual/link2_1.stl" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/collision/link2_1.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}arm/joint2_mimic" type="prismatic">
+      <parent link="${prefix}arm/link2_1"/>
+      <child link="${prefix}arm/link2_2"/>
+      <origin xyz="0 -0.1 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0" upper="1" effort="10" velocity="5" acceleration="5"/>
+       <mimic joint="${prefix}arm/joint2" multiplier="1" offset="0" />
+    </joint>
+
+    <link name="${prefix}arm/link2_2">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/visual/link2_2.stl" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/collision/link2_2.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}arm/joint3" type="prismatic">
+      <parent link="${prefix}arm/link2_2"/>
+      <child link="${prefix}arm/link3"/>
+      <origin xyz="0 -0.1 0" rpy="${90*M_PI/180} 0 ${-90*M_PI/180}"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0" upper="0.3" effort="10" velocity="5" acceleration="5"/>
+    </joint>  
+
+    <link name="${prefix}arm/link3">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/visual/link3.stl" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/arm/collision/link3.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}arm/joint_tip" type="fixed">
+      <parent link="${prefix}arm/link3"/>
+      <child link="${prefix}arm/link_tip"/>
+      <origin xyz="0 0 -0.1" rpy="${180*M_PI/180} 0 0"/>
+    </joint>
+    <link name="${prefix}arm/link_tip"/>
+  
+  </xacro:macro>
+</robot>

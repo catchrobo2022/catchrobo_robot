@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Field Side Parameters-->
+  <xacro:arg name="field" default=""/>
+  <xacro:property name="field" value="$(arg field)" />
+
+  <!-- Constants -->
+  <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
+  <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
+
+  <!-- Link & Joint -->
+  <xacro:macro name="base" params="parent *joint_origin">
+  
+    <joint name="base/root" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="base/base_link"/>
+    </joint>
+
+    <link name="base/base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/visual/base.dae" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/collision/base.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="base/link_tip" type="fixed">
+      <parent link="base/base_link"/>
+      <child link="base/link_tip"/>
+      <xacro:if value="${field=='blue'}">
+        <origin xyz="-0.795 0.350 0.0044" rpy="0 0 0"/>
+      </xacro:if>
+      <xacro:if value="${field=='red'}">
+        <origin xyz="0.795 0.350 0.0044" rpy="0 0 0"/>
+      </xacro:if>
+    </joint>
+    <link name="base/link_tip"/>
+
+  </xacro:macro>
+</robot>

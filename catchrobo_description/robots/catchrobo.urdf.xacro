@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot name="catchrobo" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Arguments -->
+  <xacro:arg name="field" default="" />
+  <xacro:property name="field" value="$(arg field)" />
+
+  <!-- Dependencies -->
+  <xacro:include filename="$(find catchrobo_description)/urdf/materials.xacro" />
+  <xacro:include filename="$(find catchrobo_description)/urdf/common.xacro" />
+  <xacro:include filename="$(find catchrobo_description)/urdf/base.urdf.xacro" />
+  <xacro:include filename="$(find catchrobo_description)/urdf/arm.urdf.xacro" />
+  <xacro:include filename="$(find catchrobo_description)/urdf/gripper.urdf.xacro" />
+
+  <!-- Link & Joint -->
+  <link name="world" />
+
+  <xacro:base parent="world">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:base>
+
+  <xacro:arm prefix="" parent="base/link_tip">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:arm>
+
+  <xacro:gripper prefix="" parent="arm/link_tip">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:gripper>
+
+</robot>
