@@ -2,14 +2,14 @@
 <!-- arguments -->
 <arg name="model" default="$(find catchrobo_description)/robots/catchrobo.urdf.xacro"/>
 <arg name="gui" default="False" />
-<arg name="field" default="" /> 
+<arg name="field" default="red" /> 
 <!-- prameters -->
 <param name="robot_description" command="$(find xacro)/xacro field:=$(arg field) --inorder $(arg model)"/>
 <param name="use_gui" value="$(arg gui)"/>
 <rosparam param="source_list">["joint_states"]</rosparam>
 <!-- nodes -->
 <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 <!-- rviz -->
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true"/>
     <param name="field" value="$(arg field)"/>
