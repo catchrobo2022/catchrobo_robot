@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+      <rosparam file="$(find catchrobo_control)/config/controller.yaml" command="load" ns="" />
+
+  <node pkg="controller_manager" type="spawner" name="controller_spawner" 
+  output="screen" respawn="false" 
+  args="joint_state_controller joint1_controller joint2_controller joint3_controller"/>
+</launch>

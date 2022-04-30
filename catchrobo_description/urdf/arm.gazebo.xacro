@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:macro name="arm" params="prefix">
+	<gazebo reference="${prefix}arm/link0">
+	  <selfCollide>false</selfCollide>
+      <mu1 value="0.8" />
+      <mu2 value="0.8" />
+    </gazebo>
+
+	<gazebo reference="${prefix}arm/link1">
+	  <selfCollide>false</selfCollide>
+      <mu1 value="0.8" />
+      <mu2 value="0.8" />
+    </gazebo>
+
+
+	<gazebo reference="${prefix}arm/link2_1">
+	  <selfCollide>false</selfCollide>
+      <mu1 value="0.8" />
+      <mu2 value="0.8" />
+    </gazebo>
+
+
+	<gazebo reference="${prefix}arm/link2_2">
+	  <selfCollide>false</selfCollide>
+      <mu1 value="0.8" />
+      <mu2 value="0.8" />
+    </gazebo>
+
+
+	<gazebo reference="${prefix}arm/link3">
+	  <selfCollide>false</selfCollide>
+      <mu1 value="0.8" />
+      <mu2 value="0.8" />
+    </gazebo>
+
+  </xacro:macro>
+</robot>

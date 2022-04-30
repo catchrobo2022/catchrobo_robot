@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
+    <xacro:include filename="$(find catchrobo_description)/urdf/arm.transmission.xacro"/>
+  <xacro:include filename="$(find catchrobo_description)/urdf/arm.gazebo.xacro"/>
+
+
   <!-- Constants -->
   <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
   <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
@@ -26,6 +30,17 @@
           <mesh filename="package://catchrobo_description/mesh/arm/collision/link0.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+    <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
+
+
+
     </link>
 
     <joint name="${prefix}arm/joint1" type="prismatic">
@@ -48,6 +63,16 @@
           <mesh filename="package://catchrobo_description/mesh/arm/collision/link1.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+
+    <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
+
     </link>
 
     <joint name="${prefix}arm/joint2" type="prismatic">
@@ -70,6 +95,16 @@
           <mesh filename="package://catchrobo_description/mesh/arm/collision/link2_1.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+
+
+          <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
     </link>
 
     <joint name="${prefix}arm/joint2_mimic" type="prismatic">
@@ -93,6 +128,15 @@
           <mesh filename="package://catchrobo_description/mesh/arm/collision/link2_2.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+
+          <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
     </link>
 
     <joint name="${prefix}arm/joint3" type="prismatic">
@@ -115,6 +159,15 @@
           <mesh filename="package://catchrobo_description/mesh/arm/collision/link3.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+
+          <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
     </link>
 
     <joint name="${prefix}arm/joint_tip" type="fixed">

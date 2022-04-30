@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <xacro:include filename="$(find catchrobo_description)/urdf/base.gazebo.xacro"/>
+
   <!-- Field Side Parameters-->
   <xacro:arg name="field" default=""/>
   <xacro:property name="field" value="$(arg field)" />
@@ -30,6 +32,16 @@
           <mesh filename="package://catchrobo_description/mesh/base/collision/base.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
+
+    <inertial>
+      <origin xyz="0 0 0.013" rpy="0 0 0"/>
+      <mass value="0.25"/>
+      <inertia ixx="0.0003350833" ixy="0" ixz="0"
+        iyy="0.000560417" iyz="0"
+        izz="0.000478833"/>
+    </inertial>
+
+
     </link>
 
     <joint name="base/link_tip" type="fixed">

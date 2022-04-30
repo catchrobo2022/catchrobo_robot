@@ -1,0 +1,13 @@
+<launch>
+<include file="$(find catchrobo_description)/launch/catchrobo_display.launch" />
+<include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="$(find catchrobo_gazebo)/worlds/world_test1.world"/>
+
+</include>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+    args="-param robot_description -urdf -model mobilerobot"/>
+
+
+
+</launch>
