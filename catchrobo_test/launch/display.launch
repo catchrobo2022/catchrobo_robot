@@ -1,0 +1,44 @@
+<launch>
+    <arg name="debug" default="false" />
+    <arg name="field" default="red" />
+    <arg name="dummy" default="false" />
+
+    <param name="color" value="$(arg field)" />
+
+
+    <!-- robot_state_publisher : /joint_statesからtfを作成する
+            <- joint_state_publiserからの入力を受け取る --> 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+            
+    <!-- joint_state_publisher : JointStateを/joint_statesというtopicにまとめる。 
+            -> robot_state_publisher, move_group　などへ出力
+            use_gui : 基本true. GUIで変更する用のものが出てくる
+            source_list : subscribeするtopic名。
+                          JointState型ならなんでもok. name[...] に関節名(別paramで指定されている)を入れる。 -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="true" />
+        <rosparam param="source_list">[my_joint_state]</rosparam>
+    </node>
+
+
+    <!-- rvizにロボットを表示する -->
+  <include file="$(find catchrobo_my_moveit)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true" />
+    <arg name="field" value="$(arg field)" />
+    <arg name="dummy" value="$(arg dummy)"/>
+  </include>
+
+<!-- topic /joint_statesに従いrvizのロボットを動かす -->
+  <include file="$(find catchrobo_my_moveit)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true" />
+    <arg name="fake_execution" value="false" />
+    <arg name="info" value="true" />
+    <arg name="debug" value="$(arg debug)" />
+  </include>
+
+  <include file="$(find catchrobo_my_moveit)/launch/moveit_rviz.launch">
+    <arg name="config" value="true" />
+    <arg name="debug" value="$(arg debug)" />
+  </include>
+
+</launch>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- <include file="$(find catchrobo_test)/launch/display.launch" /> -->
+    <node pkg="catchrobo_test" type="test_node" name="test_node" output="screen" respawn="false" respawn_delay="0">
+        <!-- <rosparam param="joints">[arm/joint1, arm/joint2, arm/joint3, gripper/joint1]</rosparam> -->
+    </node>
+
+</launch>
