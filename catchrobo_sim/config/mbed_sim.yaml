@@ -1,0 +1,7 @@
+mbed_sim:
+  mbed2ros_dt: 0.1
+  motor_driver_cmd_dt_: 0.1
+  output_topic_to_ros: my_joint_state
+  output_topic_to_motor: motor_driver_cmd
+  input_topic: motor_driver_state
+  input_topic_from_ros: my_joint_control

@@ -48,6 +48,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   LinearRobotControl.msg
+  ControlStruct.msg
+  StateStruct.msg
 )
 
 ## Generate services in the 'srv' folder

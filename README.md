@@ -14,3 +14,9 @@
 roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 
 ```
+
+### mbed simulator demo
+```
+roslaunch catchrobo_test test.launch
+
+```
