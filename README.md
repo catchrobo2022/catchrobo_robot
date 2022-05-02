@@ -19,13 +19,13 @@ roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 ```
 roslaunch catchrobo_test test.launch
 
-rostopic pub /my_joint_control catchrobo_msgs/LearRobotControl "mode: ''
-position: [0.5, 0.1, 0.1]
+rostopic pub /my_joint_control catchrobo_msgs/LinearRobotControl "mode: ''
+position: [1.5, 0, 0]
 velocity: [0]
 effort: [0]
 position_limit: [0]
 velocity_limit: [0.5, 0.1, 0.1]
-acceleration_limit: [0.1, 0.1, 0.1]
+acceleration_limit: [0.3, 0.1, 0.1]
 jerk_limit: [0.1, 0.1, 0.1]
 kp: [0]
 kd: [0]" 
