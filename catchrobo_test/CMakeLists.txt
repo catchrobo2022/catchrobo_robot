@@ -134,8 +134,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(test_node src/test_node.cpp)
-target_link_libraries(test_node ${catkin_LIBRARIES})
+# add_executable(test_node src/test_node.cpp)
+# target_link_libraries(test_node ${catkin_LIBRARIES})
 
 # add_executable(motor_driver_sim src/motor_driver_sim.cpp)
 # target_link_libraries(motor_driver_sim ${catkin_LIBRARIES})

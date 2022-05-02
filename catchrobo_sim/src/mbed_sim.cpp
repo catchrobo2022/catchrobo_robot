@@ -7,36 +7,13 @@
 #include <string>
 #include <vector>
 
-class Controller
-{
-public:
-
-    Controller(){
-        for (size_t i = 0; i < 3; i++)
-        {
-            cmd_[i].id = i;
-        }
-    };
-    void setTarget(const catchrobo_msgs::LinearRobotControl &target){
-        for (size_t i = 0; i < 3; i++)
-        {
-            cmd_[i].p_des = target.position[i];
-        }
-        
-    };
-    void getCmd(int id, catchrobo_msgs::ControlStruct &cmd){
-        cmd = cmd_[id];
-    };
-private:
-    catchrobo_msgs::ControlStruct cmd_[3];
-};
+#include "catchrobo_sim/xyz_ctrl.h"
 
 class MbedSim
 {
 public:
     MbedSim(): nh_(""), private_nh_("~")
     {
-
         joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3"};
 
         int size = joint_state_.name.size();
@@ -45,10 +22,12 @@ public:
         joint_state_.effort = std::vector<double>(size, 0);
 
         RosSetup();
+        controller_ = new XYZCtrl(motor_driver_cmd_dt_);
+        ROS_INFO("init finish");
     };
 
 private:
-    Controller controller_;
+    XYZCtrl *controller_;
     ros::NodeHandle nh_;
     ros::NodeHandle private_nh_;
     ros::Publisher pub2ros_;
@@ -78,10 +57,10 @@ private:
         pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 1);
 
         private_nh_.param<std::string>("input_topic", input_topic_name, "motor_driver_state");
-        sub_from_motor_ = nh_.subscribe(input_topic_name, 10, &MbedSim::onMsgReceived, this);
+        sub_from_motor_ = nh_.subscribe(input_topic_name, 50, &MbedSim::onMsgReceived, this);
 
         private_nh_.param<std::string>("input_topic_from_ros", input_topic_name, "my_joint_control");
-        sub_from_ros_ = nh_.subscribe(input_topic_name, 10, &MbedSim::rosCallback, this);
+        sub_from_ros_ = nh_.subscribe(input_topic_name, 50, &MbedSim::rosCallback, this);
     };
 
     void mbed2RosTimerCallback(const ros::TimerEvent &event)
@@ -94,13 +73,13 @@ private:
         catchrobo_msgs::ControlStruct cmd;
         for (size_t i = 0; i < 3; i++)
         {
-            controller_.getCmd(i, cmd);
+            controller_->getCmd(i, cmd);
             pack_cmd(cmd);
         }        
     };
 
     void rosCallback(const catchrobo_msgs::LinearRobotControl::ConstPtr &input){
-        controller_.setTarget(*input);
+        controller_->setTarget(*input, joint_state_);
     };
 
     void onMsgReceived(const catchrobo_msgs::StateStruct::ConstPtr &input)
@@ -119,6 +98,7 @@ private:
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "mbed_sim");
+    ROS_INFO("START");
     MbedSim sample_node;
     ros::spin();
     return 0;

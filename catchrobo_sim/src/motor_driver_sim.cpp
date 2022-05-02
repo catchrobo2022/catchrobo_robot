@@ -58,6 +58,9 @@ void MotorDriverSim::sampleCallback(const catchrobo_msgs::ControlStruct::ConstPt
 void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
 {
     state_.position = cmd_.p_des;
+    state_.velocity = cmd_.v_des;
+    state_.current = cmd_.i_ff;
+
     publisher_.publish(state_);
 }
 
