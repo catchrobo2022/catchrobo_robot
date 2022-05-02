@@ -47,9 +47,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  LinearRobotControl.msg
+  MyRosCmd.msg
   ControlStruct.msg
   StateStruct.msg
+  MyRosCmdArray.msg
 )
 
 ## Generate services in the 'srv' folder

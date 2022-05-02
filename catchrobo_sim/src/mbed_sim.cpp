@@ -1,33 +1,27 @@
+#include "catchrobo_sim/robot_manager.h"
+
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/ControlStruct.h>
 #include <catchrobo_msgs/StateStruct.h>
-#include <catchrobo_msgs/LinearRobotControl.h>
+#include <catchrobo_msgs/MyRosCmdArray.h>
 
 #include <string>
 #include <vector>
 
-#include "catchrobo_sim/xyz_ctrl.h"
 
 class MbedSim
 {
 public:
     MbedSim(): nh_(""), private_nh_("~")
     {
-        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3"};
-
-        int size = joint_state_.name.size();
-        joint_state_.position = std::vector<double>(size, 0);
-        joint_state_.velocity = std::vector<double>(size, 0);
-        joint_state_.effort = std::vector<double>(size, 0);
-
         RosSetup();
-        controller_ = new XYZCtrl(motor_driver_cmd_dt_);
+        robot_manager_.init(motor_driver_cmd_dt_);
         ROS_INFO("init finish");
     };
 
 private:
-    XYZCtrl *controller_;
+    RobotManager robot_manager_;
     ros::NodeHandle nh_;
     ros::NodeHandle private_nh_;
     ros::Publisher pub2ros_;
@@ -38,7 +32,6 @@ private:
     ros::Timer mbed2motor_timer_;
 
     float motor_driver_cmd_dt_;
-    sensor_msgs::JointState joint_state_;
 
     void RosSetup()
     {
@@ -65,7 +58,10 @@ private:
 
     void mbed2RosTimerCallback(const ros::TimerEvent &event)
     {
-        pub2ros_.publish(joint_state_);
+
+        sensor_msgs::JointState joint_state;
+        robot_manager_.getJointState(joint_state);
+        pub2ros_.publish(joint_state);
     };
 
     void mbed2MotorDriverTimerCallback(const ros::TimerEvent &event)
@@ -73,21 +69,18 @@ private:
         catchrobo_msgs::ControlStruct cmd;
         for (size_t i = 0; i < 3; i++)
         {
-            controller_->getCmd(i, cmd);
+            robot_manager_.getCmd(i, cmd);
             pack_cmd(cmd);
         }        
     };
 
-    void rosCallback(const catchrobo_msgs::LinearRobotControl::ConstPtr &input){
-        controller_->setTarget(*input, joint_state_);
+    void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input){
+        robot_manager_.setRosCmd(*input);
     };
 
     void onMsgReceived(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
-        int id = input->id;
-        joint_state_.position[id] = input->position;
-        joint_state_.velocity[id] = input->velocity;
-        joint_state_.effort[id] = input->current;
+        robot_manager_.setCurrentState(*input);
     };
 
     void pack_cmd(const catchrobo_msgs::ControlStruct &cmd){
