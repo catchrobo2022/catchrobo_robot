@@ -7,18 +7,22 @@
 #include <catchrobo_msgs/ControlStruct.h>
 #include <catchrobo_msgs/MyRosCmd.h>
 
-#include <ros/ros.h>//ROS_INFO用
+#include <ros/ros.h> //ROS_INFO用
+
+#include <limits>
 
 class PositionControl : public ControllerInterface
 {
 public:
-    PositionControl():dt_(0), no_target_flag_(true), during_cal_flag_(false){};
-    void init(double dt){
+    PositionControl() : dt_(0), no_target_flag_(true), during_cal_flag_(false){
+
+                                                       };
+    void init(double dt)
+    {
         dt_ = dt;
     }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const catchrobo_msgs::StateStruct &joint_state)
     {
-
 
         during_cal_flag_ = true;
         target_ = cmd;
@@ -26,26 +30,27 @@ public:
         float dist = cmd.position - start_posi; //移動距離
 
         accel_designer_.reset(cmd.jerk_limit, cmd.acceleration_limit, cmd.velocity_limit,
-                                joint_state.velocity, cmd.velocity, dist,
-                                start_posi, 0);
+                              joint_state.velocity, cmd.velocity, dist,
+                              start_posi, 0);
         t_ = 0;
         no_target_flag_ = false;
         during_cal_flag_ = false;
     };
 
-    // dt間隔で呼ばれる想定
-    void getCmd(const catchrobo_msgs::ControlStruct &old_cmd, catchrobo_msgs::ControlStruct &cmd)
+    // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
+    void getCmd(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
     {
-        t_+=dt_;
-        if(t_ > accel_designer_.t_end()){
+        t_ += dt_;
+        if (t_ > accel_designer_.t_end())
+        {
             //到達後は目標値と一致する。
             //[WARNING] トリッキーな実装：accel_designer_.t_end()はresetで値を入力するまで0を返す。
             //                         そのため、setRosCmdが呼ばれるまではこのifに入る。
-            cmd = old_cmd;
+            command = except_command;
             return;
         }
-        packResult2Cmd(t_, accel_designer_, target_, cmd);       
-        
+        packResult2Cmd(t_, accel_designer_, target_, command);
+        NanCheck(except_command, command);
     };
 
 private:
@@ -57,7 +62,8 @@ private:
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
 
-    void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd){
+    void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
+    {
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
         cmd.i_ff = accel_designer.a(t);
@@ -73,5 +79,4 @@ private:
     //     cmd.kp = 0;
     //     cmd.kd = 0;
     // }
-
 };

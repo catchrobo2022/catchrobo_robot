@@ -50,7 +50,7 @@ private:
         pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 1);
 
         private_nh_.param<std::string>("input_topic", input_topic_name, "motor_driver_state");
-        sub_from_motor_ = nh_.subscribe(input_topic_name, 50, &MbedSim::onMsgReceived, this);
+        sub_from_motor_ = nh_.subscribe(input_topic_name, 50, &MbedSim::CANCallback, this);
 
         private_nh_.param<std::string>("input_topic_from_ros", input_topic_name, "my_joint_control");
         sub_from_ros_ = nh_.subscribe(input_topic_name, 50, &MbedSim::rosCallback, this);
@@ -70,7 +70,7 @@ private:
         for (size_t i = 0; i < 3; i++)
         {
             robot_manager_.getCmd(i, cmd);
-            pack_cmd(cmd);
+            pub2motor_.publish(cmd);
         }        
     };
 
@@ -78,13 +78,9 @@ private:
         robot_manager_.setRosCmd(*input);
     };
 
-    void onMsgReceived(const catchrobo_msgs::StateStruct::ConstPtr &input)
+    void CANCallback(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
         robot_manager_.setCurrentState(*input);
-    };
-
-    void pack_cmd(const catchrobo_msgs::ControlStruct &cmd){
-        pub2motor_.publish(cmd);
     };
 };
 
