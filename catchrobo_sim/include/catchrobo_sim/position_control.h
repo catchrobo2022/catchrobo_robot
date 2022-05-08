@@ -14,9 +14,7 @@
 class PositionControl : public ControllerInterface
 {
 public:
-    PositionControl() : dt_(0), no_target_flag_(true), during_cal_flag_(false){
-
-                                                       };
+    PositionControl() : dt_(0.1), no_target_flag_(true), during_cal_flag_(false){};
     void init(double dt)
     {
         dt_ = dt;
@@ -50,6 +48,7 @@ public:
             return;
         }
         packResult2Cmd(t_, accel_designer_, target_, command);
+
         NanCheck(except_command, command);
     };
 

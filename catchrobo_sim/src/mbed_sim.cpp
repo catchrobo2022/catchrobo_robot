@@ -9,11 +9,10 @@
 #include <string>
 #include <vector>
 
-
 class MbedSim
 {
 public:
-    MbedSim(): nh_(""), private_nh_("~")
+    MbedSim() : nh_(""), private_nh_("~")
     {
         RosSetup();
         robot_manager_.init(motor_driver_cmd_dt_);
@@ -65,16 +64,17 @@ private:
     };
 
     void mbed2MotorDriverTimerCallback(const ros::TimerEvent &event)
-    {   
+    {
         catchrobo_msgs::ControlStruct cmd;
-        for (size_t i = 0; i < 3; i++)
+        for (size_t i = 0; i < 4; i++)
         {
             robot_manager_.getCmd(i, cmd);
             pub2motor_.publish(cmd);
-        }        
+        }
     };
 
-    void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input){
+    void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input)
+    {
         robot_manager_.setRosCmd(*input);
     };
 

@@ -28,3 +28,26 @@ void NanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msg
         command = except_command;
     }
 }
+
+void LimitCheck(const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &command)
+{
+    bool out_of_range = false;
+    if (command.p_des < target.position_min)
+    {
+        command.p_des = target.position_min;
+        out_of_range = true;
+    }
+    if (command.p_des > target.position_max)
+    {
+        command.p_des = target.position_max;
+        out_of_range = true;
+    }
+    if (command.v_des > target.velocity_limit)
+    {
+        command.v_des = target.velocity_limit;
+    }
+    if (command.v_des < -target.velocity_limit)
+    {
+        command.v_des = -target.velocity_limit;
+    }
+}

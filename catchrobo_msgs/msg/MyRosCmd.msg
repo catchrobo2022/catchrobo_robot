@@ -5,16 +5,17 @@ uint8 PEG_IN_HOLE_MODE=2
 uint8 id
 uint8 mode
 
-float64 position
-float64 velocity
-float64 effort
+float32 position
+float32 velocity
+float32 effort
 
-float64 inertia
+float32 inertia
 
-float64 position_limit
-float64 velocity_limit
-float64 acceleration_limit
-float64 jerk_limit
+float32 position_min
+float32 position_max
+float32 velocity_limit
+float32 acceleration_limit
+float32 jerk_limit
 
-float64 kp
-float64 kd
+float32 kp
+float32 kd

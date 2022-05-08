@@ -8,6 +8,8 @@
 #include <catchrobo_msgs/MyRosCmdArray.h>
 #include <catchrobo_msgs/StateStruct.h>
 
+#include <vector>
+
 #include <ros/ros.h> //ROS_INFO用
 
 class RobotManager
@@ -15,7 +17,7 @@ class RobotManager
 public:
     RobotManager()
     {
-        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3"};
+        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
 
         int joint_num = joint_state_.name.size();
         joint_state_.position = std::vector<double>(joint_num, 0);
@@ -30,11 +32,11 @@ public:
         }
     };
 
-    void setRosCmd(const catchrobo_msgs::MyRosCmdArray &command_array)
+    void setRosCmd(const catchrobo_msgs::MyRosCmdArray &input)
     {
-        for (size_t i = 0; i < joint_state_.name.size(); i++)
+        for (const catchrobo_msgs::MyRosCmd &command : input.command_array)
         {
-            motor_manager_[i].setRosCmd(command_array.command_array[i]);
+            motor_manager_[command.id].setRosCmd(command);
         }
     };
     void getCmd(int id, catchrobo_msgs::ControlStruct &cmd)
@@ -63,6 +65,6 @@ public:
     };
 
 private:
-    MotorManager motor_manager_[3];
+    MotorManager motor_manager_[4];
     sensor_msgs::JointState joint_state_;
 };
