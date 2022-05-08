@@ -38,7 +38,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
+    void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
     {
         t_ += dt_;
         if (t_ > accel_designer_.t_end())
@@ -64,9 +64,10 @@ private:
 
     void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
     {
+        cmd.id = target.id;
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
-        cmd.i_ff = accel_designer.a(t);
+        cmd.i_ff = target.inertia * accel_designer.a(t) + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }

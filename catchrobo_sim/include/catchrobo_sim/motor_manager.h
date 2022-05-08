@@ -26,6 +26,7 @@ public:
     void init(double dt)
     {
         position_control_.init(dt);
+        velocity_control_.init(dt);
     }
 
     //低Hz (1 Hzとか)で呼ばれる
@@ -51,7 +52,7 @@ public:
     // dt間隔で呼ばれる
     void getCmd(catchrobo_msgs::ControlStruct &command)
     {
-        controller_interface_->getCmd(old_command_, command);
+        controller_interface_->getCmd(current_state_, old_command_, command);
         old_command_ = command;
     };
 
