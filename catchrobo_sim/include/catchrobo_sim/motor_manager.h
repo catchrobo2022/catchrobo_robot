@@ -2,6 +2,7 @@
 
 #include "catchrobo_sim/position_control.h"
 #include "catchrobo_sim/velocity_control.h"
+#include "catchrobo_sim/safe_control.h"
 
 #include <catchrobo_msgs/ControlStruct.h>
 #include <catchrobo_msgs/StateStruct.h>
@@ -25,8 +26,10 @@ public:
 
     void init(double dt)
     {
-        position_control_.init(dt);
-        velocity_control_.init(dt);
+        double cbf_params = 1;
+        safe_control_.setCBFparams(cbf_params);
+        position_control_.init(dt, safe_control_);
+        velocity_control_.init(dt, safe_control_);
     }
 
     //低Hz (1 Hzとか)で呼ばれる
@@ -75,4 +78,5 @@ private:
 
     PositionControl position_control_;
     VelocityControl velocity_control_;
+    SafeControl safe_control_;
 };

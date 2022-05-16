@@ -2,6 +2,7 @@
 
 #include "catchrobo_sim/accel_designer.h"
 #include "catchrobo_sim/controller_interface.h"
+#include "catchrobo_sim/safe_control.h"
 
 #include <catchrobo_msgs/StateStruct.h>
 #include <catchrobo_msgs/ControlStruct.h>
@@ -15,9 +16,10 @@ class PositionControl : public ControllerInterface
 {
 public:
     PositionControl() : dt_(0.1), no_target_flag_(true), during_cal_flag_(false){};
-    void init(double dt)
+    void init(double dt, SafeControl &safe_control)
     {
         dt_ = dt;
+        safe_control_ = safe_control;
     }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const catchrobo_msgs::StateStruct &joint_state)
     {
@@ -38,18 +40,27 @@ public:
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
     void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
     {
-        t_ += dt_;
-        if (t_ > accel_designer_.t_end())
+        if (no_target_flag_)
         {
-            //到達後は目標値と一致する。
-            //[WARNING] トリッキーな実装：accel_designer_.t_end()はresetで値を入力するまで0を返す。
-            //                         そのため、setRosCmdが呼ばれるまではこのifに入る。
+            // まだ目標値が与えられていないとき
             command = except_command;
-            return;
         }
-        packResult2Cmd(t_, accel_designer_, target_, command);
-
-        NanCheck(except_command, command);
+        else
+        {
+            // まだ目標値が与えられた後
+            t_ += dt_;
+            if (t_ < accel_designer_.t_end())
+            {
+                //収束していないとき
+                packResult2Cmd(t_, accel_designer_, target_, command);
+            }
+            else
+            {
+                //収束後
+                command = except_command;
+            }
+        }
+        safe_control_.getSafeCmd(state, target_, except_command, command);
     };
 
 private:
@@ -60,6 +71,7 @@ private:
 
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
+    SafeControl safe_control_;
 
     void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
     {

@@ -15,11 +15,13 @@ if __name__ == "__main__":
     command = MyRosCmd()
 
     command.id = 0    # 0: x軸 1:y軸 2: z軸 3:グリッパー
-    command.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
-    command.position = 1.5
+    command.mode = MyRosCmd.VELOCITY_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
+    command.position = 0
     command.velocity = 0
     command.inertia = 1.0
     command.effort = 0
+    command.position_min = 0
+    command.position_max = 1.5
     command.velocity_limit = 0.5
     command.acceleration_limit = 0.3
     command.jerk_limit = 0.1

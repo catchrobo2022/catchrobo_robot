@@ -2,6 +2,7 @@
 
 #include "catchrobo_sim/controller_interface.h"
 #include "catchrobo_sim/accel_curve.h"
+#include "catchrobo_sim/safe_control.h"
 
 #include <catchrobo_msgs/StateStruct.h>
 #include <catchrobo_msgs/ControlStruct.h>
@@ -13,9 +14,10 @@ class VelocityControl : public ControllerInterface
 {
 public:
     VelocityControl(){};
-    void init(double dt)
+    void init(double dt, SafeControl &safe_control)
     {
         dt_ = dt;
+        safe_control_ = safe_control;
     }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const catchrobo_msgs::StateStruct &joint_state)
     {
@@ -28,7 +30,7 @@ public:
     void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
     {
         packResult2Cmd(state, target_, command);
-        NanCheck(except_command, command);
+        safe_control_.getSafeCmd(state, target_, except_command, command);
     };
 
 private:
@@ -36,6 +38,7 @@ private:
     double frequency_; // =1/dt
     catchrobo_msgs::MyRosCmd target_;
     ctrl::AccelCurve accel_curve_;
+    SafeControl safe_control_;
 
     void packResult2Cmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
     {

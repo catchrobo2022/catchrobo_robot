@@ -14,7 +14,7 @@ public:
     virtual void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &cmd) = 0;
 };
 
-void NanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
+void nanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
 {
     // nanチェック
     if (std::isfinite(command.p_des) && std::isfinite(command.v_des) && std::isfinite(command.i_ff))
@@ -29,25 +29,35 @@ void NanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msg
     }
 }
 
-void LimitCheck(const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &command)
+void bound(double min, double max, double &target)
 {
-    bool out_of_range = false;
-    if (command.p_des < target.position_min)
+    if (target < min)
     {
-        command.p_des = target.position_min;
-        out_of_range = true;
+        target = min;
     }
-    if (command.p_des > target.position_max)
+    if (target > max)
     {
-        command.p_des = target.position_max;
-        out_of_range = true;
+        target = max;
     }
-    if (command.v_des > target.velocity_limit)
+}
+
+void minPositionCBF(double position_now, double position_min, double alpha, double &target_velocity)
+{
+    ////CBF: b>=0 , b:=position_now-position_min
+    ////<=> \dot{b}+alpha(b)>=0
+    ////<=> target_velocity >= - alpha(b)
+
+    double b = position_now - position_min;
+
+    double temp = -alpha * b;
+    if (target_velocity < temp)
     {
-        command.v_des = target.velocity_limit;
+        target_velocity = temp;
     }
-    if (command.v_des < -target.velocity_limit)
-    {
-        command.v_des = -target.velocity_limit;
-    }
+}
+
+void limitCheck(const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &command)
+{
+    bound(target.position_min, target.position_max, command.p_des);
+    bound(-target.velocity_limit, target.velocity_limit, command.v_des);
 }
