@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find catchrobo_description)/launch/catchrobo_display.launch" />
+    <include file="$(find catchrobo_sim)/launch/driver_bringup.launch" />
+    <include file="$(find catchrobo_sim)/launch/mbed_sim.launch" />
+</launch>
