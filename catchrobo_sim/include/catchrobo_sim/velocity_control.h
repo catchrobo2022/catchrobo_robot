@@ -27,10 +27,11 @@ public:
     };
 
     // dt間隔で呼ばれる想定
-    void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
+    void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command, bool &finished)
     {
         packResult2Cmd(state, target_, command);
         safe_control_.getSafeCmd(state, target_, except_command, command);
+        finished = false;
     };
 
 private:

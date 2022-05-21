@@ -52,10 +52,10 @@ public:
         controller_interface_->setRosCmd(cmd, current_state_);
     };
 
-    // dt間隔で呼ばれる
-    void getCmd(catchrobo_msgs::ControlStruct &command)
+    // dt間隔で呼ばれる. servo classではoverrideされる。
+    virtual void getCmd(catchrobo_msgs::ControlStruct &command, bool &finished)
     {
-        controller_interface_->getCmd(current_state_, old_command_, command);
+        controller_interface_->getCmd(current_state_, old_command_, command, finished);
         old_command_ = command;
     };
 

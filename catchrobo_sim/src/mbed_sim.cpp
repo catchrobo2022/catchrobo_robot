@@ -1,6 +1,7 @@
 #include "catchrobo_sim/robot_manager.h"
 
 #include <ros/ros.h>
+#include <std_msgs/Int8.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/ControlStruct.h>
 #include <catchrobo_msgs/StateStruct.h>
@@ -25,6 +26,7 @@ private:
     ros::NodeHandle private_nh_;
     ros::Publisher pub2ros_;
     ros::Publisher pub2motor_;
+    ros::Publisher pub_finished_flag_;
     ros::Subscriber sub_from_motor_;
     ros::Subscriber sub_from_ros_;
     ros::Timer mbed2ros_timer_;
@@ -44,6 +46,10 @@ private:
         std::string input_topic_name, output_topic_name;
         private_nh_.param<std::string>("output_topic_to_ros", output_topic_name, "my_joint_state");
         pub2ros_ = nh_.advertise<sensor_msgs::JointState>(output_topic_name, 1);
+
+        std::string finished_flag;
+        private_nh_.param<std::string>("finished_flag_topic", finished_flag, "finished_flag_topic");
+        pub_finished_flag_ = nh_.advertise<std_msgs::Int8>(finished_flag, 5);
 
         private_nh_.param<std::string>("output_topic_to_motor", output_topic_name, "motor_driver_cmd");
         pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 1);
@@ -68,8 +74,15 @@ private:
         catchrobo_msgs::ControlStruct cmd;
         for (size_t i = 0; i < 4; i++)
         {
-            robot_manager_.getCmd(i, cmd);
+            bool finished = false;
+            robot_manager_.getCmd(i, cmd, finished);
             pub2motor_.publish(cmd);
+            if (finished)
+            {
+                std_msgs::Int8 data;
+                data.data = i;
+                pub_finished_flag_.publish(data);
+            }
         }
     };
 
