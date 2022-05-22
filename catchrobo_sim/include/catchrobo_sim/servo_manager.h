@@ -25,8 +25,5 @@ public:
         current_state.velocity = command.v_des;
         current_state.current = command.i_ff;
         MotorManager::setCurrentState(current_state);
-
-        ROS_INFO_STREAM("servo");
-        ROS_INFO_STREAM(current_state);
     };
 };
