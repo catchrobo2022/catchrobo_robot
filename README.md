@@ -25,3 +25,14 @@ rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテス�
 ```
 p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 ```
+
+
+## mbedへの移行
+1. catchrobo_sim/include/catchrobo_simをzip化する
+1. mbed compilerでプログラム名を選択し右クリック
+1. インポートを選択
+1. アップロードタブを選択
+1. 下にあるChoose Fileから作成したzipを選択
+1. ライブラリとしてインポートする(古いものがある場合には、削除してからインポートする)
+
+https://os.mbed.com/teams/catchrobo2022/
