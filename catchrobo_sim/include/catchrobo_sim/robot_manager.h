@@ -68,7 +68,7 @@ public:
             motor_manager_[i]->getState(state);
             joint_state_.position[i] = state.position;
             joint_state_.velocity[i] = state.velocity;
-            joint_state_.effort[i] = state.current;
+            joint_state_.effort[i] = state.torque;
         }
         joint_state = joint_state_;
     };

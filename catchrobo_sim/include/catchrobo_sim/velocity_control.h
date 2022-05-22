@@ -59,7 +59,7 @@ private:
             cmd.v_des = state.velocity + accel * dt_;
         }
 
-        cmd.i_ff = target.inertia * accel + target.effort;
+        cmd.torque_feed_forward = target.mass * accel + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }

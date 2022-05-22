@@ -27,7 +27,7 @@ private:
     void nanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
     {
         // nanチェック
-        if (std::isfinite(command.p_des) && std::isfinite(command.v_des) && std::isfinite(command.i_ff))
+        if (std::isfinite(command.p_des) && std::isfinite(command.v_des) && std::isfinite(command.torque_feed_forward))
         {
             //正常時
         }

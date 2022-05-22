@@ -15,13 +15,13 @@ public:
     {
         old_command_.p_des = 0;
         old_command_.v_des = 0;
-        old_command_.i_ff = 0;
+        old_command_.torque_feed_forward = 0;
         old_command_.kp = 0;
         old_command_.kd = 0;
 
         current_state_.position = 0;
         current_state_.velocity = 0;
-        current_state_.current = 0;
+        current_state_.torque = 0;
     };
 
     void init(double dt)

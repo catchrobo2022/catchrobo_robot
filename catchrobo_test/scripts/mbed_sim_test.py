@@ -18,7 +18,7 @@ if __name__ == "__main__":
     command.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
     command.position = 1
     command.velocity = 0 #目標位置での速度
-    command.inertia = 1.0 # 慣性モーメント(未対応)
+    command.mass = 1.0 # 慣性モーメント(未対応)
     command.effort = 0 #自重補償項(未対応)
     command.position_min = 0 #可動域
     command.position_max = 1.2 #可動域

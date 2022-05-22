@@ -86,7 +86,7 @@ private:
         cmd.id = target.id;
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
-        cmd.i_ff = target.inertia * accel_designer.a(t) + target.effort;
+        cmd.torque_feed_forward = target.mass * accel_designer.a(t) + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }
@@ -95,7 +95,7 @@ private:
     //     cmd.id = id;
     //     cmd.p_des = 0;
     //     cmd.v_des = 0;
-    //     cmd.i_ff = 0;
+    //     cmd.torque_feed_forward = 0;
     //     cmd.kp = 0;
     //     cmd.kd = 0;
     // }

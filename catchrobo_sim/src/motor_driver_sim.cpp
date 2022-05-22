@@ -56,10 +56,10 @@ void MotorDriverSim::sampleCallback(const catchrobo_msgs::ControlStruct::ConstPt
 
 void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
 {
-    // double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.i_ff;
+    // double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.torque_feed_forward;
     state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;
     state_.velocity = (state_.position - old_state_.position) / dt_;
-    state_.current = cmd_.i_ff;
+    state_.torque = cmd_.torque_feed_forward;
 
     publisher_.publish(state_);
     old_state_ = state_;

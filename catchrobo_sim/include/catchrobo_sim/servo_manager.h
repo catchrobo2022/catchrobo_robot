@@ -23,7 +23,7 @@ public:
         catchrobo_msgs::StateStruct current_state;
         current_state.position = command.p_des;
         current_state.velocity = command.v_des;
-        current_state.current = command.i_ff;
+        current_state.torque = command.torque_feed_forward;
         MotorManager::setCurrentState(current_state);
     };
 };
