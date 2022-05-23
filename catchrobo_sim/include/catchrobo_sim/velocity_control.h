@@ -4,11 +4,8 @@
 #include "catchrobo_sim/accel_curve.h"
 #include "catchrobo_sim/safe_control.h"
 
-#include <catchrobo_msgs/StateStruct.h>
-#include <catchrobo_msgs/ControlStruct.h>
+#include "catchrobo_sim/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
-
-#include <ros/ros.h> //ROS_INFO用
 
 class VelocityControl : public ControllerInterface
 {
@@ -19,7 +16,7 @@ public:
         dt_ = dt;
         safe_control_ = safe_control;
     }
-    void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const catchrobo_msgs::StateStruct &joint_state)
+    virtual void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
         target_ = cmd;
 
@@ -27,7 +24,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定
-    void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command, bool &finished)
+    virtual void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
     {
         packResult2Cmd(state, target_, command);
         safe_control_.getSafeCmd(state, target_, except_command, command);
@@ -41,7 +38,7 @@ private:
     ctrl::AccelCurve accel_curve_;
     SafeControl safe_control_;
 
-    void packResult2Cmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
+    void packResult2Cmd(const StateStruct &state, const catchrobo_msgs::MyRosCmd &target, ControlStruct &cmd)
     {
         cmd.id = target.id;
         cmd.p_des = target.position;

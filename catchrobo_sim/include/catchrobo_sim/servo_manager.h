@@ -1,26 +1,20 @@
 #pragma once
 
 #include "catchrobo_sim/motor_manager.h"
-
-#include <catchrobo_msgs/ControlStruct.h>
-#include <catchrobo_msgs/StateStruct.h>
-#include <ros/ros.h>
+#include "catchrobo_sim/motor_driver_struct.h"
 
 class ServoManager : public MotorManager
 {
 public:
-    using MotorManager::MotorManager;
+    // using MotorManager::MotorManager; //C++11の機能
 
-    // ServoManager()
-    // {
-    //     ROS_INFO_STREAM("servo start");
-    // };
+    ServoManager(){};
 
     // dt間隔で呼ばれる
-    void getCmd(catchrobo_msgs::ControlStruct &command, bool &finished) override
+    virtual void getCmd(ControlStruct &command, bool &finished)
     {
         MotorManager::getCmd(command, finished);
-        catchrobo_msgs::StateStruct current_state;
+        StateStruct current_state;
         current_state.position = command.p_des;
         current_state.velocity = command.v_des;
         current_state.torque = command.torque_feed_forward;

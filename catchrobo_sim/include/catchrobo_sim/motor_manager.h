@@ -3,9 +3,8 @@
 #include "catchrobo_sim/position_control.h"
 #include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
+#include "catchrobo_sim/motor_driver_struct.h"
 
-#include <catchrobo_msgs/ControlStruct.h>
-#include <catchrobo_msgs/StateStruct.h>
 #include <catchrobo_msgs/MyRosCmd.h>
 
 class MotorManager
@@ -45,7 +44,7 @@ public:
             break;
 
         default:
-            ROS_ERROR("error : No mode in MyRosCmd");
+            //            ROS_ERROR("error : No mode in MyRosCmd");
             break;
         }
 
@@ -53,28 +52,28 @@ public:
     };
 
     // dt間隔で呼ばれる. servo classではoverrideされる。
-    virtual void getCmd(catchrobo_msgs::ControlStruct &command, bool &finished)
+    virtual void getCmd(ControlStruct &command, bool &finished)
     {
         controller_interface_->getCmd(current_state_, old_command_, command, finished);
         old_command_ = command;
     };
 
     //高Hz (500Hz)で呼ばれる
-    void setCurrentState(const catchrobo_msgs::StateStruct &state)
+    void setCurrentState(const StateStruct &state)
     {
         current_state_ = state;
     }
 
     //低Hz (50Hz)で呼ばれる
-    void getState(catchrobo_msgs::StateStruct &state)
+    void getState(StateStruct &state)
     {
         state = current_state_;
     }
 
 private:
     ControllerInterface *controller_interface_;
-    catchrobo_msgs::StateStruct current_state_;
-    catchrobo_msgs::ControlStruct old_command_;
+    StateStruct current_state_;
+    ControlStruct old_command_;
 
     PositionControl position_control_;
     VelocityControl velocity_control_;

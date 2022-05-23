@@ -1,4 +1,5 @@
 #include "catchrobo_sim/robot_manager.h"
+#include "catchrobo_sim/motor_driver_struct.h"
 
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
@@ -16,7 +17,15 @@ public:
     MbedSim() : nh_(""), private_nh_("~")
     {
         RosSetup();
-        robot_manager_.init(motor_driver_cmd_dt_);
+        sensor_msgs::JointState joint_state_init;
+        joint_state_init.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
+
+        int joint_num = joint_state_init.name.size();
+        joint_state_init.position = std::vector<double>(joint_num, 0);
+        joint_state_init.velocity = std::vector<double>(joint_num, 0);
+        joint_state_init.effort = std::vector<double>(joint_num, 0);
+
+        robot_manager_.init(motor_driver_cmd_dt_, joint_state_init);
         ROS_INFO("init finish");
     };
 
@@ -71,12 +80,21 @@ private:
 
     void mbed2MotorDriverTimerCallback(const ros::TimerEvent &event)
     {
-        catchrobo_msgs::ControlStruct cmd;
         for (size_t i = 0; i < 4; i++)
         {
             bool finished = false;
+            ControlStruct cmd;
             robot_manager_.getCmd(i, cmd, finished);
-            pub2motor_.publish(cmd);
+
+            catchrobo_msgs::ControlStruct cmd_msg;
+            cmd_msg.id = cmd.id;
+            cmd_msg.p_des = cmd.p_des;
+            cmd_msg.v_des = cmd.v_des;
+            cmd_msg.torque_feed_forward = cmd.torque_feed_forward;
+            cmd_msg.kp = cmd.kp;
+            cmd_msg.kd = cmd.kd;
+
+            pub2motor_.publish(cmd_msg);
             if (finished)
             {
                 std_msgs::Int8 data;
@@ -88,12 +106,20 @@ private:
 
     void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input)
     {
-        robot_manager_.setRosCmd(*input);
+        for (const catchrobo_msgs::MyRosCmd &command : input->command_array)
+        {
+            robot_manager_.setRosCmd(command);
+        }
     };
 
     void CANCallback(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
-        robot_manager_.setCurrentState(*input);
+        StateStruct state;
+        state.id = input->id;
+        state.position = input->position;
+        state.velocity = input->velocity;
+        state.torque = input->torque;
+        robot_manager_.setCurrentState(state);
     };
 };
 

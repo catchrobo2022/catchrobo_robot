@@ -5,6 +5,7 @@
 - ros melodic
 
 ## Requirement
+- sudo apt install ros-melodic-rosserial-mbed
 
 
 ## How to use
@@ -35,4 +36,23 @@ p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 1. 下にあるChoose Fileから作成したzipを選択
 1. ライブラリとしてインポートする(古いものがある場合には、削除してからインポートする)
 
+- msgが変化した場合
+``` 
+rosrun rosserial_mbed make_libraries.py <コードの生成場所。どこでもいい>
+```
+作成後、round関数がmbedにないらしいので ros_lib/ros/duration.h　およびros_lib/ros/time.h　のclassの中に
+```
+ double round(double number) { return number < 0.0 ? ceil(number - 0.5): floor(number + 0.5); };
+```
+を追加する。
+
+作成したros_libを上記の方法でインポートする。
+
+
 https://os.mbed.com/teams/catchrobo2022/
+
+
+```
+sudo chmod a+rw /dev/ttyACM0 
+rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+```

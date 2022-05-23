@@ -1,10 +1,9 @@
 #pragma once
 
-#include <catchrobo_msgs/StateStruct.h>
-#include <catchrobo_msgs/ControlStruct.h>
+#include "catchrobo_sim/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
 
-#include <ros/ros.h>
+// #include <ros/ros.h>
 
 class SafeControl
 {
@@ -13,8 +12,8 @@ public:
     {
         alpha_ = alpha;
     }
-    void getSafeCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::MyRosCmd &target,
-                    const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
+    void getSafeCmd(const StateStruct &state, const catchrobo_msgs::MyRosCmd &target,
+                    const ControlStruct &except_command, ControlStruct &command)
     {
 
         nanCheck(except_command, command);
@@ -24,14 +23,10 @@ public:
 
 private:
     double alpha_;
-    void nanCheck(const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command)
+    void nanCheck(const ControlStruct &except_command, ControlStruct &command)
     {
         // nanチェック
-        if (std::isfinite(command.p_des) && std::isfinite(command.v_des) && std::isfinite(command.torque_feed_forward))
-        {
-            //正常時
-        }
-        else
+        if (isnan(command.p_des) || isnan(command.v_des) || isnan(command.torque_feed_forward))
         {
             //異常時
             // ROS_INFO_STREAM(command);
@@ -39,7 +34,7 @@ private:
         }
     }
 
-    void bound(double min, double max, double &target)
+    void bound(double min, double max, float &target)
     {
         if (target < min)
         {
@@ -53,14 +48,14 @@ private:
         }
     }
 
-    void boundIn(const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &command)
+    void boundIn(const catchrobo_msgs::MyRosCmd &target, ControlStruct &command)
     {
         //[min, max] にコマンドを入れる
         bound(target.position_min, target.position_max, command.p_des);
         bound(-target.velocity_limit, target.velocity_limit, command.v_des);
     }
 
-    void minPositionCBF(double position_now, double position_min, double alpha, double &target_velocity)
+    void minPositionCBF(double position_now, double position_min, double alpha, float &target_velocity)
     {
         ////CBF: b>=0 , b:=position_now-position_min
         ////<=> \dot{b}+alpha(b)>=0
@@ -75,7 +70,7 @@ private:
         }
     }
 
-    void maxPositionCBF(double position_now, double position_max, double alpha, double &target_velocity)
+    void maxPositionCBF(double position_now, double position_max, double alpha, float &target_velocity)
     {
         ////CBF: b>=0 , b:=position_max - position_now
         ////<=> \dot{b}+alpha(b)>=0
@@ -90,7 +85,7 @@ private:
         }
     }
 
-    void ControlBarrierFunctions(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &command)
+    void ControlBarrierFunctions(const StateStruct &state, const catchrobo_msgs::MyRosCmd &target, ControlStruct &command)
     {
         minPositionCBF(state.position, target.position_min, alpha_, command.v_des);
         maxPositionCBF(state.position, target.position_max, alpha_, command.v_des);

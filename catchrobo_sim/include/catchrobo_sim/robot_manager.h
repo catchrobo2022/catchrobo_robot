@@ -2,16 +2,16 @@
 
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
+#include "catchrobo_sim/motor_driver_struct.h"
 
 #include <sensor_msgs/JointState.h>
-#include <catchrobo_msgs/ControlStruct.h>
 #include <catchrobo_msgs/MyRosCmd.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
-#include <catchrobo_msgs/StateStruct.h>
 
 #include <vector>
+#include <string>
 
-#include <ros/ros.h> //ROS_INFO用
+// #include <ros/ros.h>
 
 class RobotManager
 {
@@ -24,29 +24,34 @@ public:
         }
         motor_manager_[3] = new ServoManager;
 
-        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
-
-        int joint_num = joint_state_.name.size();
-        joint_state_.position = std::vector<double>(joint_num, 0);
-        joint_state_.velocity = std::vector<double>(joint_num, 0);
-        joint_state_.effort = std::vector<double>(joint_num, 0);
+        actuator_num_ = sizeof(motor_manager_) / sizeof(motor_manager_[0]);
+        // ROS_INFO_STREAM("actuator_num_" << actuator_num_);
+        //
+        //        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
+        //
+        //        int joint_num = joint_state_.name.size();
+        //        joint_state_.position = std::vector<double>(joint_num, 0);
+        //        joint_state_.velocity = std::vector<double>(joint_num, 0);
+        //        joint_state_.effort = std::vector<double>(joint_num, 0);
     };
-    void init(double dt)
+
+    ////本当はjoint_stateの初期化をしたいが、PCとmbedで実装が異なるため引数にしている
+    void init(double dt, sensor_msgs::JointState &joint_state)
     {
-        for (size_t i = 0; i < joint_state_.name.size(); i++)
+        joint_state_ = joint_state;
+        for (size_t i = 0; i < actuator_num_; i++)
         {
             motor_manager_[i]->init(dt);
         }
     };
 
-    void setRosCmd(const catchrobo_msgs::MyRosCmdArray &input)
+    ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
+    void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
     {
-        for (const catchrobo_msgs::MyRosCmd &command : input.command_array)
-        {
-            motor_manager_[command.id]->setRosCmd(command);
-        }
+        motor_manager_[command.id]->setRosCmd(command);
     };
-    void getCmd(int id, catchrobo_msgs::ControlStruct &cmd, bool &finished)
+
+    void getCmd(int id, ControlStruct &cmd, bool &finished)
     {
         // ROS_INFO_STREAM("getCmd in robot_manager");
         // ROS_INFO_STREAM(id);
@@ -55,16 +60,16 @@ public:
 
         // ROS_INFO_STREAM(cmd);
     };
-    void setCurrentState(const catchrobo_msgs::StateStruct &state)
+    void setCurrentState(const StateStruct &state)
     {
         motor_manager_[state.id]->setCurrentState(state);
     };
     void getJointState(sensor_msgs::JointState &joint_state)
     {
 
-        for (size_t i = 0; i < joint_state_.name.size(); i++)
+        for (size_t i = 0; i < actuator_num_; i++)
         {
-            catchrobo_msgs::StateStruct state;
+            StateStruct state;
             motor_manager_[i]->getState(state);
             joint_state_.position[i] = state.position;
             joint_state_.velocity[i] = state.velocity;
@@ -76,4 +81,5 @@ public:
 private:
     MotorManager *(motor_manager_[4]);
     sensor_msgs::JointState joint_state_;
+    int actuator_num_;
 };

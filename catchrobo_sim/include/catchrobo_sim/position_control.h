@@ -4,11 +4,8 @@
 #include "catchrobo_sim/controller_interface.h"
 #include "catchrobo_sim/safe_control.h"
 
-#include <catchrobo_msgs/StateStruct.h>
-#include <catchrobo_msgs/ControlStruct.h>
+#include "catchrobo_sim/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
-
-#include <ros/ros.h> //ROS_INFO用
 
 #include <limits>
 
@@ -20,8 +17,8 @@ public:
     {
         dt_ = dt;
         safe_control_ = safe_control;
-    }
-    void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const catchrobo_msgs::StateStruct &joint_state)
+    };
+    virtual void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
 
         during_cal_flag_ = true;
@@ -39,7 +36,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const catchrobo_msgs::StateStruct &state, const catchrobo_msgs::ControlStruct &except_command, catchrobo_msgs::ControlStruct &command, bool &finished)
+    virtual void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
     {
         finished = false;
         if (no_target_flag_)
@@ -81,7 +78,7 @@ private:
     catchrobo_msgs::MyRosCmd target_;
     SafeControl safe_control_;
 
-    void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, catchrobo_msgs::ControlStruct &cmd)
+    void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, ControlStruct &cmd)
     {
         cmd.id = target.id;
         cmd.p_des = accel_designer.x(t);
@@ -91,11 +88,11 @@ private:
         cmd.kd = target.kd;
     }
 
-    // void packBeforeSetTargetCmd(int id, catchrobo_msgs::ControlStruct &cmd){
+    // void packBeforeSetTargetCmd(int id, ControlStruct &cmd){
     //     cmd.id = id;
     //     cmd.p_des = 0;
     //     cmd.v_des = 0;
-    //     cmd.torque_feed_forward = 0;
+    //     cmd.i_ff = 0;
     //     cmd.kp = 0;
     //     cmd.kd = 0;
     // }
