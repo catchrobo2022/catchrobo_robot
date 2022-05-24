@@ -61,7 +61,7 @@ private:
         pub_finished_flag_ = nh_.advertise<std_msgs::Int8>(finished_flag, 5);
 
         private_nh_.param<std::string>("output_topic_to_motor", output_topic_name, "motor_driver_cmd");
-        pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 1);
+        pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 10);
 
         private_nh_.param<std::string>("input_topic", input_topic_name, "motor_driver_state");
         sub_from_motor_ = nh_.subscribe(input_topic_name, 50, &MbedSim::CANCallback, this);
