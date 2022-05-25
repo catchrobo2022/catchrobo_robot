@@ -11,7 +11,7 @@
 #include <vector>
 #include <string>
 
-// #include <ros/ros.h>
+// #
 
 class RobotManager
 {
@@ -45,6 +45,33 @@ public:
         }
     };
 
+#ifdef USE_MBED
+
+    ~RobotManager()
+    {
+        if (joint_state_.position != NULL)
+            delete[] joint_state_.position;
+        if (joint_state_.velocity != NULL)
+            delete[] joint_state_.position;
+        if (joint_state_.effort != NULL)
+            delete[] joint_state_.position;
+    }
+    void resetJointState(int joint_num, char *joint_name[])
+    {
+
+        joint_state_.name_length = joint_num;
+        joint_state_.position_length = joint_num;
+        joint_state_.velocity_length = joint_num;
+        joint_state_.effort_length = joint_num;
+
+        joint_state_.name = joint_name;
+        joint_state_.position = new double[joint_num]; //(double *)malloc(sizeof(double)*joint_num)
+        joint_state_.velocity = new double[joint_num];
+        joint_state_.effort = new double[joint_num];
+    }
+#endif
+
+#ifndef USE_MBED
     void resetJointState(int joint_num, char *joint_name[])
     {
         std::vector<std::string> name(joint_num);
@@ -57,6 +84,7 @@ public:
         joint_state_.velocity = std::vector<double>(joint_num, 0);
         joint_state_.effort = std::vector<double>(joint_num, 0);
     }
+#endif
 
     ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)

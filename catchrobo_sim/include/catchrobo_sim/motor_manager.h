@@ -7,7 +7,7 @@
 
 #include <catchrobo_msgs/MyRosCmd.h>
 
-#include <ros/ros.h>
+#
 
 class MotorManager
 {

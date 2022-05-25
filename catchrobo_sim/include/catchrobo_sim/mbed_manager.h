@@ -1,7 +1,16 @@
+#pragma once
+
 #include "catchrobo_sim/robot_manager.h"
+
+#ifndef USE_MBED
 #include "catchrobo_sim/ros_bridge_sim.h"
 #include "catchrobo_sim/motor_driver_bridge_sim.h"
 #include "catchrobo_sim/ticker_bridge_sim.h"
+#else
+#include "catchrobo_sim/ros_bridge_mbed.h"
+#include "motor_driver_bridge/motor_driver_bridge_mbed.h"
+#include "catchrobo_sim/ticker_bridge_mbed.h"
+#endif
 
 #include "catchrobo_sim/motor_driver_struct.h"
 
@@ -37,15 +46,18 @@ private:
 
     void rosCallback(const catchrobo_msgs::MyRosCmd &command)
     {
+        // radius
         robot_manager_.setRosCmd(command);
     };
     void motorDriverCallback(const StateStruct &input)
     {
+        // radius
         robot_manager_.setCurrentState(input);
     };
 
     void mbed2RosTimerCallback()
     {
+        // radius
         sensor_msgs::JointState joint_state;
         robot_manager_.getJointState(joint_state);
         ros_bridge_.publishJointState(joint_state);
@@ -53,6 +65,7 @@ private:
 
     void mbed2MotorDriverTimerCallback()
     {
+        // radius
         ////[TODO] マジックナンバーを消す
         for (size_t i = 0; i < 3; i++)
         {

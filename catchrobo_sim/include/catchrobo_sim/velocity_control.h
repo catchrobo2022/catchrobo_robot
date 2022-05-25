@@ -7,7 +7,7 @@
 #include "catchrobo_sim/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
 
-#include <ros/ros.h>
+//#
 
 class VelocityControl : public ControllerInterface
 {
@@ -51,7 +51,7 @@ private:
         {
             accel = target.acceleration_limit;
             cmd.v_des = state.velocity + accel * dt_;
-            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
+            //            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
         }
         if (accel < -target.acceleration_limit)
         {
@@ -59,7 +59,7 @@ private:
             cmd.v_des = state.velocity + accel * dt_;
         }
 
-        ROS_INFO_STREAM(target);
+        //        ROS_INFO_STREAM(target);
         // ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
         cmd.torque_feed_forward = target.mass * accel + target.effort;
         cmd.kp = target.kp;

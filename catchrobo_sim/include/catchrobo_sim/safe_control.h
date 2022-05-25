@@ -3,7 +3,7 @@
 #include "catchrobo_sim/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
 
-// #include <ros/ros.h>
+// #
 
 class SafeControl
 {
