@@ -36,14 +36,27 @@ public:
     };
 
     ////本当はjoint_stateの初期化をしたいが、PCとmbedで実装が異なるため引数にしている
-    void init(double dt, sensor_msgs::JointState &joint_state)
+    void init(double dt, int joint_num, char *joint_name[])
     {
-        joint_state_ = joint_state;
+        resetJointState(joint_num, joint_name);
         for (size_t i = 0; i < actuator_num_; i++)
         {
             motor_manager_[i]->init(dt);
         }
     };
+
+    void resetJointState(int joint_num, char *joint_name[])
+    {
+        std::vector<std::string> name(joint_num);
+        for (size_t i = 0; i < joint_num; i++)
+        {
+            name[i] = joint_name[i];
+        }
+        joint_state_.name = name;
+        joint_state_.position = std::vector<double>(joint_num, 0);
+        joint_state_.velocity = std::vector<double>(joint_num, 0);
+        joint_state_.effort = std::vector<double>(joint_num, 0);
+    }
 
     ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
