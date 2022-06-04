@@ -1,0 +1,9 @@
+<library path="libcatchrobo_gui">
+  <!-- Dial Panel -->
+  <class name="field/Blue" type="field::Blue" base_class_type="rviz::Panel">
+    <description>
+        Panel plugin.
+    </description>
+  </class>
+
+</library>
