@@ -30,3 +30,11 @@ https://qiita.com/Yuya-Shimizu/items/4bed435e65cefc6d2df1
 rosrun catchrobo_manual catchrobo_manual_2022.py
 
 roslaunch catchrobo_test test.launch
+
+
+Commandの
+position_min,max
+velocity_limit
+acceleration_limit
+jerk_limit
+は適当に設定してます
