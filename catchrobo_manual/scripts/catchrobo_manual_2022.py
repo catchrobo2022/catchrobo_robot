@@ -68,7 +68,16 @@ class Command():
 
     def getCommandX(self):
         return self.command_x
+    
+    def getCommandY(self):
+        return self.command_y
 
+    def getCommandZ(self):
+        return self.command_z
+
+    def getCommandG(self):
+        return self.command_g
+    
     #　手動で値をいじりたいとき用
     #  初期化で値をいじる（引数に入れてつかわないから変更には使えない）
     #　position ,velocityだけの変更なら関数いらん
@@ -82,7 +91,7 @@ class Command():
         # velocity_var = [0, 0, 0, 0]
 
         #位置制御
-        self.command_x.id = 0    # 0: x軸 1:y軸 2: z軸 3:グリッパー
+        self.command_x.id = 0    # 0: x軸
         self.command_x.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
         self.command_x.position = position_var[0]
         self.command_x.velocity = velocity_var[0]
@@ -90,41 +99,41 @@ class Command():
         self.command_x.effort = 0
         self.command_x.position_min = 0
         self.command_x.position_max = 1.5
-        self.command_x.velocity_limit = 0.5
-        self.command_x.acceleration_limit = 0.3
-        self.command_x.jerk_limit = 0.1
+        self.command_x.velocity_limit = 1
+        self.command_x.acceleration_limit = 1
+        self.command_x.jerk_limit = 1
         self.command_x.kp = 0
         self.command_x.kd = 1 
 
-        self.command_y.id = 1   # 0: x軸 1:y軸 2: z軸 3:グリッパー
+        self.command_y.id = 1   # 1:y軸 
         self.command_y.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
         self.command_y.position = position_var[1]
         self.command_y.velocity = velocity_var[1]
         self.command_y.inertia = 1.0
         self.command_y.effort = 0
-        self.command_y.position_min = 0
-        self.command_y.position_max = 1.5
-        self.command_y.velocity_limit = 0.5
-        self.command_y.acceleration_limit = 0.3
-        self.command_y.jerk_limit = 0.1
+        self.command_y.position_min = -0.8
+        self.command_y.position_max = 0.8
+        self.command_y.velocity_limit = 2
+        self.command_y.acceleration_limit = 2
+        self.command_y.jerk_limit = 2
         self.command_y.kp = 0
         self.command_y.kd = 1 
 
-        self.command_z.id = 2    # 0: x軸 1:y軸 2: z軸 3:グリッパー
+        self.command_z.id = 2    # 2: z軸
         self.command_z.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
         self.command_z.position = position_var[2]
         self.command_z.velocity = velocity_var[2]
         self.command_z.inertia = 1.0
         self.command_z.effort = 0
         self.command_z.position_min = 0
-        self.command_z.position_max = 1.5
-        self.command_z.velocity_limit = 0.5
-        self.command_z.acceleration_limit = 0.3
-        self.command_z.jerk_limit = 0.1
+        self.command_z.position_max = 0.5
+        self.command_z.velocity_limit = 1
+        self.command_z.acceleration_limit = 1
+        self.command_z.jerk_limit = 1
         self.command_z.kp = 0
         self.command_z.kd = 1 
 
-        self.command_g.id = 3    # 0: x軸 1:y軸 2: z軸 3:グリッパー
+        self.command_g.id = 3    #3:グリッパー
         self.command_g.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
         self.command_g.position = position_var[3]
         self.command_g.velocity = velocity_var[3]
@@ -132,9 +141,9 @@ class Command():
         self.command_g.effort = 0
         self.command_g.position_min = 0
         self.command_g.position_max = 1.5
-        self.command_g.velocity_limit = 0.5
-        self.command_g.acceleration_limit = 0.3
-        self.command_g.jerk_limit = 0.1
+        self.command_g.velocity_limit = 2
+        self.command_g.acceleration_limit = 2
+        self.command_g.jerk_limit = 2
         self.command_g.kp = 0
         self.command_g.kd = 1
 
@@ -180,11 +189,11 @@ class Manual():
         #y軸
         if(self.joy_state.axes[self.ButtonEnum.LY] > 0.3):
             self.command.command_y.mode = MyRosCmd.VELOCITY_CTRL_MODE
-            self.command.command_y.velocity = -1
+            self.command.command_y.velocity = -2
             # print("forward")
         elif(self.joy_state.axes[self.ButtonEnum.LY] < -0.3):
             self.command.command_y.mode = MyRosCmd.VELOCITY_CTRL_MODE
-            self.command.command_y.velocity = 1
+            self.command.command_y.velocity = 2
             # print("back")
         else:
             self.command.command_y.velocity = 0
@@ -205,8 +214,6 @@ class Manual():
             # print("stop3")
         
         #　位置制御
-
-        ## ここのコメントアウトを説いて、十字キーを押すと計算エラーになる
         #x軸
         if(self.joy_state.axes[self.ButtonEnum.RIGHT_LEFT] == 1 and self.button_count[0]==0):
             self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
@@ -229,17 +236,34 @@ class Manual():
 
         self.command.command_x.position = self.position_var_manual[0]
         
+        #y軸
+        if(self.joy_state.axes[self.ButtonEnum.UP_DOWN] == 1 and self.button_count[1] == 0):
+            self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
+            self.position_var_manual[1] += 0.1
+            self.button_count[1] = 1
+            print("b_forward")
+        elif(self.joy_state.axes[self.ButtonEnum.UP_DOWN] == -1 and self.button_count[1] == 0):
+            self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
+            self.position_var_manual[1] -= 0.1
+            self.button_count[1] = 1
+            print("b_back")
+        elif(self.joy_state.axes[self.ButtonEnum.UP_DOWN] == 0):
+            self.button_count[1]= 0
 
-        # #y軸
-        # if(self.joy_state.axes[self.ButtonEnum.UP_DOWN] == 1):
-        #     self.command.command_y.position += 0.1
-        #     # print("forward")
-        # elif(self.joy_state.axes[self.ButtonEnum.UP_DOWN] == -1):
-        #     self.command.command_y.position += -0.1
-        #     # print("back")
-        # else:
-        #     self.command.command_y.position = 0
-        #     #print("stop5")
+        self.command.command_y.position = self.position_var_manual[1]
+
+        #gripper
+        if(self.joy_state.buttons[self.ButtonEnum.CIRCLE] == 1):
+            self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
+            self.position_var_manual[3] =1.0
+            print("b_circle")
+        elif(self.joy_state.buttons[self.ButtonEnum.CROSS] == 1):
+            self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
+            self.position_var_manual[3] =0
+            print("b_cross")
+
+        self.command.command_g.position = self.position_var_manual[3]
+
 
         self.command.setCommandArray()
 
@@ -248,7 +272,7 @@ class Manual():
         while not rospy.is_shutdown():
             #print(vars(self.command))
             # print("p_var=", self.position_var_manual[0])
-            print(self.command.getCommandX())
+            print(self.command.getCommandY())
             rate.sleep()
 
 if __name__ == "__main__":
