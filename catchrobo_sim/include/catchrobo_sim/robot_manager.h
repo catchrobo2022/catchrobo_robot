@@ -98,7 +98,6 @@ public:
         // ROS_INFO_STREAM(id);
         motor_manager_[id]->getCmd(cmd, finished);
         cmd.id = id;
-
         // ROS_INFO_STREAM(cmd);
     };
     void setCurrentState(const StateStruct &state)

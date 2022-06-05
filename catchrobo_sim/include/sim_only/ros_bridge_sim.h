@@ -9,15 +9,19 @@
 class RosBridge
 {
 public:
-    RosBridge() : nh_(""){};
+    RosBridge(){};
+    void setNodeHandlePtr(ros::NodeHandle *nh)
+    {
+        nh_ = nh;
+    }
 
     void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command))
     {
         callback_function_ = callback_function;
 
-        pub2ros_ = nh_.advertise<sensor_msgs::JointState>("my_joint_state", 1);
-        pub_finished_flag_ = nh_.advertise<std_msgs::Int8>("finished_flag_topic", 5);
-        sub_from_ros_ = nh_.subscribe("my_joint_control", 50, &RosBridge::rosCallback, this);
+        pub2ros_ = nh_->advertise<sensor_msgs::JointState>("my_joint_state", 1);
+        pub_finished_flag_ = nh_->advertise<std_msgs::Int8>("finished_flag_topic", 5);
+        sub_from_ros_ = nh_->subscribe("my_joint_control", 50, &RosBridge::rosCallback, this);
     };
     void publishJointState(const sensor_msgs::JointState &joint_state)
     {
@@ -37,7 +41,7 @@ public:
     };
 
 private:
-    ros::NodeHandle nh_;
+    ros::NodeHandle *nh_;
     ros::Publisher pub2ros_;
     ros::Publisher pub_finished_flag_;
     ros::Subscriber sub_from_ros_;

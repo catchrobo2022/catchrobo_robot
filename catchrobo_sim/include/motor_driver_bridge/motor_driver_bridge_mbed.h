@@ -1,37 +1,69 @@
 #pragma once
-#include "catchrobo_sim/motor_driver_struct.h"
+#include "mbed.h"
+
+#include "motor_driver_bridge/motor_driver_struct.h"
 #include "motor_driver_bridge/can_define.h"
 #include "math_ops.h"
 
+
+/** IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。
+*   なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
+**/
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge() : can_(CAN_RD, CAN_TD){};
+    MotorDriverBridge() : can_(CAN_RD, CAN_TD) {};
 
-    void init(int baudrate, void (*callback_function)(const StateStruct &input))
+    void init(void (*callback_function)(const StateStruct &input))
     {
         callback_function_ = callback_function;
 
-        can_.frequency(baudrate);
+        can_.frequency(CAN_BAUD_RATE);
         can_.attach(callback(this, &MotorDriverBridge::canCallback)); // attach 'CAN receive-complete' interrupt handler
         can_.filter(CAN_ID, 0xFFF, CANStandard, 0);                   // Set up can filter so it interrups only for messages with ID CAN_ID
-
-        for (int i = 0; i < 4; i++)
-        {
-            CANMessage txMsg;
-            //        enable_motor(i, txMsg, &can_);
-        }
     };
+
     void publish(const ControlStruct &control)
     {
         CANMessage txMsg;
         pack_cmd(control, txMsg);
         can_.write(txMsg);
     };
+    void enable_motor(int id)
+    {
+        ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
+        CANMessage txMsg;
+        txMsg.id = id + 1;
+        txMsg.data[0] = 0xFF;
+        txMsg.data[1] = 0xFF;
+        txMsg.data[2] = 0xFF;
+        txMsg.data[3] = 0xFF;
+        txMsg.data[4] = 0xFF;
+        txMsg.data[5] = 0xFF;
+        txMsg.data[6] = 0xFF;
+        txMsg.data[7] = 0xFC;
+        can_.write(txMsg);
+    };
+
+    void disable_motor(int id)
+    {
+        CANMessage txMsg;
+        txMsg.id = id + 1;
+        txMsg.data[0] = 0xFF;
+        txMsg.data[1] = 0xFF;
+        txMsg.data[2] = 0xFF;
+        txMsg.data[3] = 0xFF;
+        txMsg.data[4] = 0xFF;
+        txMsg.data[5] = 0xFF;
+        txMsg.data[6] = 0xFF;
+        txMsg.data[7] = 0xFD;
+        can_.write(txMsg);
+    }
 
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
     void (*callback_function_)(const StateStruct &input);
+
 
     void canCallback()
     {
@@ -56,7 +88,8 @@ private:
         float v = uint_to_float(v_int, V_MIN, V_MAX, 12);
         float i = uint_to_float(i_int, -I_MAX, I_MAX, 12);
 
-        state.id = id;
+        ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
+        state.id = id - 1;
         state.position = p;
         state.velocity = v;
         state.torque = i;
@@ -86,20 +119,7 @@ private:
         txMsg.data[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
         txMsg.data[7] = t_int & 0xff;
 
-        txMsg.id = control.id;
-    }
-
-    void enable_motor(int id, CANMessage &txMsg, CAN *can)
-    {
-        txMsg.id = id;
-        txMsg.data[0] = 0xFF;
-        txMsg.data[1] = 0xFF;
-        txMsg.data[2] = 0xFF;
-        txMsg.data[3] = 0xFF;
-        txMsg.data[4] = 0xFF;
-        txMsg.data[5] = 0xFF;
-        txMsg.data[6] = 0xFF;
-        txMsg.data[7] = 0xFC;
-        can->write(txMsg);
+        ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
+        txMsg.id = control.id + 1;
     }
 };

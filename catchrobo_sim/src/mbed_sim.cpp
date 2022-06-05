@@ -1,71 +1,86 @@
-// #define USE_MBED
+//#define USE_MBED
 
-#include "catchrobo_sim/mbed_manager.h"
-
-#ifndef USE_MBED
-#include <ros/ros.h>
-#include "catchrobo_sim/ros_bridge_sim.h"
-#include "catchrobo_sim/motor_driver_bridge_sim.h"
-#include "catchrobo_sim/ticker_bridge_sim.h"
-#else
-#include <ros.h>
-#include "catchrobo_sim/ros_bridge_mbed.h"
+#ifdef USE_MBED
+#include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
-#include "catchrobo_sim/ticker_bridge_mbed.h"
-
+#include "catchrobo_sim/ros_bridge_mbed.h"
+#else
+#include <ros/ros.h>
+#include "sim_only/motor_driver_bridge_sim.h"
+#include "sim_only/ros_bridge_sim.h"
+#include "sim_only/ticker_sim.h"
 #endif
 
-const int ROS_BAUD_RATE = 115200;
-const int CAN_BAUD_RATE = 1000000;
+#include "catchrobo_sim/robot_manager.h"
+#include "catchrobo_msgs/MyRosCmd.h"
 
-const float MBED2ROS_DT = 0.02;    // 50Hz
-const float MBED2MOTOR_DT = 0.002; // 500Hz
+const float MBED2ROS_DT = 0.2;    // 5Hz
+const float MBED2MOTOR_DT = 0.01; // 500Hz
+const int SERIAL_BAUD_RATE = 115200;
+
+const int N_MOTORS = 3;
+
 const int JOINT_NUM = 4;
 char *JOINT_NAME[JOINT_NUM] = {"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
 
-MbedManager sample_node;
-
-void rosCallback(const catchrobo_msgs::MyRosCmd &command)
-{
-    sample_node.rosCallback(command);
-    //    ROS_INFO_STREAM(command);
-}
+MotorDriverBridge motor_driver_bridge;
+RosBridge ros_bridge;
+RobotManager robot_manager;
 
 void motorDriverCallback(const StateStruct &input)
 {
-    // radius
-    sample_node.motorDriverCallback(input);
+    robot_manager.setCurrentState(input);
 };
+
+void rosCallback(const catchrobo_msgs::MyRosCmd &command)
+{
+    robot_manager.setRosCmd(command);
+}
 
 void mbed2MotorDriverTimerCallback()
 {
-    sample_node.mbed2MotorDriverTimerCallback();
+    //// update target value
+    for (int i = 0; i < N_MOTORS; i++)
+    {
+        bool finished = false;
+        ControlStruct control;
+        robot_manager.getCmd(i, control, finished);
+        motor_driver_bridge.publish(control);
+        if (finished)
+        {
+            ros_bridge.publishFinishFlag(i);
+        }
+    }
 }
 
 void mbed2RosTimerCallback()
 {
-    sample_node.mbed2RosTimerCallback();
-}
-
+    //// radius
+    sensor_msgs::JointState joint_state;
+    robot_manager.getJointState(joint_state);
+    ros_bridge.publishJointState(joint_state);
+};
 int main(int argc, char **argv)
 {
 #ifndef USE_MBED
     ros::init(argc, argv, "mbed_sim");
+    ros::NodeHandle nh("");
+    motor_driver_bridge.setNodeHandlePtr(&nh);
+    ros_bridge.setNodeHandlePtr(&nh);
 #endif
 
-    //    sample_node = new MbedManager();
-    RosBridge ros_bridge;
-    MotorDriverBridge motor_driver_bridge;
-    TickerBridge ticker_motor_driver_send;
-    TickerBridge ticker_ros_send;
+    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback);
+    robot_manager.init(MBED2MOTOR_DT, JOINT_NUM, JOINT_NAME);
+    motor_driver_bridge.init(motorDriverCallback);
+    for (int i = 0; i < N_MOTORS; i++)
+    {
+        motor_driver_bridge.enable_motor(i);
+    }
 
-    ros_bridge.init(ROS_BAUD_RATE, rosCallback);
-    motor_driver_bridge.init(CAN_BAUD_RATE, motorDriverCallback);
-    ticker_motor_driver_send.init(MBED2MOTOR_DT, mbed2MotorDriverTimerCallback);
-    ticker_ros_send.init(MBED2ROS_DT, mbed2RosTimerCallback);
+    Ticker ticker_motor_driver_send;
+    ticker_motor_driver_send.attach(&mbed2MotorDriverTimerCallback, MBED2MOTOR_DT);
 
-    sample_node.init(MBED2MOTOR_DT, JOINT_NUM, JOINT_NAME, &ros_bridge, &motor_driver_bridge);
+    Ticker ticker;
+    ticker.attach(&mbed2RosTimerCallback, MBED2ROS_DT);
     ros_bridge.spin();
-
-    return 0;
 }

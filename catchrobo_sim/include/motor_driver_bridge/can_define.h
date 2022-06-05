@@ -1,10 +1,15 @@
 #pragma once
 
+//#define CAN_TD PA_12
+//#define CAN_RD PA_11
+
 #define CAN_TD p29
 #define CAN_RD p30
-#define CAN_ID 0x0 // master CAN ID
 
-#define N_MOTORS 3
+
+#define CAN_ID 0x0 // master CAN ID
+#define CAN_BAUD_RATE 1000000
+//#define N_MOTORS 3
 /// Value Limits ///
 #define P_MIN -95.5f // Radians
 #define P_MAX 95.5f

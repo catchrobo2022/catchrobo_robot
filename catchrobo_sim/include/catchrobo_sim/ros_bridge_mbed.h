@@ -8,7 +8,7 @@
 class RosBridge
 {
 public:
-    RosBridge() : pub2ros_("joint_state_radius", new sensor_msgs::JointState),
+    RosBridge() : pub2ros_("my_joint_state", new sensor_msgs::JointState),
                   pub_finished_flag_("finished_flag_topic", new std_msgs::Int8),
                   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this){};
 

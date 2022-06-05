@@ -9,15 +9,20 @@
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge() : nh_(""){};
+    MotorDriverBridge(){};
 
-    void init(int baudrate, void (*callback_function)(const StateStruct &input))
+    void setNodeHandlePtr(ros::NodeHandle *nh)
     {
-        pub_ = nh_.advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 1);
-        sub_ = nh_.subscribe("motor_driver_state", 50, &MotorDriverBridge::callback, this);
+        nh_ = nh;
+    }
+
+    void init(void (*callback_function)(const StateStruct &input))
+    {
+        pub_ = nh_->advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 1);
+        sub_ = nh_->subscribe("motor_driver_state", 50, &MotorDriverBridge::callback, this);
 
         callback_function_ = callback_function;
-    };
+    }
     void publish(const ControlStruct &control)
     {
         catchrobo_msgs::ControlStruct data;
@@ -28,7 +33,14 @@ public:
         data.kp = control.kp;
         data.kd = control.kd;
         pub_.publish(data);
-    };
+    }
+    void enable_motor(int id) {}
+
+private:
+    ros::NodeHandle *nh_;
+    ros::Publisher pub_;
+    ros::Subscriber sub_;
+    void (*callback_function_)(const StateStruct &input);
     void callback(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
         StateStruct data;
@@ -37,11 +49,5 @@ public:
         data.velocity = input->velocity;
         data.torque = input->torque;
         (*callback_function_)(data);
-    };
-
-private:
-    ros::NodeHandle nh_;
-    ros::Publisher pub_;
-    ros::Subscriber sub_;
-    void (*callback_function_)(const StateStruct &input);
+    }
 };

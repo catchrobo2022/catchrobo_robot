@@ -6,23 +6,24 @@
 #include <catchrobo_msgs/StateStruct.h>
 #include <catchrobo_msgs/ControlStruct.h>
 
-class TickerBridge
+class Ticker
 {
 public:
-    TickerBridge() : nh_(""){};
+    Ticker() : nh_(""){};
 
-    void init(double dt, void (*callback_function)())
+    void attach(void (*callback_function)(), double dt)
     {
         callback_function_ = callback_function;
-        timer_ = nh_.createTimer(ros::Duration(dt), &TickerBridge::callback, this);
-    };
-    void callback(const ros::TimerEvent &event)
-    {
-        (*callback_function_)();
-    };
+        timer_ = nh_.createTimer(ros::Duration(dt), &Ticker::callback, this);
+    }
 
 private:
     ros::NodeHandle nh_;
     ros::Timer timer_;
     void (*callback_function_)();
+
+    void callback(const ros::TimerEvent &event)
+    {
+        (*callback_function_)();
+    }
 };
