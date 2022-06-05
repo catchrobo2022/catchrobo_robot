@@ -21,13 +21,13 @@
     <link name="base/base_link">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/visual/base.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/base.dae" scale="${visual_mesh_scale}"/>
         </geometry>
         <material name="white"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/collision/base.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/base.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
@@ -36,10 +36,10 @@
       <parent link="base/base_link"/>
       <child link="base/link_tip"/>
       <xacro:if value="${field=='blue'}">
-        <origin xyz="-0.3 -0.825 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.675 -0.825 0.00445" rpy="0 0 0"/>
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="-0.3 0.825 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.675 0.825 0.00445" rpy="0 0 0"/>
       </xacro:if>
     </joint>
     <link name="base/link_tip"/>
