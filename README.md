@@ -55,4 +55,10 @@ https://os.mbed.com/teams/catchrobo2022/
 ```
 sudo chmod a+rw /dev/ttyACM0 
 rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyACM0 _baud:=115200
+```
+
+printfしたいなら
+```
+cu -s 921600 -l /dev/ttyACM0
 ```

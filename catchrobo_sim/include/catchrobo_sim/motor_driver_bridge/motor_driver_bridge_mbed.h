@@ -1,22 +1,26 @@
 #pragma once
 #include "catchrobo_sim/motor_driver_struct.h"
-#include "catchrobo_sim/motor_driver_bridge/can_define.h"
-#include "../math_ops.h"
+#include "motor_driver_bridge/can_define.h"
+#include "math_ops.h"
 
-template <class T>
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge() : can_(CAN_TD, CAN_RD){};
+    MotorDriverBridge() : can_(CAN_RD, CAN_TD){};
 
-    void init(int baudrate, void (T::*callback_function)(const StateStruct &input), T *obj)
+    void init(int baudrate, void (*callback_function)(const StateStruct &input))
     {
-        obj_ = obj;
         callback_function_ = callback_function;
 
         can_.frequency(baudrate);
         can_.attach(callback(this, &MotorDriverBridge::canCallback)); // attach 'CAN receive-complete' interrupt handler
         can_.filter(CAN_ID, 0xFFF, CANStandard, 0);                   // Set up can filter so it interrups only for messages with ID CAN_ID
+
+        for (int i = 0; i < 4; i++)
+        {
+            CANMessage txMsg;
+            //        enable_motor(i, txMsg, &can_);
+        }
     };
     void publish(const ControlStruct &control)
     {
@@ -27,8 +31,7 @@ public:
 
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
-    void (T::*callback_function_)(const StateStruct &input);
-    T *obj_;
+    void (*callback_function_)(const StateStruct &input);
 
     void canCallback()
     {
@@ -38,7 +41,7 @@ private:
 
         StateStruct data;
         unpack_reply(rxMsg, data);
-        (obj_->*callback_function_)(data);
+        (*callback_function_)(data);
     };
 
     void unpack_reply(const CANMessage &rxMsg, StateStruct &state)
@@ -84,5 +87,19 @@ private:
         txMsg.data[7] = t_int & 0xff;
 
         txMsg.id = control.id;
+    }
+
+    void enable_motor(int id, CANMessage &txMsg, CAN *can)
+    {
+        txMsg.id = id;
+        txMsg.data[0] = 0xFF;
+        txMsg.data[1] = 0xFF;
+        txMsg.data[2] = 0xFF;
+        txMsg.data[3] = 0xFF;
+        txMsg.data[4] = 0xFF;
+        txMsg.data[5] = 0xFF;
+        txMsg.data[6] = 0xFF;
+        txMsg.data[7] = 0xFC;
+        can->write(txMsg);
     }
 };

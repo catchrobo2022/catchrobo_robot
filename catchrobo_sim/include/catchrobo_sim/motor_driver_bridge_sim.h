@@ -6,18 +6,16 @@
 #include <catchrobo_msgs/StateStruct.h>
 #include <catchrobo_msgs/ControlStruct.h>
 
-template <class T>
 class MotorDriverBridge
 {
 public:
     MotorDriverBridge() : nh_(""){};
 
-    void init(int baudrate, void (T::*callback_function)(const StateStruct &input), T *obj)
+    void init(int baudrate, void (*callback_function)(const StateStruct &input))
     {
         pub_ = nh_.advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 1);
         sub_ = nh_.subscribe("motor_driver_state", 50, &MotorDriverBridge::callback, this);
 
-        obj_ = obj;
         callback_function_ = callback_function;
     };
     void publish(const ControlStruct &control)
@@ -38,13 +36,12 @@ public:
         data.position = input->position;
         data.velocity = input->velocity;
         data.torque = input->torque;
-        (obj_->*callback_function_)(data);
+        (*callback_function_)(data);
     };
 
 private:
     ros::NodeHandle nh_;
     ros::Publisher pub_;
     ros::Subscriber sub_;
-    void (T::*callback_function_)(const StateStruct &input);
-    T *obj_;
+    void (*callback_function_)(const StateStruct &input);
 };

@@ -5,18 +5,17 @@
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
 
-template <class T>
+// template <class T>
 class RosBridge
 {
 public:
     RosBridge() : nh_(""){};
 
-    void init(int ros_baudrate, void (T::*callback_function)(const catchrobo_msgs::MyRosCmd &command), T *obj)
+    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command))
     {
-        obj_ = obj;
         callback_function_ = callback_function;
 
-        pub2ros_ = nh_.advertise<sensor_msgs::JointState>("joint_state_radius", 1);
+        pub2ros_ = nh_.advertise<sensor_msgs::JointState>("my_joint_state", 1);
         pub_finished_flag_ = nh_.advertise<std_msgs::Int8>("finished_flag_topic", 5);
         sub_from_ros_ = nh_.subscribe("my_joint_control", 50, &RosBridge::rosCallback, this);
     };
@@ -43,14 +42,13 @@ private:
     ros::Publisher pub_finished_flag_;
     ros::Subscriber sub_from_ros_;
     sensor_msgs::JointState joint_state_;
-    void (T::*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
-    T *obj_;
+    void (*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
 
     void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input)
     {
         for (const catchrobo_msgs::MyRosCmd &command : input->command_array)
         {
-            (obj_->*callback_function_)(command);
+            (*callback_function_)(command);
         }
     };
 };
