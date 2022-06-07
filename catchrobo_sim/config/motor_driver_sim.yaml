@@ -2,22 +2,22 @@ motor_driver_sim0:
   motor_id: 0
   input_topic: motor_driver_cmd
   output_topic: motor_driver_state
-  dt: 0.002
+  dt: 0.1
 
 motor_driver_sim1:
   motor_id: 1
   input_topic: motor_driver_cmd
   output_topic: motor_driver_state
-  dt: 0.002
+  dt: 0.1
 
 motor_driver_sim2:
   motor_id: 2
   input_topic: motor_driver_cmd
   output_topic: motor_driver_state
-  dt: 0.002
+  dt: 0.1
 
 servo_sim0:
   motor_id: 3
   input_topic: motor_driver_cmd
   output_topic: motor_driver_state
-  dt: 0.002
+  dt: 0.1

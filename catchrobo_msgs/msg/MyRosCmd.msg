@@ -1,6 +1,7 @@
 uint8 POSITION_CTRL_MODE=0
 uint8 DIRECT_CTRL_MODE=1
 uint8 PEG_IN_HOLE_MODE=2
+uint8 GO_ORIGIN_MODE=3
 
 uint8 id
 uint8 mode

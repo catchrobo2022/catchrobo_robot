@@ -2,6 +2,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/Bool.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
 
@@ -15,7 +16,7 @@ public:
         nh_ = nh;
     }
 
-    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command))
+    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command), void (*enable_callback_function)(const std_msgs::Bool &input))
     {
         callback_function_ = callback_function;
 

@@ -2,6 +2,7 @@
 
 #include "catchrobo_sim/accel_designer.h"
 #include "catchrobo_sim/safe_control.h"
+#include "catchrobo_sim/control_result.h"
 
 #include "motor_driver_bridge/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
@@ -35,9 +36,9 @@ public:
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
+    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult &finished)
     {
-        finished = false;
+        finished = ControlResult::RUNNING;
         if (no_target_flag_)
         {
             // まだ目標値が与えられていないとき
@@ -58,7 +59,7 @@ public:
                 command = except_command;
                 if (!finish_already_notified_)
                 {
-                    finished = true;
+                    finished = ControlResult::FINISH;
                     finish_already_notified_ = true;
                 }
             }

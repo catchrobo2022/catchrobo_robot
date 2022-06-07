@@ -2,7 +2,7 @@
 
 #include "catchrobo_sim/accel_curve.h"
 #include "catchrobo_sim/safe_control.h"
-
+#include "catchrobo_sim/control_result.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
 
@@ -24,11 +24,11 @@ public:
     };
 
     // dt間隔で呼ばれる想定
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
+    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult &result)
     {
         packResult2Cmd(target_, command);
         safe_control_.getSafeCmd(state, target_, except_command, command);
-        finished = false;
+        result = ControlResult::RUNNING;
     };
 
 private:

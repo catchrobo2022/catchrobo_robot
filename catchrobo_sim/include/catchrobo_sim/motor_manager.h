@@ -3,6 +3,7 @@
 #include "catchrobo_sim/position_control.h"
 #include "catchrobo_sim/direct_control.h"
 #include "catchrobo_sim/safe_control.h"
+#include "catchrobo_sim/go_origin_control.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <catchrobo_msgs/MyRosCmd.h>
@@ -42,6 +43,9 @@ public:
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
             direct_control_.setRosCmd(cmd, current_state_);
             break;
+        case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
+            go_origin_control_.setRosCmd(cmd, current_state_);
+            break;
 
         default:
             //            ROS_ERROR("error : No mode in MyRosCmd");
@@ -51,15 +55,20 @@ public:
     };
 
     // dt間隔で呼ばれる. servo classではoverrideされる。
-    virtual void getCmd(ControlStruct &command, bool &finished)
+    virtual void getCmd(ControlStruct &command, ControlResult &result)
     {
         switch (ros_cmd_.mode)
         {
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
-            position_control_.getCmd(current_state_, old_command_, command, finished);
+
+            position_control_.getCmd(current_state_, old_command_, command, result);
             break;
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.getCmd(current_state_, old_command_, command, finished);
+            direct_control_.getCmd(current_state_, old_command_, command, result);
+            break;
+
+        case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
+            go_origin_control_.getCmd(current_state_, old_command_, command, result);
             break;
 
         default:
@@ -90,4 +99,5 @@ private:
     PositionControl position_control_;
     DirectControl direct_control_;
     SafeControl safe_control_;
+    GoOriginControl go_origin_control_;
 };

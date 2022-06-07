@@ -18,7 +18,7 @@ public:
 
     void init(void (*callback_function)(const StateStruct &input))
     {
-        pub_ = nh_->advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 1);
+        pub_ = nh_->advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 5);
         sub_ = nh_->subscribe("motor_driver_state", 50, &MotorDriverBridge::callback, this);
 
         callback_function_ = callback_function;
@@ -34,7 +34,11 @@ public:
         data.kd = control.kd;
         pub_.publish(data);
     }
-    void enable_motor(int id) {}
+
+    ////[TODO] 特にsimulatorでやる必要性を感じないので後回し
+    void enableMotor(int id) {}
+    void disableMotor(int id) {}
+    void setOrigin(int id) {}
 
 private:
     ros::NodeHandle *nh_;

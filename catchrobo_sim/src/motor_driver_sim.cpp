@@ -35,7 +35,7 @@ MotorDriverSim::MotorDriverSim() : nh_(""), private_nh_("~")
 
     std::string input_topic_name, output_topic_name;
     private_nh_.param<std::string>("input_topic", input_topic_name, "input_topic");
-    subscriber_ = nh_.subscribe(input_topic_name, 1, &MotorDriverSim::sampleCallback, this);
+    subscriber_ = nh_.subscribe(input_topic_name, 5, &MotorDriverSim::sampleCallback, this);
 
     private_nh_.param<std::string>("output_topic", output_topic_name, "output_topic");
     publisher_ = nh_.advertise<catchrobo_msgs::StateStruct>(output_topic_name, 1);
@@ -51,14 +51,27 @@ void MotorDriverSim::sampleCallback(const catchrobo_msgs::ControlStruct::ConstPt
     if (input->id == id_)
     {
         cmd_ = *input;
+        ROS_INFO_STREAM("cb " << cmd_);
     }
 }
 
 void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
 {
     // double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.torque_feed_forward;
-    state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;
-    state_.velocity = (state_.position - old_state_.position) / dt_;
+
+    double vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
+
+    if (cmd_.id == 0)
+    {
+        ROS_INFO_STREAM("current " << state_.position);
+        ROS_INFO_STREAM("cmd " << cmd_);
+        ROS_INFO_STREAM("velocity" << vel);
+    }
+
+    state_.velocity = vel;
+    state_.position += state_.velocity * dt_;
+    // state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;
+    // state_.velocity = (state_.position - old_state_.position) / dt_;
     state_.torque = cmd_.torque_feed_forward;
 
     publisher_.publish(state_);

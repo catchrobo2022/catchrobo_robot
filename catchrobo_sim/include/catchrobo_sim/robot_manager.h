@@ -92,11 +92,11 @@ public:
         motor_manager_[command.id]->setRosCmd(command);
     };
 
-    void getCmd(int id, ControlStruct &cmd, bool &finished)
+    void getCmd(int id, ControlStruct &cmd, ControlResult &result)
     {
         // ROS_INFO_STREAM("getCmd in robot_manager");
         // ROS_INFO_STREAM(id);
-        motor_manager_[id]->getCmd(cmd, finished);
+        motor_manager_[id]->getCmd(cmd, result);
         cmd.id = id;
         // ROS_INFO_STREAM(cmd);
     };
