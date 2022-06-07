@@ -78,7 +78,9 @@ cu -s 921600 -l /dev/ttyACM0
 - [x] jointをradに
 - [x] finishを変える
 - [x] simulatorをそれっぽく : 失敗。摩擦の項とかが必要で大変
-- [ ] meter rad変換つくる
+- [x] 3 motor同時検証 : PIDの係数によってはmotor driver 側で発散するので注意
+
+
 
 
 wifiあるところで

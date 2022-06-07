@@ -13,8 +13,8 @@
 
 #include "catchrobo_sim/robot_manager.h"
 
-const float MBED2ROS_DT = 0.2;   // 5Hz
-const float MBED2MOTOR_DT = 0.1; // 500Hz
+const float MBED2ROS_DT = 0.2;     // 5Hz
+const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 
 const int N_MOTORS = 3;

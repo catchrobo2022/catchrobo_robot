@@ -46,8 +46,8 @@ if __name__ == "__main__":
 
 
     for i in range(N_MOTOR):
-        command_array.command_array[i].kp = 0
-        command_array.command_array[i].kd = 0
+        command_array.command_array[i].position = 0
+        # command_array.command_array[i].kd = 0
     print(command_array)
     pub.publish(command_array)
     rospy.sleep(3) #このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう

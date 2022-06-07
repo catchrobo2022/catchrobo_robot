@@ -40,7 +40,7 @@ if __name__ == "__main__":
     for i in range(3):
         temp = copy.deepcopy(command)
         temp.id = i
-        temp.position =0# (i+1) * 2*math.pi 
+        temp.position =(i+1) * 2*math.pi 
         command_array.command_array.append(temp)
 
 
@@ -51,8 +51,8 @@ if __name__ == "__main__":
 
 
     for i in range(3):
-        command_array.command_array[i].kp = 0
-        command_array.command_array[i].kd = 0
+        command_array.command_array[i].position = 0
+        # command_array.command_array[i].kd = 0
     pub.publish(command_array)
     rospy.sleep(3) #このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
 
