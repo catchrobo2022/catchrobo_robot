@@ -1,7 +1,7 @@
 #pragma once
 
 #include "catchrobo_sim/position_control.h"
-#include "catchrobo_sim/direct_control.h"
+#include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
@@ -10,7 +10,7 @@
 class MotorManager
 {
 public:
-    MotorManager()
+    MotorManager() : controller_interface_(&position_control_)
     {
         old_command_.p_des = 0;
         old_command_.v_des = 0;
@@ -28,7 +28,7 @@ public:
         double cbf_params = 1;
         safe_control_.setCBFparams(cbf_params);
         position_control_.init(dt, safe_control_);
-        direct_control_.init(dt, safe_control_);
+        velocity_control_.init(dt, safe_control_);
     }
 
     //低Hz (1 Hzとか)で呼ばれる
@@ -37,35 +37,24 @@ public:
         switch (cmd.mode)
         {
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
-            position_control_.setRosCmd(cmd, current_state_);
+            controller_interface_ = &position_control_;
             break;
-        case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.setRosCmd(cmd, current_state_);
+        case catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE:
+            controller_interface_ = &velocity_control_;
             break;
 
         default:
             //            ROS_ERROR("error : No mode in MyRosCmd");
             break;
         }
-        ros_cmd_ = cmd;
+
+        controller_interface_->setRosCmd(cmd, current_state_);
     };
 
     // dt間隔で呼ばれる. servo classではoverrideされる。
     virtual void getCmd(ControlStruct &command, bool &finished)
     {
-        switch (ros_cmd_.mode)
-        {
-        case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
-            position_control_.getCmd(current_state_, old_command_, command, finished);
-            break;
-        case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.getCmd(current_state_, old_command_, command, finished);
-            break;
-
-        default:
-            //            ROS_ERROR("error : No mode in MyRosCmd");
-            break;
-        }
+        controller_interface_->getCmd(current_state_, old_command_, command, finished);
         old_command_ = command;
     };
 
@@ -82,12 +71,11 @@ public:
     }
 
 private:
+    ControllerInterface *controller_interface_;
     StateStruct current_state_;
     ControlStruct old_command_;
 
-    catchrobo_msgs::MyRosCmd ros_cmd_;
-
     PositionControl position_control_;
-    DirectControl direct_control_;
+    VelocityControl velocity_control_;
     SafeControl safe_control_;
 };

@@ -19,7 +19,7 @@ public:
     {
         callback_function_ = callback_function;
 
-        pub2ros_ = nh_->advertise<sensor_msgs::JointState>("my_joint_state", 1);
+        pub2ros_ = nh_->advertise<sensor_msgs::JointState>("joint_state_rad", 1);
         pub_finished_flag_ = nh_->advertise<std_msgs::Int8>("finished_flag_topic", 5);
         sub_from_ros_ = nh_->subscribe("my_joint_control", 50, &RosBridge::rosCallback, this);
     };

@@ -2,7 +2,7 @@
 
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
-#include "catchrobo_sim/motor_driver_struct.h"
+#include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmd.h>

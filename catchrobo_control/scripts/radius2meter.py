@@ -9,13 +9,16 @@ import math
 class Radius2Meter:
     def __init__(self):
         self._radius = [0.002 * 54/(2*math.pi), 0.002 * 54/(2*math.pi), 0.002 * 54/(2*math.pi)]
-        self.pub_ = rospy.Publisher("/my_joint_state", JointState, queue_size=1)
-        rospy.Subscriber("/joint_state_radius", JointState, self.callback)
+        self._pub = rospy.Publisher("/my_joint_state", JointState, queue_size=1)
+        rospy.Subscriber("/joint_state_rad", JointState, self.callback)
+
     def callback(self, msg):
+        meter_msg = msg
         for i, (theta, velocity, radius) in enumerate(zip(msg.position, msg.velocity, self._radius)):
-            msg.position[i] = theta * radius
-            msg.velocity[i] = velocity * radius
+            meter_msg.position[i] = theta * radius
+            meter_msg.velocity[i] = velocity * radius
         
+        self._pub.publish(meter_msg)
 
 
 if __name__ == "__main__":

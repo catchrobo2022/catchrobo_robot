@@ -1,5 +1,5 @@
 #pragma once
-#include "catchrobo_sim/motor_driver_struct.h"
+#include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>

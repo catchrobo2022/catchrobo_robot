@@ -1,6 +1,7 @@
 #pragma once
 
 #include "catchrobo_sim/accel_designer.h"
+#include "catchrobo_sim/controller_interface.h"
 #include "catchrobo_sim/safe_control.h"
 
 #include "motor_driver_bridge/motor_driver_struct.h"
@@ -8,7 +9,7 @@
 
 #include <limits>
 
-class PositionControl
+class PositionControl : public ControllerInterface
 {
 public:
     PositionControl() : dt_(0.1), no_target_flag_(true), during_cal_flag_(false), finish_already_notified_(false){};
@@ -17,7 +18,7 @@ public:
         dt_ = dt;
         safe_control_ = safe_control;
     };
-    void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
+    virtual void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
 
         during_cal_flag_ = true;
@@ -35,7 +36,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
+    virtual void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, bool &finished)
     {
         finished = false;
         if (no_target_flag_)

@@ -4,7 +4,7 @@
 #include "catchrobo_sim/accel_curve.h"
 #include "catchrobo_sim/safe_control.h"
 
-#include "catchrobo_sim/motor_driver_struct.h"
+#include "motor_driver_bridge/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
 
 //#
@@ -33,7 +33,6 @@ public:
     };
 
 private:
-
     catchrobo_msgs::MyRosCmd target_;
     ctrl::AccelCurve accel_curve_;
     SafeControl safe_control_;
@@ -44,18 +43,18 @@ private:
         cmd.p_des = target.position;
         cmd.v_des = target.velocity;
 
-//        double accel = (target.velocity - state.velocity) / dt_;
-//        if (accel > target.acceleration_limit)
-//        {
-//            accel = target.acceleration_limit;
-//            cmd.v_des = state.velocity + accel * dt_;
-//            //            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
-//        }
-//        if (accel < -target.acceleration_limit)
-//        {
-//            accel = -target.acceleration_limit;
-//            cmd.v_des = state.velocity + accel * dt_;
-//        }
+        //        double accel = (target.velocity - state.velocity) / dt_;
+        //        if (accel > target.acceleration_limit)
+        //        {
+        //            accel = target.acceleration_limit;
+        //            cmd.v_des = state.velocity + accel * dt_;
+        //            //            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
+        //        }
+        //        if (accel < -target.acceleration_limit)
+        //        {
+        //            accel = -target.acceleration_limit;
+        //            cmd.v_des = state.velocity + accel * dt_;
+        //        }
 
         //        ROS_INFO_STREAM(target);
         // ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);

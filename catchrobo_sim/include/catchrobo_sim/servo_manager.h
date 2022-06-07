@@ -1,7 +1,7 @@
 #pragma once
 
 #include "catchrobo_sim/motor_manager.h"
-#include "catchrobo_sim/motor_driver_struct.h"
+#include "motor_driver_bridge/motor_driver_struct.h"
 
 class ServoManager : public MotorManager
 {
