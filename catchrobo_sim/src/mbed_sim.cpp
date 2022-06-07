@@ -60,6 +60,7 @@ void mbed2RosTimerCallback()
     robot_manager.getJointState(joint_state);
     ros_bridge.publishJointState(joint_state);
 };
+
 int main(int argc, char **argv)
 {
 #ifndef USE_MBED

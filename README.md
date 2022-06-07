@@ -53,9 +53,20 @@ https://os.mbed.com/teams/catchrobo2022/
 
 
 ```
+roslaunch catchrobo_description catchrobo_display.launch 
+
 sudo chmod a+rw /dev/ttyACM0 
 rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
-rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyACM0 _baud:=115200
+rosrun catchrobo_test mbed_sim_test.py
+```
+
+Xbeeあり
+```
+roslaunch catchrobo_description catchrobo_display.launch 
+
+sudo chmod a+rw /dev/ttyUSB0 
+rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=115200
+rosrun catchrobo_test mbed_sim_test.py
 ```
 
 printfしたいなら

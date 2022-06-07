@@ -40,7 +40,7 @@ if __name__ == "__main__":
     for i in range(3):
         temp = copy.deepcopy(command)
         temp.id = i
-        temp.position = (i+1) * 2*math.pi /50.0
+        temp.position =0# (i+1) * 2*math.pi 
         command_array.command_array.append(temp)
 
 
