@@ -14,17 +14,18 @@ if __name__ == "__main__":
     pub = rospy.Publisher("/my_joint_control", MyRosCmdArray, queue_size=1)
 
     N_MOTOR = 1
+    radius = 0.002 * 54/(2*math.pi)
 
     command = MyRosCmd()
 
     command.id = 0 # 0: x軸 1:y軸 2: z軸 3:グリッパー
     command.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
-    command.position = 10*math.pi 
-    command.velocity = -math.pi*0#目標位置での速度
+    command.position = 1.0 / radius
+    command.velocity = 0#目標位置での速度
     command.mass = 0.0 # 慣性モーメント(未対応)
     command.effort = 0 #自重補償項(未対応)
-    command.position_min = -60 #可動域
-    command.position_max = 60 #可動域
+    command.position_min = 0 #可動域
+    command.position_max = 1.5 / radius #可動域
     command.velocity_limit = 30 #台形加速中の最大速度
     command.acceleration_limit = 10 #台形加速を作るための最大加速度
     command.jerk_limit = 5 #台形加速を作るための最大躍度(加速度の微分)

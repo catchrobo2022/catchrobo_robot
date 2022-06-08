@@ -9,8 +9,7 @@
 
 
 ## How to use
-### Launching simulated robot
-1. Launch moveit
+### show robot
 ```
 roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 
@@ -18,7 +17,7 @@ roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 
 ### mbed simulator demo
 ```
-roslaunch catchrobo_test test.launch
+roslaunch catchrobo_bringup sim_bringup.launch
 rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテストドライバ。自由に書き換え可能
 ```
 
@@ -74,23 +73,4 @@ printfしたいなら
 cu -s 921600 -l /dev/ttyACM0
 ```
 
-
-- [x] jointをradに
-- [x] finishを変える
-- [x] simulatorをそれっぽく : 失敗。摩擦の項とかが必要で大変
-- [x] 3 motor同時検証 : PIDの係数によってはmotor driver 側で発散するので注意
-
-
-
-
-wifiあるところで
-- push
-- [ ] 井上に 大体 0.002 * 54/(2*math.pi)倍されてしまうこと(rad管理になったこと)を伝える
-- [ ] mbedで原点設定する方法見る
-
-帰国後
-- [ ] enable / disable 検証
-- [ ] 原点だし
-    - [ ] パラメータ探し
-    - [ ] 設定されるか検証
     
