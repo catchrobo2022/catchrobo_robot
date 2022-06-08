@@ -62,14 +62,14 @@ public:
     {
         CANMessage txMsg;
         txMsg.id = listId2CANId(id);
-        // txMsg.data[0] = 0xFF;
-        // txMsg.data[1] = 0xFF;
-        // txMsg.data[2] = 0xFF;
-        // txMsg.data[3] = 0xFF;
-        // txMsg.data[4] = 0xFF;
-        // txMsg.data[5] = 0xFF;
-        // txMsg.data[6] = 0xFF;
-        // txMsg.data[7] = 0xFD;
+        txMsg.data[0] = 0xFF;
+        txMsg.data[1] = 0xFF;
+        txMsg.data[2] = 0xFF;
+        txMsg.data[3] = 0xFF;
+        txMsg.data[4] = 0xFF;
+        txMsg.data[5] = 0xFF;
+        txMsg.data[6] = 0xFF;
+        txMsg.data[7] = 0xFE;
         can_.write(txMsg);
     }
 
