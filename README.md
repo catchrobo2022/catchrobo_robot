@@ -72,5 +72,3 @@ printfしたいなら
 ```
 cu -s 921600 -l /dev/ttyACM0
 ```
-
-    

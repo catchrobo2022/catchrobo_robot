@@ -28,8 +28,7 @@ public:
     {
         double cbf_params = 1;
         safe_control_.setCBFparams(cbf_params);
-        position_control_.init(dt, safe_control_);
-        direct_control_.init(dt, safe_control_);
+        position_control_.init(dt);
     }
 
     //低Hz (1 Hzとか)で呼ばれる
@@ -62,9 +61,11 @@ public:
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
 
             position_control_.getCmd(current_state_, old_command_, command, result);
+            safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
             direct_control_.getCmd(current_state_, old_command_, command, result);
+            safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
 
         case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
@@ -72,6 +73,7 @@ public:
             break;
 
         default:
+            command = old_command_;
             //            ROS_ERROR("error : No mode in MyRosCmd");
             break;
         }
@@ -88,6 +90,15 @@ public:
     void getState(StateStruct &state)
     {
         state = current_state_;
+    }
+
+    void getRosCmd(catchrobo_msgs::MyRosCmd &ros_cmd)
+    {
+        ros_cmd = ros_cmd_;
+    }
+    bool IsPegInHoleMode()
+    {
+        return (ros_cmd_.mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE);
     }
 
 private:

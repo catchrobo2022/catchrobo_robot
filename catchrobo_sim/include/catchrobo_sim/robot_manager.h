@@ -1,7 +1,9 @@
 #pragma once
 
+#include "catchrobo_sim/define.h"
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
+#include "catchrobo_sim/peg_in_hole_control.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <sensor_msgs/JointState.h>
@@ -16,13 +18,13 @@
 class RobotManager
 {
 public:
-    RobotManager()
+    RobotManager() : is_peg_in_hole_mode_(false)
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < N_MOTORS; i++)
         {
             motor_manager_[i] = new MotorManager;
         }
-        motor_manager_[3] = new ServoManager;
+        motor_manager_[N_MOTORS] = new ServoManager;
 
         actuator_num_ = sizeof(motor_manager_) / sizeof(motor_manager_[0]);
         // ROS_INFO_STREAM("actuator_num_" << actuator_num_);
@@ -35,14 +37,17 @@ public:
         //        joint_state_.effort = std::vector<double>(joint_num, 0);
     };
 
-    ////本当はjoint_stateの初期化をしたいが、PCとmbedで実装が異なるため引数にしている
-    void init(double dt, int joint_num, char *joint_name[])
+    void init(double dt)
     {
-        resetJointState(joint_num, joint_name);
+        ////[TODO] 面倒なので直打ち
+        char *joint_name[JOINT_NUM] = {"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
+        resetJointState(JOINT_NUM, joint_name);
         for (size_t i = 0; i < actuator_num_; i++)
         {
             motor_manager_[i]->init(dt);
         }
+
+        peg_in_hole_control_.init(dt);
     };
 
 #ifdef USE_MBED
@@ -90,16 +95,26 @@ public:
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
     {
         motor_manager_[command.id]->setRosCmd(command);
+        peg_in_hole_control_.setRosCmd(command);
     };
 
-    void getCmd(int id, ControlStruct &cmd, ControlResult &result)
+    void getMotorDrivesCommand(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
     {
-        // ROS_INFO_STREAM("getCmd in robot_manager");
-        // ROS_INFO_STREAM(id);
-        motor_manager_[id]->getCmd(cmd, result);
-        cmd.id = id;
-        // ROS_INFO_STREAM(cmd);
+        independentControl(cmd, result);
+
+        ////もしpeg in holeなら、指示を変える
+        if (peg_in_hole_control_.isPegInHoleMode())
+        {
+            pegInHole(cmd, result);
+        }
+
+        ///// cmdのidを上書き。初期値である0になっている場合があるため
+        for (size_t i = 0; i < actuator_num_; i++)
+        {
+            cmd[i].id = i;
+        }
     };
+
     void setCurrentState(const StateStruct &state)
     {
         motor_manager_[state.id]->setCurrentState(state);
@@ -119,7 +134,35 @@ public:
     };
 
 private:
-    MotorManager *(motor_manager_[4]);
+    MotorManager *(motor_manager_[JOINT_NUM]);
     sensor_msgs::JointState joint_state_;
     int actuator_num_;
+    int is_peg_in_hole_mode_;
+
+    PegInHoleControl peg_in_hole_control_;
+
+    void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    {
+        for (size_t i = 0; i < actuator_num_; i++)
+        {
+            motor_manager_[i]->getCmd(cmd[i], result[i]);
+        }
+    }
+
+    void pegInHole(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    {
+
+        ////xyz軸のros cmdを変更
+        catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
+        StateStruct z_state;
+        motor_manager_[2]->getState(z_state);
+        peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
+        for (int i = 0; i < 3; i++)
+        {
+            motor_manager_[i]->setRosCmd(ros_cmd[i]);
+        }
+        ////resultはpeg_in_hole_control_で計算するので、dummyを使う
+        ControlResult dummy[JOINT_NUM];
+        independentControl(cmd, dummy);
+    }
 };

@@ -13,14 +13,9 @@
 
 #include "catchrobo_sim/robot_manager.h"
 
-const float MBED2ROS_DT = 0.2;     // 5Hz
+const float MBED2ROS_DT = 0.01;    // 10Hz
 const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
-
-const int N_MOTORS = 3;
-
-const int JOINT_NUM = 4;
-char *JOINT_NAME[JOINT_NUM] = {"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
 
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
@@ -38,15 +33,17 @@ void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 
 void mbed2MotorDriverTimerCallback()
 {
+    ControlResult result[JOINT_NUM];
+    ControlStruct control[JOINT_NUM];
+
+    robot_manager.getMotorDrivesCommand(control, result);
     //// update target value
     for (int i = 0; i < N_MOTORS; i++)
     {
-        ControlResult result;
-        ControlStruct control;
-        robot_manager.getCmd(i, control, result);
-        motor_driver_bridge.publish(control);
 
-        switch (result)
+        motor_driver_bridge.publish(control[i]);
+
+        switch (result[i])
         {
         case ControlResult::RUNNING:
             break;
@@ -99,7 +96,7 @@ int main(int argc, char **argv)
 #endif
 
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback);
-    robot_manager.init(MBED2MOTOR_DT, JOINT_NUM, JOINT_NAME);
+    robot_manager.init(MBED2MOTOR_DT);
     motor_driver_bridge.init(motorDriverCallback);
 
     Ticker ticker_motor_driver_send;

@@ -12,16 +12,14 @@
 class PositionControl
 {
 public:
-    PositionControl() : dt_(0.1), no_target_flag_(true), during_cal_flag_(false), finish_already_notified_(false){};
-    void init(double dt, SafeControl &safe_control)
+    PositionControl() : dt_(0.1), no_target_flag_(true), finish_already_notified_(false){};
+    void init(double dt)
     {
         dt_ = dt;
-        safe_control_ = safe_control;
     };
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
 
-        during_cal_flag_ = true;
         target_ = cmd;
         float start_posi = joint_state.position;
         float dist = cmd.position - start_posi; //移動距離
@@ -31,7 +29,6 @@ public:
                               start_posi, 0);
         t_ = 0;
         no_target_flag_ = false;
-        during_cal_flag_ = false;
         finish_already_notified_ = false;
     };
 
@@ -64,19 +61,16 @@ public:
                 }
             }
         }
-        safe_control_.getSafeCmd(state, target_, except_command, command);
     };
 
 private:
     double dt_;
     double t_;
     bool no_target_flag_;
-    bool during_cal_flag_;
     bool finish_already_notified_;
 
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
-    SafeControl safe_control_;
 
     void packResult2Cmd(double t, const ctrl::AccelDesigner &accel_designer, const catchrobo_msgs::MyRosCmd &target, ControlStruct &cmd)
     {

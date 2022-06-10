@@ -12,53 +12,24 @@ class DirectControl
 {
 public:
     DirectControl(){};
-    void init(double dt, SafeControl &safe_control)
+    void setRosCmd(const catchrobo_msgs::MyRosCmd &command, const StateStruct &joint_state)
     {
-        safe_control_ = safe_control;
-    }
-    void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
-    {
-        target_ = cmd;
-
-        // accel_curve_.reset(cmd.jerk_limit, cmd.acceleration_limit, joint_state.velocity, cmd.velocity);
+        target_ = command;
     };
 
     // dt間隔で呼ばれる想定
     void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult &result)
     {
-        packResult2Cmd(target_, command);
-        safe_control_.getSafeCmd(state, target_, except_command, command);
+        //// accel_curveを入れると、速度の誤差が大きいため変な動きをする
+        command.id = target_.id;
+        command.p_des = target_.position;
+        command.v_des = target_.velocity;
+        command.torque_feed_forward = target_.effort;
+        command.kp = target_.kp;
+        command.kd = target_.kd;
         result = ControlResult::RUNNING;
     };
 
 private:
     catchrobo_msgs::MyRosCmd target_;
-    ctrl::AccelCurve accel_curve_;
-    SafeControl safe_control_;
-
-    void packResult2Cmd(const catchrobo_msgs::MyRosCmd &target, ControlStruct &cmd)
-    {
-        cmd.id = target.id;
-        cmd.p_des = target.position;
-        cmd.v_des = target.velocity;
-
-        //        double accel = (target.velocity - state.velocity) / dt_;
-        //        if (accel > target.acceleration_limit)
-        //        {
-        //            accel = target.acceleration_limit;
-        //            cmd.v_des = state.velocity + accel * dt_;
-        //            //            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
-        //        }
-        //        if (accel < -target.acceleration_limit)
-        //        {
-        //            accel = -target.acceleration_limit;
-        //            cmd.v_des = state.velocity + accel * dt_;
-        //        }
-
-        //        ROS_INFO_STREAM(target);
-        // ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
-        cmd.torque_feed_forward = target.effort;
-        cmd.kp = target.kp;
-        cmd.kd = target.kd;
-    }
 };
