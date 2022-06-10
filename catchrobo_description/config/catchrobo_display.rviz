@@ -5,7 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /RobotModel1/Links1
+        - /TF1
         - /TF1/Frames1
+        - /TF1/Frames1/gripper/right_finger1
+        - /TF1/Frames1/world1
         - /TF1/Tree1
       Splitter Ratio: 0.5972973108291626
     Tree Height: 728
@@ -131,19 +134,60 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        arm/link0:
+          Value: false
+        arm/link1:
+          Value: true
+        arm/link2_1:
+          Value: false
+        arm/link2_2:
+          Value: false
+        arm/link3:
+          Value: false
+        arm/link_tip:
+          Value: false
+        base/base_link:
+          Value: true
+        base/link_tip:
+          Value: false
+        gripper/base_link:
+          Value: false
+        gripper/grasping_frame:
+          Value: false
+        gripper/left_finger:
+          Value: false
+        gripper/right_finger:
+          Value: false
+        world:
+          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        world:
+          base/base_link:
+            base/link_tip:
+              arm/link0:
+                arm/link1:
+                  arm/link2_1:
+                    arm/link2_2:
+                      arm/link3:
+                        arm/link_tip:
+                          gripper/base_link:
+                            gripper/grasping_frame:
+                              {}
+                            gripper/left_finger:
+                              {}
+                            gripper/right_finger:
+                              {}
       Update Interval: 0
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -172,25 +216,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.3509914875030518
+      Distance: 2.05952525138855
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.28422755002975464
-        Y: -0.27788227796554565
-        Z: 0.017150670289993286
+        X: 0.48523446917533875
+        Y: 0.28688547015190125
+        Z: -0.5317886471748352
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0897949934005737
+      Pitch: 0.9647965431213379
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.5367937088012695
+      Yaw: 1.9067987203598022
     Saved: ~
 Window Geometry:
   Displays:

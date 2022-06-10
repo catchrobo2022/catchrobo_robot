@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import rospy
+from catchrobo_control.rad_transform import RadTransform
 
+import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd
 import math
 import copy
@@ -10,25 +11,25 @@ import copy
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
-
+    
     pub = rospy.Publisher("/my_joint_control", MyRosCmdArray, queue_size=1)
 
     N_MOTOR = 1
-    radius = 0.002 * 54/(2*math.pi)
 
+    rad_transform = RadTransform()
     command = MyRosCmd()
 
     command.id = 0 # 0: x軸 1:y軸 2: z軸 3:グリッパー
     command.mode = MyRosCmd.POSITION_CTRL_MODE  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
-    command.position = 1.0 / radius
-    command.velocity = 0#目標位置での速度
+    command.position = rad_transform.robot_m2rad(command.id, 1.0)
+    command.velocity = rad_transform.robot_m2rad(command.id, 0.0)#目標位置での速度
     command.mass = 0.0 # 慣性モーメント(未対応)
     command.effort = 0 #自重補償項(未対応)
-    command.position_min = 0 #可動域
-    command.position_max = 1.5 / radius #可動域
-    command.velocity_limit = 30 #台形加速中の最大速度
-    command.acceleration_limit = 10 #台形加速を作るための最大加速度
-    command.jerk_limit = 5 #台形加速を作るための最大躍度(加速度の微分)
+    command.position_min = rad_transform.robot_m2rad(command.id, 0.0) #可動域
+    command.position_max = rad_transform.robot_m2rad(command.id, 1.5) #可動域
+    command.velocity_limit = rad_transform.robot_m2rad(command.id, 1.0) #台形加速中の最大速度
+    command.acceleration_limit = rad_transform.robot_m2rad(command.id, 2.0) #台形加速を作るための最大加速度
+    command.jerk_limit = rad_transform.robot_m2rad(command.id, 5.0) #台形加速を作るための最大躍度(加速度の微分)
     command.kp = 5 # p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
     command.kd = 0.5
 
