@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Blue</class>
- <widget class="QWidget" name="Blue">
+ <class>Red</class>
+ <widget class="QWidget" name="Red">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>blue_field</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,1,2,1" columnstretch="5,3">
+  <layout class="QGridLayout" name="gridLayout_2" rowstretch="3,1,2,1" columnstretch="3,5">
    <property name="leftMargin">
     <number>1</number>
    </property>
@@ -99,7 +99,7 @@
           <number>5</number>
          </property>
          <item>
-          <widget class="QFrame" name="fm0">
+          <widget class="QFrame" name="fm8">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -123,7 +123,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj0">
+             <widget class="QPushButton" name="obj8">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -139,7 +139,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm1">
+          <widget class="QFrame" name="fm7">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -163,7 +163,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj1">
+             <widget class="QPushButton" name="obj7">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -179,7 +179,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm2">
+          <widget class="QFrame" name="fm6">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -203,7 +203,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj2">
+             <widget class="QPushButton" name="obj6">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -219,7 +219,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm3">
+          <widget class="QFrame" name="fm5">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -243,7 +243,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj3">
+             <widget class="QPushButton" name="obj5">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -299,7 +299,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm5">
+          <widget class="QFrame" name="fm3">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -323,7 +323,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj5">
+             <widget class="QPushButton" name="obj3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -339,7 +339,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm6">
+          <widget class="QFrame" name="fm2">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -363,7 +363,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj6">
+             <widget class="QPushButton" name="obj2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -379,7 +379,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm7">
+          <widget class="QFrame" name="fm1">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -403,7 +403,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj7">
+             <widget class="QPushButton" name="obj1">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -419,7 +419,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm8">
+          <widget class="QFrame" name="fm0">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -443,7 +443,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj8">
+             <widget class="QPushButton" name="obj0">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -483,7 +483,7 @@
           <number>4</number>
          </property>
          <item>
-          <widget class="QFrame" name="fm9">
+          <widget class="QFrame" name="fm13">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -507,7 +507,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj9">
+             <widget class="QPushButton" name="obj13">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -532,7 +532,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm10">
+          <widget class="QFrame" name="fm12">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -556,7 +556,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj10">
+             <widget class="QPushButton" name="obj12">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -618,7 +618,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm12">
+          <widget class="QFrame" name="fm10">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -642,7 +642,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj12">
+             <widget class="QPushButton" name="obj10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -658,7 +658,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm13">
+          <widget class="QFrame" name="fm9">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -682,7 +682,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj13">
+             <widget class="QPushButton" name="obj9">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -722,7 +722,7 @@
           <number>4</number>
          </property>
          <item>
-          <widget class="QFrame" name="fm14">
+          <widget class="QFrame" name="fm19">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -746,127 +746,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj14">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QFrame" name="fm15">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QPushButton" name="obj15">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QFrame" name="fm16">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_12">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QPushButton" name="obj16">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QFrame" name="fm17">
-           <property name="frameShape">
-            <enum>QFrame::Box</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QPushButton" name="obj17">
+             <widget class="QPushButton" name="obj19">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -889,7 +769,7 @@
            <property name="frameShadow">
             <enum>QFrame::Plain</enum>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
             <property name="spacing">
              <number>0</number>
             </property>
@@ -922,7 +802,127 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm19">
+          <widget class="QFrame" name="fm17">
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="obj17">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="fm16">
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="obj16">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="fm15">
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="obj15">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="fm14">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -946,7 +946,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj19">
+             <widget class="QPushButton" name="obj14">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -992,7 +992,7 @@
           <number>4</number>
          </property>
          <item>
-          <widget class="QFrame" name="fm20">
+          <widget class="QFrame" name="fm24">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1016,7 +1016,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj20">
+             <widget class="QPushButton" name="obj24">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1038,7 +1038,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm21">
+          <widget class="QFrame" name="fm23">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1062,7 +1062,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj21">
+             <widget class="QPushButton" name="obj23">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1118,7 +1118,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm23">
+          <widget class="QFrame" name="fm21">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1142,7 +1142,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj23">
+             <widget class="QPushButton" name="obj21">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1158,7 +1158,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="fm24">
+          <widget class="QFrame" name="fm20">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1182,7 +1182,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="obj24">
+             <widget class="QPushButton" name="obj20">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1203,104 +1203,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="mode">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
-     </property>
-     <property name="topMargin">
-      <number>10</number>
-     </property>
-     <property name="bottomMargin">
-      <number>10</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="bt_add">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Add</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="autoRepeat">
-        <bool>false</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <property name="autoRepeatInterval">
-        <number>5</number>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="bt_tar">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Target</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="autoRepeat">
-        <bool>false</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <property name="autoRepeatInterval">
-        <number>5</number>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="1" rowspan="3">
+   <item row="1" column="0" rowspan="3">
     <widget class="QWidget" name="shootbox" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1331,7 +1234,7 @@
        <number>3</number>
       </property>
       <item row="6" column="0">
-       <widget class="QFrame" name="frm12">
+       <widget class="QFrame" name="frm14">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1355,7 +1258,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl12">
+          <widget class="QPushButton" name="gl14">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1460,7 +1363,7 @@
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="QFrame" name="frm17">
+       <widget class="QFrame" name="frm15">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1484,7 +1387,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl17">
+          <widget class="QPushButton" name="gl15">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1503,7 +1406,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QFrame" name="frm0">
+       <widget class="QFrame" name="frm2">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1527,7 +1430,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl0">
+          <widget class="QPushButton" name="gl2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1546,7 +1449,7 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QFrame" name="frm8">
+       <widget class="QFrame" name="frm6">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1570,7 +1473,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl8">
+          <widget class="QPushButton" name="gl6">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1589,7 +1492,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QFrame" name="frm2">
+       <widget class="QFrame" name="frm0">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1613,7 +1516,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl2">
+          <widget class="QPushButton" name="gl0">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1675,7 +1578,7 @@
        </widget>
       </item>
       <item row="6" column="2">
-       <widget class="QFrame" name="frm14">
+       <widget class="QFrame" name="frm12">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1699,7 +1602,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl14">
+          <widget class="QPushButton" name="gl12">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1728,7 +1631,7 @@
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QFrame" name="frm15">
+       <widget class="QFrame" name="frm17">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1752,7 +1655,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl15">
+          <widget class="QPushButton" name="gl17">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1864,7 +1767,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QFrame" name="frm3">
+       <widget class="QFrame" name="frm5">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1888,7 +1791,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl3">
+          <widget class="QPushButton" name="gl5">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1907,7 +1810,7 @@
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QFrame" name="frm9">
+       <widget class="QFrame" name="frm11">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1931,7 +1834,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl9">
+          <widget class="QPushButton" name="gl11">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1956,7 +1859,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QFrame" name="frm6">
+       <widget class="QFrame" name="frm8">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -1980,7 +1883,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl6">
+          <widget class="QPushButton" name="gl8">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -2042,7 +1945,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QFrame" name="frm5">
+       <widget class="QFrame" name="frm3">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -2066,7 +1969,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl5">
+          <widget class="QPushButton" name="gl3">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -2085,7 +1988,7 @@
        </widget>
       </item>
       <item row="4" column="2">
-       <widget class="QFrame" name="frm11">
+       <widget class="QFrame" name="frm9">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -2109,7 +2012,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="gl11">
+          <widget class="QPushButton" name="gl9">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -2158,7 +2061,104 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="1">
+    <layout class="QHBoxLayout" name="mode">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <property name="bottomMargin">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="bt_add">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeatInterval">
+        <number>5</number>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bt_tar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Target</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeatInterval">
+        <number>5</number>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="1">
     <layout class="QGridLayout" name="menu">
      <property name="sizeConstraint">
       <enum>QLayout::SetNoConstraint</enum>
@@ -2318,7 +2318,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
+   <item row="3" column="1">
     <layout class="QGridLayout" name="gridLayout">
      <property name="sizeConstraint">
       <enum>QLayout::SetNoConstraint</enum>

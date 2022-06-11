@@ -1,5 +1,5 @@
-#ifndef Blue_FIELD_H
-#define Blue_FIELD_H
+#ifndef Red_FIELD_H
+#define Red_FIELD_H
 
 #pragma once
 
@@ -21,19 +21,19 @@
 #include <geometry_msgs/PointStamped.h>
 
 namespace Ui {
-class Blue;
+class Red;
 }
 
 namespace field
 {
-class Blue: public rviz::Panel
+class Red: public rviz::Panel
 {
     Q_OBJECT
 
 public:
-    //explicit Blue_field(QWidget *parent = 0);
-    Blue(QWidget *parent = 0);
-    ~Blue() override; 
+    //explicit Red_field(QWidget *parent = 0);
+    Red(QWidget *parent = 0);
+    ~Red() override; 
 
     int obj[25];
     int gl[18];
@@ -78,7 +78,7 @@ private Q_SLOTS:
   void countdown();
 
 protected:
-  Ui::Blue *ui;
+  Ui::Red *ui;
   QGraphicsScene *field_scene;
   QGraphicsScene *goal_scene;
   QGraphicsPixmapItem *field_pix;
@@ -98,4 +98,4 @@ protected:
   ros::NodeHandle n;
 };
 }
-#endif // Blue_FIELD_H
+#endif // Red_FIELD_H

@@ -1,5 +1,5 @@
-#include "field/blue_field.h"
-#include "ui_blue_field.h"
+#include "field/red_field.h"
+#include "ui_red_field.h"
 
 #include <pluginlib/class_list_macros.h>
 
@@ -27,25 +27,25 @@
 
 namespace field
 {
-Blue::Blue(QWidget *parent) :
+Red::Red(QWidget *parent) :
     rviz::Panel(parent),
-    ui(new Ui::Blue)
+    ui(new Ui::Red)
 {
     ui->setupUi(this);
     project_path = ros::package::getPath("catchrobo_gui");
     this->set_icon();
-    //this->setStyleSheet("background-color: Blue;");
+    //this->setStyleSheet("background-color: Red;");
     ui->shootbox->setStyleSheet("background-color: rgb(0,255,0);");
     ui->comAREA->setStyleSheet("background-color: rgb(210,210,210);");
-    ui->Top->setStyleSheet("background-color: rgb(0,0,255);");
-    ui->Middle->setStyleSheet("background-color: rgb(0,0,255);");
-    ui->Bottom->setStyleSheet("background-color: rgb(0,0,255);");
+    ui->Top->setStyleSheet("background-color: rgb(255,0,0);");
+    ui->Middle->setStyleSheet("background-color: rgb(255,0,0);");
+    ui->Bottom->setStyleSheet("background-color: rgb(255,0,0);");
 
     for(int num=0;num<obj_num;++num){
       if(num<9){
         findChild<QFrame*>(QString("fm"+QString::number(num)))->setStyleSheet("color: rgb(210,210,210)");
       }else{
-        findChild<QFrame*>(QString("fm"+QString::number(num)))->setStyleSheet("color: rgb(0,0,255)");
+        findChild<QFrame*>(QString("fm"+QString::number(num)))->setStyleSheet("color: rgb(255,0,0)");
       }
       findChild<QFrame*>(QString("fm"+QString::number(num)))->setLineWidth(2);
     }
@@ -58,10 +58,10 @@ Blue::Blue(QWidget *parent) :
 
     //rostopic
     pub_obj = nh_.advertise<std_msgs::Int32MultiArray>("obj_rigo", 1);
-    sub_obj = n.subscribe("obj_giro", sendtime, &Blue::arrayback_obj, this);
+    sub_obj = n.subscribe("obj_giro", sendtime, &Red::arrayback_obj, this);
 
     pub_gl = nh_.advertise<std_msgs::Int32MultiArray>("gl_rigo", 1);
-    sub_gl = n.subscribe("gl_giro", sendtime, &Blue::arrayback_gl, this);
+    sub_gl = n.subscribe("gl_giro", sendtime, &Red::arrayback_gl, this);
 
     pub_menu = nh_.advertise<std_msgs::Int8>("menu", 1);
 
@@ -77,9 +77,9 @@ Blue::Blue(QWidget *parent) :
     */
 }
 
-Blue::~Blue() = default;
+Red::~Red() = default;
 
-void Blue::onInitialize()
+void Red::onInitialize()
 {
   for(int i=0; i<obj_num; i++){
     connect(findChild<QPushButton*>(QString("obj"+QString::number(i))), SIGNAL(clicked()), this, SLOT(obj_Clicked()));
@@ -98,7 +98,7 @@ void Blue::onInitialize()
   //QTimer::singleShot(sendtime, this, SLOT(hogehoge));
 }
 
-void Blue::set_icon()
+void Red::set_icon()
 {
   //add img to QPushButton
   std::string obj_on_img_path = "/img/jagarico_icon2.png";
@@ -126,19 +126,19 @@ void Blue::set_icon()
   }
 }
 
-void Blue::onEnable()
+void Red::onEnable()
 {
   show();
   parentWidget()->show();
 }
 
-void Blue::onDisable()
+void Red::onDisable()
 {
   hide();
   parentWidget()->hide();
 }
 
-void Blue::obj_Clicked()
+void Red::obj_Clicked()
 {
   if(touch_mode == 1){
     int arg;
@@ -159,7 +159,7 @@ void Blue::obj_Clicked()
   this->send_obj_msgs(false);
 }
 
-void Blue::gl_Clicked()
+void Red::gl_Clicked()
 {
   if(touch_mode == 1){
     int arg;
@@ -181,7 +181,7 @@ void Blue::gl_Clicked()
   //ROS_INFO_STREAM(array);
 }
 
-void Blue::send_obj_msgs(bool flag)
+void Red::send_obj_msgs(bool flag)
 {
   for(int i=0; i<obj_num; i++){
       array_obj.data[i] = obj[i];
@@ -193,7 +193,7 @@ void Blue::send_obj_msgs(bool flag)
   }
 }
 
-void Blue::send_gl_msgs(bool flag)
+void Red::send_gl_msgs(bool flag)
 {
   for(int i=0; i<gl_num; i++){
       array_gl.data[i] = gl[i];
@@ -204,7 +204,7 @@ void Blue::send_gl_msgs(bool flag)
   }
 }
 
-void Blue::send_menu_msgs(bool flag)
+void Red::send_menu_msgs(bool flag)
 {
   menu.data = status;
   pub_menu.publish(menu);
@@ -213,7 +213,7 @@ void Blue::send_menu_msgs(bool flag)
   }
 }
 
-void Blue::arrayback_obj(const std_msgs::Int32MultiArray& msg){
+void Red::arrayback_obj(const std_msgs::Int32MultiArray& msg){
   int num = msg.data.size();
   if(num != obj_num){
     ROS_INFO("The number of elements is different");
@@ -230,7 +230,7 @@ void Blue::arrayback_obj(const std_msgs::Int32MultiArray& msg){
   }
 }
 
-void Blue::arrayback_gl(const std_msgs::Int32MultiArray& msg){
+void Red::arrayback_gl(const std_msgs::Int32MultiArray& msg){
   int num = msg.data.size();
   if(num != gl_num){
     ROS_INFO("The number of elements is different");
@@ -247,20 +247,20 @@ void Blue::arrayback_gl(const std_msgs::Int32MultiArray& msg){
   }
 }
 
-void Blue::count_obj(){
+void Red::count_obj(){
   for(int i=0; i<obj_num; i++){
       obj[i] = findChild<QPushButton*>(QString("obj"+QString::number(i)))->isChecked() + obj_frame[i];
   }
 }
 
-void Blue::count_gl(){
+void Red::count_gl(){
   for(int i=0; i<gl_num; i++){
       gl[i] = findChild<QPushButton*>(QString("gl"+QString::number(i)))->isChecked() + gl_frame[i];
   }
   this->count_score();
 }
 
-void Blue::initialize(){
+void Red::initialize(){
   status = 0;
   ui->bt_init->setChecked(1);
   ui->bt_sta->setChecked(0);
@@ -270,7 +270,7 @@ void Blue::initialize(){
   ti = 180.0;
   this->timer();
 }
-void Blue::start(){
+void Red::start(){
   status = 1;
   ui->bt_init->setChecked(0);
   ui->bt_sta->setChecked(1);
@@ -280,7 +280,7 @@ void Blue::start(){
   stop_ti = 0;
   QTimer::singleShot(100, this, SLOT(countdown()));
 }
-void Blue::pause(){
+void Red::pause(){
   status = 2;
   ui->bt_init->setChecked(0);
   ui->bt_sta->setChecked(0);
@@ -288,7 +288,7 @@ void Blue::pause(){
   ui->bt_stp->setChecked(0);
   this->send_menu_msgs(false);
 }
-void Blue::stop(){
+void Red::stop(){
   status = 3;
   ui->bt_init->setChecked(0);
   ui->bt_sta->setChecked(0);
@@ -298,17 +298,17 @@ void Blue::stop(){
   stop_ti = 1;
   this->timer();
 }
-void Blue::touch_rm(){
+void Red::touch_rm(){
   touch_mode = 0;
   ui->bt_add->setChecked(1);
   ui->bt_tar->setChecked(0);
 }
-void Blue::touch_tar(){
+void Red::touch_tar(){
   touch_mode = 1;
   ui->bt_add->setChecked(0);
   ui->bt_tar->setChecked(1);
 }
-void Blue::count_score(){
+void Red::count_score(){
   int score = 0;
   int bonus = 1;
   for(int i=0; i<gl_num; i++){
@@ -328,7 +328,7 @@ void Blue::count_score(){
   ui->Score->display(score);
 }
 
-void Blue::timer(){
+void Red::timer(){
   if(ti<0){
     ti = 0.0;
   }
@@ -337,7 +337,7 @@ void Blue::timer(){
   ui->Time->display(buffer);
 }
 
-void Blue::countdown(){
+void Red::countdown(){
   ti -= 0.1;
   if(ti >= 0 && stop_ti == 0){
     this->timer();
@@ -345,18 +345,18 @@ void Blue::countdown(){
   }
 }
 
-void Blue::marker_obj(int num, int i){
+void Red::marker_obj(int num, int i){
   for(int i=0;i<obj_num;++i){
     if(i<9){
       findChild<QFrame*>(QString("fm"+QString::number(i)))->setStyleSheet("color: rgb(210,210,210)");
     }else{
-      findChild<QFrame*>(QString("fm"+QString::number(i)))->setStyleSheet("color: rgb(0,0,255)");
+      findChild<QFrame*>(QString("fm"+QString::number(i)))->setStyleSheet("color: rgb(255,0,0)");
     }
   }
   findChild<QFrame*>(QString("fm"+QString::number(num)))->setStyleSheet("color: rgb(255,170,0)");
   obj_frame[num] = i*2;
 }
-void Blue::marker_gl(int num, int i){
+void Red::marker_gl(int num, int i){
   for(int i=0;i<gl_num;++i){
     findChild<QFrame*>(QString("frm"+QString::number(i)))->setStyleSheet("color: rgb(0,255,0)");
   }
@@ -366,4 +366,4 @@ void Blue::marker_gl(int num, int i){
 
 }
 
-PLUGINLIB_EXPORT_CLASS(field::Blue, rviz::Panel )
+PLUGINLIB_EXPORT_CLASS(field::Red, rviz::Panel )

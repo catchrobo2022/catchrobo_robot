@@ -71,12 +71,15 @@ link_directories(${catkin_LIBRARY_DIRS})
 
 set(HEADERS
   include/field/blue_field.h
+  include/field/red_field.h
   )
 qt5_wrap_ui(UIC_FILES
   src/ui/blue_field.ui
+  src/ui/red_field.ui
   )
 set(SOURCE_FILES
   src/blue_field.cpp
+  src/red_field.cpp
   )
 
 #set(HEADERS
