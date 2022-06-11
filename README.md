@@ -17,7 +17,7 @@ roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 
 ### mbed simulator demo
 ```
-roslaunch catchrobo_bringup sim_bringup.launch
+roslaunch catchrobo_bringup sim_bringup.launch field="red"  # or blue
 rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテストドライバ。自由に書き換え可能
 ```
 
