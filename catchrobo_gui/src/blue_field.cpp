@@ -325,6 +325,11 @@ void Blue::count_score(){
       bonus = 1;
     }
   }
+  if(score >= 27){
+    stop_ti = 1;
+  }else{
+    stop_ti = 0;
+  }
   ui->Score->display(score);
 }
 
