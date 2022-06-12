@@ -11,10 +11,6 @@ class PegInHoleControl
 {
 public:
     PegInHoleControl() : pi_(3.1415){};
-    void init(double dt)
-    {
-        dt_ = dt;
-    }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd)
     {
         targets_[cmd.id] = cmd;
@@ -96,6 +92,12 @@ public:
     {
         ////peg in hole modeかどうかはz軸で判断する
         return (targets_[2].mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE);
+    }
+
+    //// [TODO] t_を用意する。getCmdのたびに値が変わらないようにする
+    void nextStep(float dt)
+    {
+        dt_ = dt;
     }
 
 private:

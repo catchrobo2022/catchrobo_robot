@@ -4,11 +4,14 @@
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
 #include "catchrobo_sim/peg_in_hole_control.h"
+#include "catchrobo_sim/enable_manager.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmd.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
+#include <catchrobo_msgs/EnableCmd.h>
+#include <catchrobo_msgs/ErrorCode.h>
 
 #include <vector>
 #include <string>
@@ -27,28 +30,11 @@ public:
         motor_manager_[N_MOTORS] = new ServoManager;
 
         actuator_num_ = sizeof(motor_manager_) / sizeof(motor_manager_[0]);
-        // ROS_INFO_STREAM("actuator_num_" << actuator_num_);
-        //
-        //        joint_state_.name = std::vector<std::string>{"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
-        //
-        //        int joint_num = joint_state_.name.size();
-        //        joint_state_.position = std::vector<double>(joint_num, 0);
-        //        joint_state_.velocity = std::vector<double>(joint_num, 0);
-        //        joint_state_.effort = std::vector<double>(joint_num, 0);
-    };
 
-    void init(double dt)
-    {
         ////[TODO] 面倒なので直打ち
         char *joint_name[JOINT_NUM] = {"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
         resetJointState(JOINT_NUM, joint_name);
-        for (size_t i = 0; i < actuator_num_; i++)
-        {
-            motor_manager_[i]->init(dt);
-        }
-
-        peg_in_hole_control_.init(dt);
-    };
+    }
 
 #ifdef USE_MBED
 
@@ -98,7 +84,7 @@ public:
         peg_in_hole_control_.setRosCmd(command);
     };
 
-    void getMotorDrivesCommand(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    void getMotorDrivesCommand(bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error, ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
     {
         independentControl(cmd, result);
 
@@ -113,7 +99,19 @@ public:
         {
             cmd[i].id = i;
         }
+
+        enable_manager_.check(joint_state_, cmd, is_enable, change_enable, error);
     };
+
+    void nextStep(float dt)
+    {
+        for (size_t i = 0; i < actuator_num_; i++)
+        {
+            motor_manager_[i]->nextStep(dt);
+        }
+
+        peg_in_hole_control_.nextStep(dt);
+    }
 
     void setCurrentState(const StateStruct &state)
     {
@@ -133,6 +131,11 @@ public:
         joint_state = joint_state_;
     };
 
+    void setEnableParams(const catchrobo_msgs::EnableCmd &input)
+    {
+        enable_manager_.setParams(input);
+    }
+
 private:
     MotorManager *(motor_manager_[JOINT_NUM]);
     sensor_msgs::JointState joint_state_;
@@ -140,6 +143,7 @@ private:
     int is_peg_in_hole_mode_;
 
     PegInHoleControl peg_in_hole_control_;
+    EnableManager enable_manager_;
 
     void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
     {

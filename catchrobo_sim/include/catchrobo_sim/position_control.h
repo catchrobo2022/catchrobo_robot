@@ -12,11 +12,7 @@
 class PositionControl
 {
 public:
-    PositionControl() : dt_(0.1), no_target_flag_(true), finish_already_notified_(false){};
-    void init(double dt)
-    {
-        dt_ = dt;
-    };
+    PositionControl() : no_target_flag_(true), finish_already_notified_(false){};
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
 
@@ -44,7 +40,7 @@ public:
         else
         {
             // まだ目標値が与えられた後
-            t_ += dt_;
+
             if (t_ < accel_designer_.t_end())
             {
                 //収束していないとき
@@ -62,9 +58,9 @@ public:
             }
         }
     };
+    void nextStep(float dt) { t_ += dt; }
 
 private:
-    double dt_;
     double t_;
     bool no_target_flag_;
     bool finish_already_notified_;

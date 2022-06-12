@@ -9,7 +9,7 @@
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge(){};
+    MotorDriverBridge() : is_enable(false){};
 
     void setNodeHandlePtr(ros::NodeHandle *nh)
     {
@@ -32,12 +32,26 @@ public:
         data.torque_feed_forward = control.torque_feed_forward;
         data.kp = control.kp;
         data.kd = control.kd;
+
+        if (!is_enable)
+        {
+            data.kp = 0;
+            data.kd = 0;
+        }
         pub_.publish(data);
     }
 
+    void enableMotor(int id)
+    {
+        //// どれか一つでも励起していたら全部enable. 配列にするのが面倒だった
+        is_enable = true;
+    }
+    void disableMotor(int id)
+    {
+        //// どれか一つでも励起していたら全部enable. 配列にするのが面倒だった
+        is_enable = false;
+    }
     ////[TODO] 特にsimulatorでやる必要性を感じないので後回し
-    void enableMotor(int id) {}
-    void disableMotor(int id) {}
     void setOrigin(int id) {}
 
 private:
@@ -45,6 +59,8 @@ private:
     ros::Publisher pub_;
     ros::Subscriber sub_;
     void (*callback_function_)(const StateStruct &input);
+    bool is_enable;
+
     void callback(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
         StateStruct data;

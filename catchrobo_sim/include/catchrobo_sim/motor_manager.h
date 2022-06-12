@@ -22,14 +22,9 @@ public:
         current_state_.position = 0;
         current_state_.velocity = 0;
         current_state_.torque = 0;
-    };
-
-    void init(double dt)
-    {
         double cbf_params = 1;
         safe_control_.setCBFparams(cbf_params);
-        position_control_.init(dt);
-    }
+    };
 
     //低Hz (1 Hzとか)で呼ばれる
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd)
@@ -96,6 +91,10 @@ public:
     {
         ros_cmd = ros_cmd_;
     }
+    void nextStep(float dt)
+    {
+        position_control_.nextStep(dt);
+    };
     bool IsPegInHoleMode()
     {
         return (ros_cmd_.mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE);

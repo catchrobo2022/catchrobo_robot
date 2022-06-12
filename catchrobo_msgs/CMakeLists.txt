@@ -51,6 +51,8 @@ add_message_files(
   ControlStruct.msg
   StateStruct.msg
   MyRosCmdArray.msg
+  EnableCmd.msg
+  ErrorCode.msg
 )
 
 ## Generate services in the 'srv' folder
