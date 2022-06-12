@@ -5,14 +5,17 @@
 #include <std_msgs/Bool.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
+#include <catchrobo_msgs/EnableCmd.h>
+#include <catchrobo_msgs/ErrorCode.h>
 
 class RosBridge
 {
 public:
     RosBridge() : pub2ros_("joint_state_rad", new sensor_msgs::JointState),
                   pub_finished_flag_("finished_flag_topic", new std_msgs::Int8),
+                  pub_error_("error", new catchrobo_msgs::ErrorCode),
                   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
-                  sub_enable_("enable_motor", &RosBridge::rosCallback, this){};
+                  sub_enable_("enable_motor", &RosBridge::enableCallback, this){};
 
     void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command), void (*enable_callback_function)(const std_msgs::Bool &input))
     {
@@ -22,6 +25,7 @@ public:
         nh_.initNode();
         nh_.advertise(pub2ros_);
         nh_.advertise(pub_finished_flag_);
+        nh_.advertise(pub_error_);
         nh_.subscribe(sub_from_ros_);
         nh_.subscribe(sub_enable_);
     };
@@ -45,11 +49,17 @@ public:
             wait_ms(1000);
         }
     };
+    void publishError(catchrobo_msgs::ErrorCode msg)
+    {
+        pub_error_.publish(msg);
+    }
 
 private:
     ros::NodeHandle nh_;
     ros::Publisher pub2ros_;
     ros::Publisher pub_finished_flag_;
+    ros::Publisher pub_error_;
+
     ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
     ros::Subscriber<std_msgs::Bool, RosBridge> sub_enable_;
 
@@ -65,7 +75,7 @@ private:
         }
     };
 
-    void enableCallback(const std_msgs::Bool &input)
+    void enableCallback(const catchrobo_msgs::EnableCmd &input)
     {
         (*enable_callback_function_)(input);
     }
