@@ -18,7 +18,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult &result)
+    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &result)
     {
         //// accel_curveを入れると、速度の誤差が大きいため変な動きをする
         command.id = target_.id;

@@ -1,8 +1,11 @@
 #pragma once
 
-enum ControlResult
+namespace ControlResult
 {
-    RUNNING,
-    FINISH,
-    SET_ORIGIN
+    enum ControlResult
+    {
+        RUNNING,
+        FINISH,
+        SET_ORIGIN
+    };
 };

@@ -84,7 +84,7 @@ public:
         peg_in_hole_control_.setRosCmd(command);
     };
 
-    void getMotorDrivesCommand(bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error, ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    void getMotorDrivesCommand(bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error, ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
         independentControl(cmd, result);
 
@@ -145,7 +145,7 @@ private:
     PegInHoleControl peg_in_hole_control_;
     EnableManager enable_manager_;
 
-    void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
         for (size_t i = 0; i < actuator_num_; i++)
         {
@@ -153,7 +153,7 @@ private:
         }
     }
 
-    void pegInHole(ControlStruct (&cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    void pegInHole(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
 
         ////xyz軸のros cmdを変更
@@ -166,7 +166,7 @@ private:
             motor_manager_[i]->setRosCmd(ros_cmd[i]);
         }
         ////resultはpeg_in_hole_control_で計算するので、dummyを使う
-        ControlResult dummy[JOINT_NUM];
+        ControlResult::ControlResult dummy[JOINT_NUM];
         independentControl(cmd, dummy);
     }
 };

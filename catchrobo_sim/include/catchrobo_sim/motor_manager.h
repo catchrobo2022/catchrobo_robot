@@ -49,7 +49,7 @@ public:
     };
 
     // dt間隔で呼ばれる. servo classではoverrideされる。
-    virtual void getCmd(ControlStruct &command, ControlResult &result)
+    virtual void getCmd(ControlStruct &command, ControlResult::ControlResult &result)
     {
         switch (ros_cmd_.mode)
         {

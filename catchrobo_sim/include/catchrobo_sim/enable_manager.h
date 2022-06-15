@@ -97,18 +97,20 @@ private:
     {
         for (int i = 0; i < N_MOTORS; i++)
         {
-            if (fabs(state.position[i] - cmd[i].p_des) > params.trajectory_error_limit[i])
+            if (fabs(cmd[i].kp) > 0)
             {
-                error.id = i;
-                error.error_code = catchrobo_msgs::ErrorCode::FAR_TARGET_POSITION;
-                return;
+                if (fabs(state.position[i] - cmd[i].p_des) > params.trajectory_error_limit[i])
+                {
+                    error.id = i;
+                    error.error_code = catchrobo_msgs::ErrorCode::FAR_TARGET_POSITION;
+                    return;
+                }
             }
         }
     }
 
     void checkCollision(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
     {
-        bool ret = true;
         for (int i = 0; i < N_MOTORS; i++)
         {
             //// 1軸でもobstacle外なら衝突はしていない

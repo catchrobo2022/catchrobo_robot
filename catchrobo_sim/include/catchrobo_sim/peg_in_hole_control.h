@@ -26,7 +26,7 @@ public:
         theta_ = 0;
         // accel_curve_.reset(cmd.jerk_limit, cmd.acceleration_limit, joint_state.velocity, cmd.velocity);
     };
-    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[JOINT_NUM], ControlResult (&result)[JOINT_NUM])
+    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
 
         //// 初期化
@@ -37,9 +37,8 @@ public:
             result[i] = ControlResult::RUNNING;
         }
 
-        /** じゃがりこが穴に入る=z軸が一定値以下になったら終了.
-        /* しきい値はz軸のposition_minとする.
-        **/
+        //// じゃがりこが穴に入る=z軸が一定値以下になったら終了.
+        //// しきい値はz軸のposition_minとする.
         if (z_state.position > z_threshold_)
         {
             ////穴に落ちるまで押し付けながらぐるぐるする

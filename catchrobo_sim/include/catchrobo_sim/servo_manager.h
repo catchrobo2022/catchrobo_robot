@@ -11,7 +11,7 @@ public:
     ServoManager(){};
 
     // dt間隔で呼ばれる
-    virtual void getCmd(ControlStruct &command, ControlResult &finished)
+    virtual void getCmd(ControlStruct &command, ControlResult::ControlResult &finished)
     {
         MotorManager::getCmd(command, finished);
         StateStruct current_state;

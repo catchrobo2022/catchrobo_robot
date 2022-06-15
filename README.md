@@ -72,6 +72,3 @@ printfしたいなら
 ```
 cu -s 921600 -l /dev/ttyACM0
 ```
-
-
-- [ ] peg in hole : t_を用意する。getCmdのたびに値が変わらないようにする

@@ -29,7 +29,7 @@ public:
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult &finished)
+    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &finished)
     {
         finished = ControlResult::RUNNING;
         if (no_target_flag_)

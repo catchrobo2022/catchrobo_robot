@@ -36,7 +36,7 @@ void mbed2MotorDriverTimerCallback()
     bool is_enable;
     bool change_enable;
     catchrobo_msgs::ErrorCode error;
-    ControlResult result[JOINT_NUM];
+    ControlResult::ControlResult result[JOINT_NUM];
     ControlStruct control[JOINT_NUM];
     robot_manager.getMotorDrivesCommand(is_enable, change_enable, error, control, result);
     // ROS_INFO_STREAM(is_enable << " " << change_enable << " " << error);
@@ -46,7 +46,7 @@ void mbed2MotorDriverTimerCallback()
         //// disableのとき
         if (change_enable)
         {
-            for (int i = 0; i < N_MOTORS; i++)
+            for (int i = 0; i < JOINT_NUM; i++)
             {
                 motor_driver_bridge.disableMotor(i);
             }
@@ -58,7 +58,7 @@ void mbed2MotorDriverTimerCallback()
     //// 切り替わりタイミングならモーター励起
     if (change_enable)
     {
-        for (int i = 0; i < N_MOTORS; i++)
+        for (int i = 0; i < JOINT_NUM; i++)
         {
             motor_driver_bridge.enableMotor(i);
         }
@@ -69,7 +69,7 @@ void mbed2MotorDriverTimerCallback()
     robot_manager.nextStep(MBED2MOTOR_DT);
 
     //// update target value
-    for (int i = 0; i < N_MOTORS; i++)
+    for (int i = 0; i < JOINT_NUM; i++)
     {
 
         motor_driver_bridge.publish(control[i]);
@@ -133,9 +133,17 @@ int main(int argc, char **argv)
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback);
     motor_driver_bridge.init(motorDriverCallback);
 
+    //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
+    for (size_t i = 0; i < N_MOTORS; i++)
+    {
+        motor_driver_bridge.setOrigin(i);
+    }
+
+    //// motor driverへの指示開始
     Ticker ticker_motor_driver_send;
     ticker_motor_driver_send.attach(&mbed2MotorDriverTimerCallback, MBED2MOTOR_DT);
 
+    //// ros へのフィードバック開始
     Ticker ticker;
     ticker.attach(&mbed2RosTimerCallback, MBED2ROS_DT);
     ros_bridge.spin();

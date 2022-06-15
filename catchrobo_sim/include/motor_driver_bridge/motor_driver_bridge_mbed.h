@@ -80,11 +80,11 @@ private:
     ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
     int listId2CANId(int list_id)
     {
-        return id + 1;
+        return list_id + 1;
     }
     int CanId2ListId(int can_id)
     {
-        return id - 1;
+        return can_id - 1;
     }
     void canCallback()
     {

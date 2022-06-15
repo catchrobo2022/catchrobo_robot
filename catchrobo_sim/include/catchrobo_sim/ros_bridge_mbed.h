@@ -17,7 +17,7 @@ public:
                   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
                   sub_enable_("enable_motor", &RosBridge::enableCallback, this){};
 
-    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command), void (*enable_callback_function)(const std_msgs::Bool &input))
+    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command), void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input))
     {
         callback_function_ = callback_function;
         enable_callback_function_ = enable_callback_function;
@@ -49,9 +49,9 @@ public:
             wait_ms(1000);
         }
     };
-    void publishError(catchrobo_msgs::ErrorCode msg)
+    void publishError(const catchrobo_msgs::ErrorCode &msg)
     {
-        pub_error_.publish(msg);
+        pub_error_.publish(&msg);
     }
 
 private:
@@ -61,10 +61,10 @@ private:
     ros::Publisher pub_error_;
 
     ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
-    ros::Subscriber<std_msgs::Bool, RosBridge> sub_enable_;
+    ros::Subscriber<catchrobo_msgs::EnableCmd, RosBridge> sub_enable_;
 
     void (*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
-    void (*enable_callback_function_)(const std_msgs::Bool &input);
+    void (*enable_callback_function_)(const catchrobo_msgs::EnableCmd &input);
 
     void rosCallback(const catchrobo_msgs::MyRosCmdArray &input)
     {
