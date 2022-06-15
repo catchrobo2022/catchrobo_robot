@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(catchrobo_control)
+project(catchrobo_manager)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -102,7 +102,7 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES catchrobo_control
+#  LIBRARIES catchrobo_manager
 #  CATKIN_DEPENDS rospy
 #  DEPENDS system_lib
 )
@@ -120,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/catchrobo_control.cpp
+#   src/${PROJECT_NAME}/catchrobo_manager.cpp
 # )
 
 ## Add cmake target dependencies of the library

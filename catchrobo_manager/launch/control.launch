@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="catchrobo_manager" type="radius2meter.py" name="radius2meter" output="screen" respawn="false" respawn_delay="0" />
+
+</launch>

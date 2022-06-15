@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from catchrobo_control.next_action_enum import NextAction
+from catchrobo_manager.next_action_enum import NextAction
 
 
 class WorkManager:
