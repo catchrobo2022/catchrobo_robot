@@ -2,21 +2,25 @@
 # -*- coding: utf-8 -*-
 from catchrobo_control.next_action_enum import NextAction
 
-class ZyagarikoManager():
+
+class WorkManager:
     def __init__(self, field):
-        #[TODO] csv読み込み
+        # [TODO] csv読み込み
+        # targetをGUIに教える
         pass
 
-    def pick(self):
+    def get_target(self):
         ### [TODO] 目標ビスコ位置計算
         position = [0, 0, 0]
         ### [TODO] next_action計算
+
+        return position
+
+    def pick(self):
+        ### [TODO] ビスコ取得
+
         next_action = NextAction.PICK
-
-        return position, next_action
-
-    
-
+        return next_action
 
         self._database = BiscoDatabase()
         self._database.readCsv(color)
@@ -32,8 +36,7 @@ class ZyagarikoManager():
 
         self._can_go_common = False
 
-        
-
+    #################################去年のプログラム
     def pick(self, id):
         self._rviz.attach(id)
         self._database.delete(id)
@@ -43,16 +46,15 @@ class ZyagarikoManager():
         self._rviz.release(id)
 
     def calcTargetTwin(self):
-        self._target_ids =  self._calculator.calcTargetTwin(self._database)
-        self._twin = self._calculator.isNeighbor(self._database, self._target_ids[0], self._target_ids[1])
+        self._target_ids = self._calculator.calcTargetTwin(self._database)
+        self._twin = self._calculator.isNeighbor(
+            self._database, self._target_ids[0], self._target_ids[1]
+        )
 
         self._gui.highlight(self._target_ids)
 
-
-
     def getTargetTwin(self):
-        return [self._database.getObj(id) for id in self._target_ids], self._twin 
-
+        return [self._database.getObj(id) for id in self._target_ids], self._twin
 
     def setCanGoCommon(self, flag):
         self._can_go_common = flag

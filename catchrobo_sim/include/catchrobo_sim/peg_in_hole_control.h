@@ -67,6 +67,8 @@ public:
             ros_cmd[1].position = y;
             ros_cmd[1].velocity = y_vel;
 
+            //// [TODO] t_ff計算
+
             //// z 軸は脱力
             ros_cmd[2].kp = 0;
             ros_cmd[2].kd = 0;

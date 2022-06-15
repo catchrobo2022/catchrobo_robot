@@ -73,7 +73,7 @@ private:
         cmd.id = target.id;
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
-        cmd.torque_feed_forward = target.mass * accel_designer.a(t) + target.effort;
+        cmd.torque_feed_forward = target.net_inertia * accel_designer.a(t) + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }
