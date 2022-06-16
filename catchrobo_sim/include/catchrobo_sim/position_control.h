@@ -18,7 +18,17 @@ public:
 
         target_ = cmd;
         float start_posi = joint_state.position;
-        float dist = cmd.position - start_posi; //移動距離
+        float target_position = cmd.position;
+        if (target_position > cmd.position_max)
+        {
+            target_position = cmd.position_max;
+        }
+        else if (target_position < cmd.position_min)
+        {
+            target_position = cmd.position_min;
+        }
+
+        float dist = target_position - start_posi; //移動距離
 
         accel_designer_.reset(cmd.jerk_limit, cmd.acceleration_limit, cmd.velocity_limit,
                               0, cmd.velocity, dist,
