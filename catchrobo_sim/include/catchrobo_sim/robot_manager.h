@@ -101,6 +101,22 @@ public:
         }
 
         enable_manager_.check(joint_state_, cmd, is_enable, change_enable, error);
+
+        if (!is_enable)
+        {
+            //// disable時にはコマンドを無入力に切り替え
+            for (int i = 0; i < N_MOTORS; i++)
+            {
+                catchrobo_msgs::MyRosCmd command;
+                command.id = i;
+                command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+                command.kp = 0;
+                command.kd = 0;
+                command.effort = 0;
+                setRosCmd(command);
+            }
+            return;
+        }
     };
 
     void nextStep(float dt)

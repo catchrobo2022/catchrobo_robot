@@ -28,7 +28,7 @@ public:
         pack_cmd(control, txMsg);
         can_.write(txMsg);
     };
-    void enableMotor(int id)
+    void enableMotor(int id, bool is_enable)
     {
         CANMessage txMsg;
         txMsg.id = listId2CANId(id);
@@ -39,24 +39,31 @@ public:
         txMsg.data[4] = 0xFF;
         txMsg.data[5] = 0xFF;
         txMsg.data[6] = 0xFF;
-        txMsg.data[7] = 0xFC;
+        if (is_enable)
+        {
+            txMsg.data[7] = 0xFC;
+        }
+        else
+        {
+            txMsg.data[7] = 0xFD;
+        }
         can_.write(txMsg);
     };
 
-    void disableMotor(int id)
-    {
-        CANMessage txMsg;
-        txMsg.id = listId2CANId(id);
-        txMsg.data[0] = 0xFF;
-        txMsg.data[1] = 0xFF;
-        txMsg.data[2] = 0xFF;
-        txMsg.data[3] = 0xFF;
-        txMsg.data[4] = 0xFF;
-        txMsg.data[5] = 0xFF;
-        txMsg.data[6] = 0xFF;
-        txMsg.data[7] = 0xFD;
-        can_.write(txMsg);
-    }
+    // void disableMotor(int id)
+    // {
+    //     CANMessage txMsg;
+    //     txMsg.id = listId2CANId(id);
+    //     txMsg.data[0] = 0xFF;
+    //     txMsg.data[1] = 0xFF;
+    //     txMsg.data[2] = 0xFF;
+    //     txMsg.data[3] = 0xFF;
+    //     txMsg.data[4] = 0xFF;
+    //     txMsg.data[5] = 0xFF;
+    //     txMsg.data[6] = 0xFF;
+    //     txMsg.data[7] = 0xFD;
+    //     can_.write(txMsg);
+    // }
 
     void setOrigin(int id)
     {

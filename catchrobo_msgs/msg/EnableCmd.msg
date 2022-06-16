@@ -1,4 +1,5 @@
 bool is_enable
+bool enable_check
 
 float32[] position_min
 float32[] position_max

@@ -40,28 +40,19 @@ void mbed2MotorDriverTimerCallback()
     ControlStruct control[JOINT_NUM];
     robot_manager.getMotorDrivesCommand(is_enable, change_enable, error, control, result);
     // ROS_INFO_STREAM(is_enable << " " << change_enable << " " << error);
-    /////enable, disableが切り替わるときは、enable指示のみを出してreturn
-    if (!is_enable)
-    {
-        //// disableのとき
-        if (change_enable)
-        {
-            for (int i = 0; i < JOINT_NUM; i++)
-            {
-                motor_driver_bridge.disableMotor(i);
-            }
-            ros_bridge.publishError(error);
-        }
-        return;
-    }
-    //// enableのとき
-    //// 切り替わりタイミングならモーター励起
+    /////enable, disableが切り替わるときは、すぐreturn
     if (change_enable)
     {
         for (int i = 0; i < JOINT_NUM; i++)
         {
-            motor_driver_bridge.enableMotor(i);
+            motor_driver_bridge.enableMotor(i, is_enable);
         }
+        ros_bridge.publishError(error);
+        return;
+    }
+    //// disable中はskip
+    if (!is_enable)
+    {
         return;
     }
 
@@ -73,21 +64,25 @@ void mbed2MotorDriverTimerCallback()
     {
 
         motor_driver_bridge.publish(control[i]);
-
-        switch (result[i])
+        if (result[i] == ControlResult::FINISH)
         {
-        case ControlResult::RUNNING:
-            break;
-        case ControlResult::FINISH:
             ros_bridge.publishFinishFlag(i);
-            break;
-        // case ControlResult::SET_ORIGIN:
-        //     motor_driver_bridge.setOrigin(i);
+        }
+
+        // switch (result[i])
+        // {
+        // case ControlResult::RUNNING:
+        //     break;
+        // case ControlResult::FINISH:
         //     ros_bridge.publishFinishFlag(i);
         //     break;
-        default:
-            break;
-        }
+        // // case ControlResult::SET_ORIGIN:
+        // //     motor_driver_bridge.setOrigin(i);
+        // //     ros_bridge.publishFinishFlag(i);
+        // //     break;
+        // default:
+        //     break;
+        // }
     }
 }
 

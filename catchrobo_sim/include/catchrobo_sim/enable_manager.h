@@ -11,8 +11,7 @@
 #include <catchrobo_msgs/ErrorCode.h>
 #include <sensor_msgs/JointState.h>
 
-//#
-
+//// ブラシレスしかチェックしない
 class EnableManager
 {
 public:
@@ -28,12 +27,15 @@ public:
         {
             //// enable指示
             error.error_code = catchrobo_msgs::ErrorCode::NONE;
+            if (params_.enable_check)
+            {
 
-            checkCollision(state, params_, error);
-            checkTargetPosition(state, cmd, params_, error);
-            checkOverTorque(state, params_, error);
-            checkOverVelocity(state, params_, error);
-            checkOverPosition(state, params_, error);
+                checkCollision(state, params_, error);
+                checkTargetPosition(state, cmd, params_, error);
+                checkOverTorque(state, params_, error);
+                checkOverVelocity(state, params_, error);
+                checkOverPosition(state, params_, error);
+            }
 
             is_enable = false;
             if (error.error_code == catchrobo_msgs::ErrorCode::NONE)

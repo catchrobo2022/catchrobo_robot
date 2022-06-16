@@ -37,19 +37,26 @@ public:
         pub_.publish(data);
     }
 
-    void enableMotor(int id)
+    void enableMotor(int id, bool is_enable)
     {
         //// どれか一つでも励起していたら全部enable. 配列にするのが面倒だった
         std_msgs::Int8 msg;
         msg.data = id;
-        pub_enable_.publish(msg);
+        if (is_enable)
+        {
+            pub_enable_.publish(msg);
+        }
+        else
+        {
+            pub_disable_.publish(msg);
+        }
     }
-    void disableMotor(int id)
-    {
-        std_msgs::Int8 msg;
-        msg.data = id;
-        pub_disable_.publish(msg);
-    }
+    // void disableMotor(int id)
+    // {
+    //     std_msgs::Int8 msg;
+    //     msg.data = id;
+    //     pub_disable_.publish(msg);
+    // }
     ////[TODO] 特にsimulatorでやる必要性を感じないので後回し
     void setOrigin(int id) {}
 

@@ -44,7 +44,7 @@ class GameManager:
 
     def set_origin(self):
         ### enable
-        self._robot.enable()
+        self._robot.enable(enable_check=False)
         ### z軸setorigin
         self._robot.set_origin(2)
         ### y軸 setorigin

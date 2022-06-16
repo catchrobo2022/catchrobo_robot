@@ -34,6 +34,7 @@ class RosCmdTemplate:
         enable_command = EnableCmd()
         ### motor電源を入れる
         enable_command.is_enable = True
+        enable_command.enable_check = True
         ### x, y, zの順
         ### 可動域
         enable_command.position_min = [
