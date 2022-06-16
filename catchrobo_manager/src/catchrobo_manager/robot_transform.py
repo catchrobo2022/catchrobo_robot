@@ -2,20 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import math
+import numpy as np
 
 ### world - robot座標変換
-class RobotTransform:
+class WorldRobotTransform:
     def __init__(self):
-        # tf 
+        # world座標でみたrobot座標原点
+        self._robot_origin = np.array([0.5, 0.5, 0.5])
         pass
 
+    #### robot座標系での[m] -> world[m]に変換.
+    def robot2world(self, position):
+        return np.array(position[:3]) + self._robot_origin
 
-    #### robot座標系での[m] -> motor回転角度[rad]に変換. gripperは入力をそのまま返す
-    def robot2world(self, motor_id, position):
-        return
-
-
-    #### motor回転角度[rad] -> rviz表示用の値に変換　gripperは入力をそのまま返す
-    def world2robot(self,motor_id, rad):
-        return        
-
+    #### world座標系での[m] -> robot [m]
+    def world2robot(self, position):
+        print(position, self._robot_origin)
+        temp = np.array(position[:3]) - self._robot_origin
+        print(temp)
+        return temp

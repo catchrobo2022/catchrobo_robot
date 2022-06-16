@@ -76,22 +76,47 @@ public:
         joint_state_.effort = std::vector<double>(joint_num, 0);
     }
 #endif
-
+    void setPegInHoleCmd(const catchrobo_msgs::PegInHoleCmd &input)
+    {
+        peg_in_hole_control_.setPegInHoleCmd(input);
+    };
     ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
     {
         motor_manager_[command.id]->setRosCmd(command);
-        peg_in_hole_control_.setRosCmd(command);
     };
+
+    // void setPegInHoleCmd(const catchrobo_msgs)
 
     void getMotorDrivesCommand(bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error, ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
-        independentControl(cmd, result);
 
         ////もしpeg in holeなら、指示を変える
         if (peg_in_hole_control_.isPegInHoleMode())
         {
-            pegInHole(cmd, result);
+            catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
+            for (size_t i = 0; i < N_MOTORS; i++)
+            {
+                motor_manager_[i]->getRosCmd(ros_cmd[i]);
+            }
+            StateStruct z_state;
+            motor_manager_[2]->getState(z_state);
+            peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
+            ////resultはpeg_in_hole_control_で計算してあるので、dummyを使う
+            ControlResult::ControlResult dummy[JOINT_NUM];
+            for (int i = 0; i < N_MOTORS; i++)
+            {
+                motor_manager_[i]->setRosCmd(ros_cmd[i]);
+                motor_manager_[i]->getCmd(cmd[i], dummy[i]);
+            }
+        }
+        else
+        {
+            //// 通常のコントロール
+            for (size_t i = 0; i < actuator_num_; i++)
+            {
+                motor_manager_[i]->getCmd(cmd[i], result[i]);
+            }
         }
 
         ///// cmdのidを上書き。初期値である0になっている場合があるため
@@ -115,6 +140,9 @@ public:
                 command.effort = 0;
                 setRosCmd(command);
             }
+            catchrobo_msgs::PegInHoleCmd cmd;
+            cmd.run = false;
+            setPegInHoleCmd(cmd);
             return;
         }
     };
@@ -161,28 +189,28 @@ private:
     PegInHoleControl peg_in_hole_control_;
     EnableManager enable_manager_;
 
-    void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
-    {
-        for (size_t i = 0; i < actuator_num_; i++)
-        {
-            motor_manager_[i]->getCmd(cmd[i], result[i]);
-        }
-    }
+    // void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    // {
+    //     for (size_t i = 0; i < actuator_num_; i++)
+    //     {
+    //         motor_manager_[i]->getCmd(cmd[i], result[i]);
+    //     }
+    // }
 
-    void pegInHole(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
-    {
+    // void pegInHole(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    // {
 
-        ////xyz軸のros cmdを変更
-        catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
-        StateStruct z_state;
-        motor_manager_[2]->getState(z_state);
-        peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
-        for (int i = 0; i < 3; i++)
-        {
-            motor_manager_[i]->setRosCmd(ros_cmd[i]);
-        }
-        ////resultはpeg_in_hole_control_で計算するので、dummyを使う
-        ControlResult::ControlResult dummy[JOINT_NUM];
-        independentControl(cmd, dummy);
-    }
+    //     ////xyz軸のros cmdを変更
+    //     catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
+    //     StateStruct z_state;
+    //     motor_manager_[2]->getState(z_state);
+    //     peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
+    //     for (int i = 0; i < 3; i++)
+    //     {
+    //         motor_manager_[i]->setRosCmd(ros_cmd[i]);
+    //     }
+    //     ////resultはpeg_in_hole_control_で計算するので、dummyを使う
+    //     ControlResult::ControlResult dummy[JOINT_NUM];
+    //     independentControl(cmd, dummy);
+    // }
 };

@@ -53,6 +53,7 @@ add_message_files(
   MyRosCmdArray.msg
   EnableCmd.msg
   ErrorCode.msg
+  PegInHoleCmd.msg
 )
 
 ## Generate services in the 'srv' folder

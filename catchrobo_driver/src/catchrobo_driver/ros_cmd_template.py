@@ -2,18 +2,22 @@
 # -*- coding: utf-8 -*-
 
 from catchrobo_driver.rad_transform import RadTransform
-from catchrobo_msgs.msg import EnableCmd, MyRosCmd
+from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
 from scipy import constants
 
 
 import rospkg
 
 import pandas as pd
+import math
 
 
 class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
+        self._velocity_limit_scale = 0.2
+        self._accerelation_limit_scale = 0.2
+
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
         # print(self._datas)
@@ -79,11 +83,13 @@ class RosCmdTemplate:
         command.position_max = rad_transform.robot_m2rad(
             id, self._datas.loc["position_max"][id]
         )
-        command.velocity_limit = rad_transform.robot_m2rad(
-            id, self._datas.loc["velocity_limit"][id]
+        command.velocity_limit = (
+            rad_transform.robot_m2rad(id, self._datas.loc["velocity_limit"][id])
+            * self._velocity_limit_scale
         )
-        command.acceleration_limit = rad_transform.robot_m2rad(
-            id, self._datas.loc["acceleration_limit"][id]
+        command.acceleration_limit = (
+            rad_transform.robot_m2rad(id, self._datas.loc["acceleration_limit"][id])
+            * self._accerelation_limit_scale
         )
         command.jerk_limit = rad_transform.robot_m2rad(
             id, self._datas.loc["jerk_limit"][id]
@@ -108,3 +114,16 @@ class RosCmdTemplate:
 
     def robot_m2rad(self, motor_id, position):
         return self._rad_transform.robot_m2rad(motor_id, position)
+
+    def generate_peg_in_hole_command(self, current_position_robot):
+        command = PegInHoleCmd()
+        command.run = True
+        # [TODO] ros paramにする
+        command.radius_delta = self.robot_m2rad(0, 0.009)
+        command.target_velocity = 2 * math.pi * command.radius_delta * 2
+        t = 5
+        command.max_radius = math.sqrt(t * command.target_velocity / (2 * math.pi))
+        command.z_threshold = 0.05
+        command.center_x = self.robot_m2rad(0, current_position_robot[0])
+        command.center_y = self.robot_m2rad(1, current_position_robot[1])
+        return command

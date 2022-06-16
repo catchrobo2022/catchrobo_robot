@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.robot_transform import WorldRobotTransform
+
+import rospy
+from std_msgs.msg import Int8
+from catchrobo_msgs.msg import (
+    ErrorCode,
+    EnableCmd,
+    MyRosCmdArray,
+    MyRosCmd,
+    PegInHoleCmd,
+)
+from sensor_msgs.msg import JointState
+
+
+import math
+
+
+### input : ロボット座標系 [m]
+class Motor:
+    def __init__(self, id):
+        self._running = False
+        self._id = id
+        self._ros_cmd_template = RosCmdTemplate()
+
+        self._pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=5)
+
+    def finish(self):
+        self._running = False
+
+    def is_running(self):
+        return self._running
+
+    def go(self, target_position, has_work_num=0):
+        self._running = True
+        ros_command = self._ros_cmd_template.generate_ros_command(
+            self._id, MyRosCmd.POSITION_CTRL_MODE, target_position, 0, has_work_num
+        )
+        self._pub_ros_cmd.publish(ros_command)
+        print(ros_command)
+
+    def direct_control(self, position, velocity, has_work_num):
+        self._running = True
+        ros_command = self._ros_cmd_template.generate_ros_command(
+            self._id, MyRosCmd.DIRECT_CTRL_MODE, position, velocity, has_work_num
+        )
+        self._pub_ros_cmd.publish(ros_command)
+
+    def set_origin(self, position, velocity, torque_threshold, has_work_num):
+        self._running = True
+        ros_command = self._ros_cmd_template.generate_ros_command(
+            self._id, MyRosCmd.GO_ORIGIN_MODE, position, velocity, has_work_num
+        )
+        ros_command.acceleration_limit = torque_threshold
+        self._pub_ros_cmd.publish(ros_command)

@@ -21,6 +21,11 @@ MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
 RobotManager robot_manager;
 
+void pegInHoleCallback(const catchrobo_msgs::PegInHoleCmd &input)
+{
+    robot_manager.setPegInHoleCmd(input);
+}
+
 void motorDriverCallback(const StateStruct &input)
 {
     robot_manager.setCurrentState(input);
@@ -47,7 +52,8 @@ void mbed2MotorDriverTimerCallback()
         {
             motor_driver_bridge.enableMotor(i, is_enable);
         }
-        ros_bridge.publishError(error);
+        if (!is_enable)
+            ros_bridge.publishError(error);
         return;
     }
     //// disable中はskip
@@ -125,7 +131,7 @@ int main(int argc, char **argv)
     ros_bridge.setNodeHandlePtr(&nh);
 #endif
 
-    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback);
+    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
     motor_driver_bridge.init(motorDriverCallback);
 
     //// 初期値を暫定原点にする。後にROS指示で原点だしを行う

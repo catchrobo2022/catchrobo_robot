@@ -7,6 +7,7 @@
 #include <catchrobo_msgs/MyRosCmdArray.h>
 #include <catchrobo_msgs/EnableCmd.h>
 #include <catchrobo_msgs/ErrorCode.h>
+#include <catchrobo_msgs/PegInHoleCmd.h>
 
 class RosBridge
 {
@@ -16,9 +17,13 @@ public:
                   pub_error_("error", new catchrobo_msgs::ErrorCode),
                   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
                   sub_enable_("enable_motor", &RosBridge::enableCallback, this),
+                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this),
                   sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this){};
 
-    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command), void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input))
+    void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command),
+              void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input),
+              void (*peg_in_hole_callack_function)(const catchrobo_msgs::PegInHoleCmd &command))
+
     {
         callback_function_ = callback_function;
         enable_callback_function_ = enable_callback_function;
@@ -30,6 +35,7 @@ public:
         nh_.subscribe(sub_from_ros_);
         nh_.subscribe(sub_enable_);
         nh_.subscribe(sub_ros_cmd_);
+        nh_.subscribe(sub_peg_in_hole_);
     };
     void publishJointState(const sensor_msgs::JointState &joint_state)
     {
@@ -65,9 +71,11 @@ private:
     ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
     ros::Subscriber<catchrobo_msgs::MyRosCmd, RosBridge> sub_ros_cmd_;
     ros::Subscriber<catchrobo_msgs::EnableCmd, RosBridge> sub_enable_;
+    ros::Subscriber<catchrobo_msgs::PegInHoleCmd, RosBridge> sub_peg_in_hole_;
 
     void (*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
     void (*enable_callback_function_)(const catchrobo_msgs::EnableCmd &input);
+    void (*peg_in_hole_callack_function_)(const catchrobo_msgs::PegInHoleCmd &command);
 
     void rosCallback(const catchrobo_msgs::MyRosCmdArray &input)
     {
@@ -83,5 +91,9 @@ private:
     void enableCallback(const catchrobo_msgs::EnableCmd &input)
     {
         (*enable_callback_function_)(input);
+    }
+    void pegInHoleCallback(const catchrobo_msgs::PegInHoleCmd &input)
+    {
+        (*peg_in_hole_callack_function_)(input);
     }
 };
