@@ -26,6 +26,7 @@ public:
         pub_finished_flag_ = nh_->advertise<std_msgs::Int8>("finished_flag_topic", 5);
         pub_error_ = nh_->advertise<catchrobo_msgs::ErrorCode>("error", 5);
         sub_from_ros_ = nh_->subscribe("my_joint_control", 50, &RosBridge::rosCallback, this);
+        sub_ros_cmd_ = nh_->subscribe("ros_cmd", 50, &RosBridge::rosCallback2, this);
         sub_enable_ = nh_->subscribe("enable_cmd", 1, &RosBridge::enableCmdCallback, this);
     };
     void publishJointState(const sensor_msgs::JointState &joint_state)
@@ -55,6 +56,7 @@ private:
     ros::Publisher pub_finished_flag_;
     ros::Publisher pub_error_;
     ros::Subscriber sub_from_ros_;
+    ros::Subscriber sub_ros_cmd_;
     ros::Subscriber sub_enable_;
     sensor_msgs::JointState joint_state_;
 
@@ -68,7 +70,10 @@ private:
             (*callback_function_)(command);
         }
     };
-
+    void rosCallback2(const catchrobo_msgs::MyRosCmd::ConstPtr &input)
+    {
+        (*callback_function_)(*input);
+    };
     void enableCmdCallback(const catchrobo_msgs::EnableCmd::ConstPtr &input)
     {
         (*enable_callback_function_)(*input);

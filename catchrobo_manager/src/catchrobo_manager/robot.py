@@ -5,6 +5,8 @@ import rospy
 from catchrobo_msgs.msg import ErrorCode, EnableCmd, MyRosCmdArray, MyRosCmd
 from std_msgs.msg import Int8
 
+import math
+
 
 class Motor:
     def __init__(self):
@@ -13,9 +15,16 @@ class Motor:
     def finish(self):
         self._running = False
 
+    def go(self, target_position):
+        self._running = True
+
+    def is_running(self):
+        return self._running
+
 
 class Robot:
     def __init__(self):
+        self.OPEN_GRIPPER_RAD = math.pi
         self._has_work = 0
         self._main_run_ok = False
         self._error = None
@@ -28,12 +37,6 @@ class Robot:
             "my_joint_control", MyRosCmdArray, queue_size=1
         )
 
-    # [TODO]
-    def error_callback(self, msg):
-        self._main_run_ok = False
-        self._error = msg
-
-    # [TODO]
     def finished_flag_callback(self, msg):
         self._motors[msg.data].finish()
 
@@ -45,18 +48,35 @@ class Robot:
     def start(self):
         self._main_run_ok = True
 
-    # [TODO]
     ### 絶対座標系
     def go(self, x=None, y=None, z=None, wait=True):
         ### stop flagが立ったら指示しない
         if not self._main_run_ok:
             return
 
-    # [TODO]
+        if x is not None:
+            self._motors[0].go(x)
+        if y is not None:
+            self._motors[1].go(y)
+        if z is not None:
+            self._motors[2].go(z)
+
+        if wait:
+            while not rospy.is_shutdown():
+                ### どれか1motorだけでも動き途中ならrunning > 0となる。
+                ### ruuning == 0 まで待つ
+                ruuning = 0
+                for i in range(len(self._motors)):
+                    ruuning += self._motors[i].is_running()
+
+                if ruuning == 0:
+                    break
+
     ### gripperを開く
     def open_gripper(self, wait=True):
         if not self._main_run_ok:
             return
+        self._motors[3].go()
 
     def close_gripper(self, wait=True):
         if not self._main_run_ok:
@@ -79,9 +99,6 @@ class Robot:
             pass
         else:
             self.recovery(self._error.id)
-
-    def recovery(self, id):
-        pass
 
     # [TODO]
     def disable(self):
@@ -106,3 +123,12 @@ class Robot:
 
     def main_run_ok(self):
         return self._main_run_ok
+
+    # [TODO]
+    def error_callback(self, msg):
+        self._main_run_ok = False
+        self._error = msg
+
+    # [TODO]
+    def recovery(self, id):
+        pass

@@ -81,10 +81,10 @@ void mbed2MotorDriverTimerCallback()
         case ControlResult::FINISH:
             ros_bridge.publishFinishFlag(i);
             break;
-        case ControlResult::SET_ORIGIN:
-            motor_driver_bridge.setOrigin(i);
-            ros_bridge.publishFinishFlag(i);
-            break;
+        // case ControlResult::SET_ORIGIN:
+        //     motor_driver_bridge.setOrigin(i);
+        //     ros_bridge.publishFinishFlag(i);
+        //     break;
         default:
             break;
         }

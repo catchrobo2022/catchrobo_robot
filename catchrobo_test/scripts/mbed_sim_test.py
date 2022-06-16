@@ -10,7 +10,7 @@ from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 if __name__ == "__main__":
     rospy.init_node("test_pub")
 
-    pub = rospy.Publisher("/my_joint_control", MyRosCmdArray, queue_size=1)
+    pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
 
     ### default command生成器
@@ -54,16 +54,13 @@ if __name__ == "__main__":
     # command.kp = 5  # p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
     # command.kd = 0.5
 
-    command_array = MyRosCmdArray()
-    command_array.command_array.append(command)
-
     # rospy.sleep(1) # enableを待つ
-    print(command_array)
-    pub.publish(command_array)
+    print(command)
+    pub.publish(command)
     rospy.sleep(10)
 
     ### 原点に戻る
-    command_array.command_array[0].position = 0
-    print(command_array)
-    pub.publish(command_array)
+    command.position = 0
+    print(command)
+    pub.publish(command)
     rospy.sleep(3)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう

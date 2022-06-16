@@ -14,16 +14,18 @@ public:
     };
 
     // dt間隔で呼ばれる想定
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &result)
+    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &result, float &offset)
     {
-        //// position, acceralationは無視する
-        command.kp = 0;
-        command.torque_feed_forward = target_.effort;
 
+        //// 現在値にホールド
+        command.kp = target_.kp;
+        //// [WARINIG] 面倒だったので、positionを原点出し時に到達する位置としています
+        command.p_des = target_.position;
+        command.kd = target_.kd;
+        command.torque_feed_forward = target_.effort;
         if (is_arrived_)
         {
             result = ControlResult::RUNNING;
-            command.kd = 0;
             return;
         }
         else
@@ -31,14 +33,14 @@ public:
             //// [WARINIG] 面倒だったので、acceleration_limitをしきい値とみなして実装しちゃってます
             if (state.torque > target_.acceleration_limit)
             {
-                result = ControlResult::SET_ORIGIN;
-                is_arrived_ = true;
-                command.kd = 0;
+                result = ControlResult::FINISH;
+                offset = state.position - target_.position;
                 return;
             }
             else
             {
-                command.kd = target_.kd;
+                //// 速度制御に変更
+                command.kp = 0;
                 command.v_des = target_.velocity;
             }
         }
