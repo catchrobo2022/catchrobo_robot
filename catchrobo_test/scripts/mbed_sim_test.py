@@ -26,12 +26,16 @@ if __name__ == "__main__":
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=0, mode=MyRosCmd.POSITION_CTRL_MODE, robot_position=1.0, robot_end_velocity=0
+        id=0,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=1.0,
+        robot_end_velocity=0.0,
     )
-
+    command.kp = 5
+    command.kd = 0.5
     ### 生成したcommandはあくまでdefault. 全要素自由に書き換え可能
     ### robot_m2rad : ロボット座標系でのmをradに変換する
-    command.velocity_limit = template.robot_m2rad(command.id, 0.5)
+    # command.velocity_limit = template.robot_m2rad(command.id, 0.5)
 
     #######################################
     # command.id = 1  # 0: x軸 1:y軸 2: z軸 3:グリッパー
@@ -60,6 +64,7 @@ if __name__ == "__main__":
     rospy.sleep(10)
 
     ### 原点に戻る
+    command.mode = MyRosCmd.POSITION_CTRL_MODE
     command.position = 0
     print(command)
     pub.publish(command)

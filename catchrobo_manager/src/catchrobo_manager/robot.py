@@ -6,7 +6,7 @@ from catchrobo_manager.robot_transform import WorldRobotTransform
 from catchrobo_manager.motor import Motor
 
 import rospy
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Bool
 from catchrobo_msgs.msg import (
     ErrorCode,
     EnableCmd,
@@ -47,7 +47,7 @@ class Robot:
             "my_joint_control", MyRosCmdArray, queue_size=1
         )
         self._pub_peg_in_hole_cmd = rospy.Publisher(
-            "peg_in_hole_cmd", PegInHoleCmd, queue_size=1
+            "peg_in_hole_cmd", Bool, queue_size=1
         )
 
         self._ros_cmd_template = RosCmdTemplate()
@@ -75,7 +75,7 @@ class Robot:
 
         ### peg in hole mode中の可能性があるので強制終了する
         peg_cmd = self._ros_cmd_template.generate_peg_in_hole_command([0, 0, 0])
-        peg_cmd.run = False
+        peg_cmd.data = False
         self._pub_peg_in_hole_cmd.publish(peg_cmd)
 
     def start(self):

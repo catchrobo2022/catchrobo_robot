@@ -7,6 +7,7 @@
 #include "catchrobo_sim/enable_manager.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
+#include <std_msgs/Float32MultiArray.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmd.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
@@ -32,8 +33,10 @@ public:
         actuator_num_ = sizeof(motor_manager_) / sizeof(motor_manager_[0]);
 
         ////[TODO] 面倒なので直打ち
+        const int joint_num = JOINT_NUM;
         char *joint_name[JOINT_NUM] = {"arm/joint1", "arm/joint2", "arm/joint3", "gripper/joint1"};
-        resetJointState(JOINT_NUM, joint_name);
+        resetJointState(joint_num, joint_name);
+        resetJointRad(joint_num);
     }
 
 #ifdef USE_MBED
@@ -60,6 +63,12 @@ public:
         joint_state_.velocity = new double[joint_num];
         joint_state_.effort = new double[joint_num];
     }
+
+    void resetJointRad(int joint_num)
+    {
+        joint_rad_.data_length = joint_num;
+        joint_rad_.data = new float[joint_num];
+    }
 #endif
 
 #ifndef USE_MBED
@@ -75,10 +84,14 @@ public:
         joint_state_.velocity = std::vector<double>(joint_num, 0);
         joint_state_.effort = std::vector<double>(joint_num, 0);
     }
-#endif
-    void setPegInHoleCmd(const catchrobo_msgs::PegInHoleCmd &input)
+    void resetJointRad(int joint_num)
     {
-        peg_in_hole_control_.setPegInHoleCmd(input);
+        joint_rad_.data.resize(joint_num);
+    }
+#endif
+    void setPegInHoleCmd(const std_msgs::Bool &input)
+    {
+        peg_in_hole_control_.setPegInHoleCmd(input, joint_rad_);
     };
     ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
@@ -140,8 +153,8 @@ public:
                 command.effort = 0;
                 setRosCmd(command);
             }
-            catchrobo_msgs::PegInHoleCmd cmd;
-            cmd.run = false;
+            std_msgs::Bool cmd;
+            cmd.data = false;
             setPegInHoleCmd(cmd);
             return;
         }
@@ -175,6 +188,18 @@ public:
         joint_state = joint_state_;
     };
 
+    void getJointRad(std_msgs::Float32MultiArray &joint_state)
+    {
+
+        for (size_t i = 0; i < actuator_num_; i++)
+        {
+            StateStruct state;
+            motor_manager_[i]->getState(state);
+            joint_rad_.data[i] = state.position;
+        }
+        joint_state = joint_rad_;
+    };
+
     void setEnableParams(const catchrobo_msgs::EnableCmd &input)
     {
         enable_manager_.setParams(input);
@@ -183,6 +208,8 @@ public:
 private:
     MotorManager *(motor_manager_[JOINT_NUM]);
     sensor_msgs::JointState joint_state_;
+    std_msgs::Float32MultiArray joint_rad_;
+
     int actuator_num_;
     int is_peg_in_hole_mode_;
 

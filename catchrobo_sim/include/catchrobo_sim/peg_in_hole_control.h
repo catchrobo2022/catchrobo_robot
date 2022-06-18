@@ -12,16 +12,25 @@ class PegInHoleControl
 {
 public:
     PegInHoleControl() : pi_(3.1415){};
-    void setPegInHoleCmd(const catchrobo_msgs::PegInHoleCmd &input)
+    void setPegInHoleCmd(const std_msgs::Bool &input, const std_msgs::Float32MultiArray &joint_state)
     {
+        float pulley_radius = 0.002 * 54 / (2 * pi_);
+        radius_delta_ = 0.009 / pulley_radius;
+        target_velocity_ = 2 * pi_ * radius_delta_ * 2;
+        float t = 2.0;
+        max_radius_ = sqrt(t * target_velocity_ / (2.0 * pi_));
+        z_threshold_ = 0.05;
+
+        center_x_ = joint_state.data[0];
+        center_y_ = joint_state.data[1];
         params_ = input;
-        if (!params_.run)
+        if (!params_.data)
         {
             return;
         }
-        r_ = params_.radius_delta;
+        r_ = radius_delta_;
         //// 半径 radius_deltaからスタートするには、以下の時刻tからスタートする必要がある
-        t_ = 2.0 * pi_ * params_.radius_delta / params_.target_velocity;
+        t_ = 2.0 * pi_ * radius_delta_ / target_velocity_;
     }
 
     // void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd)
@@ -41,7 +50,7 @@ public:
     // };
     void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
-        if (!params_.run)
+        if (!params_.data)
         {
             return;
         }
@@ -57,18 +66,18 @@ public:
         //// じゃがりこが穴に入る=z軸が一定値以下になったら終了.
         //// max_radius 以上になったら諦める
         //// しきい値はz軸のposition_minとする.
-        if (z_state.position > params_.z_threshold && r_ < params_.max_radius)
+        if (z_state.position > z_threshold_ && r_ < max_radius_)
         {
             ////穴に落ちるまで押し付けながらぐるぐるする
             //// x,yは円を描くように進む。速度はzのvelocity, 許容誤差はzのpositionとする。
 
-            float omega = params_.target_velocity / r_;
+            float omega = target_velocity_ / r_;
             float theta = omega * t_;
-            float r = params_.radius_delta * theta / (2.0 * pi_);
+            float r = radius_delta_ * theta / (2.0 * pi_);
             r_ = r;
 
-            float x = r * cos(theta) + params_.center_x;
-            float y = r * sin(theta) * 0.5 + params_.center_y; // y軸は2倍動くため
+            float x = r * cos(theta) + center_x_;
+            float y = r * sin(theta) * 0.5 + center_y_; // y軸は2倍動くため
 
             float x_vel = -r * omega * sin(theta);
             float y_vel = r * omega * cos(theta) * 0.5; // y軸は2倍動くため
@@ -99,13 +108,13 @@ public:
 
                 result[i] = ControlResult::FINISH;
             }
-            params_.run = false;
+            params_.data = false;
         }
     }
 
     int isPegInHoleMode()
     {
-        return params_.run;
+        return params_.data;
     }
 
     void nextStep(float dt)
@@ -114,9 +123,17 @@ public:
     }
 
 private:
-    catchrobo_msgs::PegInHoleCmd params_;
+    std_msgs::Bool params_;
 
     float t_;
     float r_;
+
+    float radius_delta_;    //### 回転する間隔　(＝許容誤差)
+    float max_radius_;      //### 最大半径
+    float target_velocity_; //### 回転速度
+    float z_threshold_;     //### シュート検知しきい値　(=z軸の高さ)
+
+    float center_x_;
+    float center_y_;
     const float pi_;
 };

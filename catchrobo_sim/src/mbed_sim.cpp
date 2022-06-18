@@ -10,7 +10,7 @@
 #include "sim_only/ros_bridge_sim.h"
 #include "sim_only/ticker_sim.h"
 #endif
-
+#include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 
 const float MBED2ROS_DT = 0.01;    // 10Hz
@@ -21,7 +21,7 @@ MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
 RobotManager robot_manager;
 
-void pegInHoleCallback(const catchrobo_msgs::PegInHoleCmd &input)
+void pegInHoleCallback(const std_msgs::Bool &input)
 {
     robot_manager.setPegInHoleCmd(input);
 }
@@ -95,8 +95,11 @@ void mbed2MotorDriverTimerCallback()
 void mbed2RosTimerCallback()
 {
     //// radius
-    sensor_msgs::JointState joint_state;
-    robot_manager.getJointState(joint_state);
+    // sensor_msgs::JointState joint_state;
+    // robot_manager.getJointState(joint_state);
+
+    std_msgs::Float32MultiArray joint_state;
+    robot_manager.getJointRad(joint_state);
     ros_bridge.publishJointState(joint_state);
 };
 

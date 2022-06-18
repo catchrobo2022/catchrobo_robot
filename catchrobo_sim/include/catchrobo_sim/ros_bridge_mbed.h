@@ -3,6 +3,7 @@
 #include <ros.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <sensor_msgs/JointState.h>
 #include <catchrobo_msgs/MyRosCmdArray.h>
 #include <catchrobo_msgs/EnableCmd.h>
@@ -12,17 +13,17 @@
 class RosBridge
 {
 public:
-    RosBridge() : pub2ros_("joint_state_rad", new sensor_msgs::JointState),
+    RosBridge() : pub2ros_("joint_rad", new std_msgs::Float32MultiArray),
                   pub_finished_flag_("finished_flag_topic", new std_msgs::Int8),
                   pub_error_("error", new catchrobo_msgs::ErrorCode),
-                  sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
+                  //   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
+                  sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this),
                   sub_enable_("enable_motor", &RosBridge::enableCallback, this),
-                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this),
-                  sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this){};
+                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this){};
 
     void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command),
               void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input),
-              void (*peg_in_hole_callack_function)(const catchrobo_msgs::PegInHoleCmd &command))
+              void (*peg_in_hole_callack_function)(const std_msgs::Bool &command))
 
     {
         callback_function_ = callback_function;
@@ -32,12 +33,12 @@ public:
         nh_.advertise(pub2ros_);
         nh_.advertise(pub_finished_flag_);
         nh_.advertise(pub_error_);
-        nh_.subscribe(sub_from_ros_);
+        // nh_.subscribe(sub_from_ros_);
         nh_.subscribe(sub_enable_);
         nh_.subscribe(sub_ros_cmd_);
         nh_.subscribe(sub_peg_in_hole_);
     };
-    void publishJointState(const sensor_msgs::JointState &joint_state)
+    void publishJointState(const std_msgs::Float32MultiArray &joint_state)
     {
         pub2ros_.publish(&joint_state);
     };
@@ -68,14 +69,14 @@ private:
     ros::Publisher pub_finished_flag_;
     ros::Publisher pub_error_;
 
-    ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
+    // ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
     ros::Subscriber<catchrobo_msgs::MyRosCmd, RosBridge> sub_ros_cmd_;
     ros::Subscriber<catchrobo_msgs::EnableCmd, RosBridge> sub_enable_;
-    ros::Subscriber<catchrobo_msgs::PegInHoleCmd, RosBridge> sub_peg_in_hole_;
+    ros::Subscriber<std_msgs::Bool, RosBridge> sub_peg_in_hole_;
 
     void (*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
     void (*enable_callback_function_)(const catchrobo_msgs::EnableCmd &input);
-    void (*peg_in_hole_callack_function_)(const catchrobo_msgs::PegInHoleCmd &command);
+    void (*peg_in_hole_callack_function_)(const std_msgs::Bool &command);
 
     void rosCallback(const catchrobo_msgs::MyRosCmdArray &input)
     {
@@ -92,7 +93,7 @@ private:
     {
         (*enable_callback_function_)(input);
     }
-    void pegInHoleCallback(const catchrobo_msgs::PegInHoleCmd &input)
+    void pegInHoleCallback(const std_msgs::Bool &input)
     {
         (*peg_in_hole_callack_function_)(input);
     }

@@ -26,6 +26,7 @@
 
 <!-- <node pkg="catchrobo_test" type="radius2meter" name="radius2meter" output="screen" respawn="false" respawn_delay="0"> -->
 <!-- </node> -->
-
+    
+    <include file="$(find catchrobo_manager)/launch/control.launch" />
 
 </launch>

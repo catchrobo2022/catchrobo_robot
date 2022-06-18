@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from std_msgs.msg import Bool
 from catchrobo_driver.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
 from scipy import constants
@@ -41,33 +42,33 @@ class RosCmdTemplate:
         enable_command.enable_check = True
         ### x, y, zの順
         ### 可動域
-        enable_command.position_min = [
-            rad_transform.robot_m2rad(i, val)
-            for i, val in enumerate(self._datas.loc["enable_position_min"])
-        ]
+        # enable_command.position_min = [
+        #     rad_transform.robot_m2rad(i, val)
+        #     for i, val in enumerate(self._datas.loc["enable_position_min"])
+        # ]
 
-        enable_command.position_max = [
-            rad_transform.robot_m2rad(i, val)
-            for i, val in enumerate(self._datas.loc["enable_position_max"])
-        ]
-        ### 速度制約
-        enable_command.velocity_limit = [
-            rad_transform.robot_m2rad(i, val)
-            for i, val in enumerate(self._datas.loc["enable_velocity_limit"])
-        ]
-        ### トルク制約
-        enable_command.torque_limit = [
-            rad_transform.robot_m2rad(i, val)
-            for i, val in enumerate(self._datas.loc["enable_torque_limit"])
-        ]
-        ### 目標位置とどれくらいかけ離れていたらだめか
-        enable_command.trajectory_error_limit = [
-            rad_transform.robot_m2rad(i, 0.5) for i in range(3)
-        ]
+        # enable_command.position_max = [
+        #     rad_transform.robot_m2rad(i, val)
+        #     for i, val in enumerate(self._datas.loc["enable_position_max"])
+        # ]
+        # ### 速度制約
+        # enable_command.velocity_limit = [
+        #     rad_transform.robot_m2rad(i, val)
+        #     for i, val in enumerate(self._datas.loc["enable_velocity_limit"])
+        # ]
+        # ### トルク制約
+        # enable_command.torque_limit = [
+        #     rad_transform.robot_m2rad(i, val)
+        #     for i, val in enumerate(self._datas.loc["enable_torque_limit"])
+        # ]
+        # ### 目標位置とどれくらいかけ離れていたらだめか
+        # enable_command.trajectory_error_limit = [
+        #     rad_transform.robot_m2rad(i, 0.5) for i in range(3)
+        # ]
 
-        ### 障害物としての箱を設定。 x,y,zの値
-        enable_command.obstacle_min = [1] * 3  # min > maxにすると、制約無しとなる. 面倒なので今はなし
-        enable_command.obstacle_max = [-1] * 3
+        # ### 障害物としての箱を設定。 x,y,zの値
+        # enable_command.obstacle_min = [1] * 3  # min > maxにすると、制約無しとなる. 面倒なので今はなし
+        # enable_command.obstacle_max = [-1] * 3
 
         return enable_command
 
@@ -116,14 +117,16 @@ class RosCmdTemplate:
         return self._rad_transform.robot_m2rad(motor_id, position)
 
     def generate_peg_in_hole_command(self, current_position_robot):
-        command = PegInHoleCmd()
-        command.run = True
-        # [TODO] ros paramにする
-        command.radius_delta = self.robot_m2rad(0, 0.009)
-        command.target_velocity = 2 * math.pi * command.radius_delta * 2
-        t = 5
-        command.max_radius = math.sqrt(t * command.target_velocity / (2 * math.pi))
-        command.z_threshold = 0.05
-        command.center_x = self.robot_m2rad(0, current_position_robot[0])
-        command.center_y = self.robot_m2rad(1, current_position_robot[1])
+        # command = PegInHoleCmd()
+        # command.run = True
+        # # [TODO] ros paramにする
+        # command.radius_delta = self.robot_m2rad(0, 0.009)
+        # command.target_velocity = 2 * math.pi * command.radius_delta * 2
+        # t = 5
+        # command.max_radius = math.sqrt(t * command.target_velocity / (2 * math.pi))
+        # command.z_threshold = 0.05
+        # command.center_x = self.robot_m2rad(0, current_position_robot[0])
+        # command.center_y = self.robot_m2rad(1, current_position_robot[1])
+        command = Bool()
+        command.data = True
         return command

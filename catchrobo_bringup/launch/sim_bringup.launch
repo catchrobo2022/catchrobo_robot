@@ -4,6 +4,5 @@
     <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
         <arg name="field" value="$(arg field)"/>
     </include>
-    <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />    
-    <include file="$(find catchrobo_manager)/launch/control.launch" />
+    <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
 </launch>
