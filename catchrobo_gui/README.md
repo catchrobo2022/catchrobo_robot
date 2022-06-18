@@ -12,9 +12,9 @@ $ catkin build
 $ source devel/setup.bash
 ```
 環境構築が終わってるなら
-'''bash
+```bash
 $ catkin build
-'''
+```
 だけで大丈夫です
 
 # How to Use
