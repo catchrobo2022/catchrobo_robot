@@ -45,6 +45,20 @@ rosrun rosserial_mbed make_libraries.py <コードの生成場所。どこでも
 ```
 を追加する。
 
+MbedHardware.hに
+```
+    #ifdef USE_XBEE
+    :iostream(p13, p14)      //Xbee
+    #else
+    :iostream(USBTX, USBRX) //有線
+    #endif
+```
+ros/node_handle.h
+```
+         int INPUT_SIZE = 1024,
+         int OUTPUT_SIZE = 1024>
+```
+
 作成したros_libを上記の方法でインポートする。
 
 
