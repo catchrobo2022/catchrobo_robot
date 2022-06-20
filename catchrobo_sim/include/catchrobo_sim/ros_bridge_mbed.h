@@ -18,8 +18,9 @@ public:
                   pub_error_("error", new catchrobo_msgs::ErrorCode),
                   //   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
                   sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this),
-                  sub_enable_("enable_motor", &RosBridge::enableCallback, this),
-                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this){};
+                  sub_enable_("enable_cmd", &RosBridge::enableCallback, this),
+                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this),
+                  led_(LED1){};
 
     void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command),
               void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input),
@@ -55,6 +56,7 @@ public:
         while (1)
         {
             nh_.spinOnce();
+            led_ = !led_;
             wait_ms(1000);
         }
     };
@@ -73,6 +75,8 @@ private:
     ros::Subscriber<catchrobo_msgs::MyRosCmd, RosBridge> sub_ros_cmd_;
     ros::Subscriber<catchrobo_msgs::EnableCmd, RosBridge> sub_enable_;
     ros::Subscriber<std_msgs::Bool, RosBridge> sub_peg_in_hole_;
+
+    DigitalOut led_;
 
     void (*callback_function_)(const catchrobo_msgs::MyRosCmd &command);
     void (*enable_callback_function_)(const catchrobo_msgs::EnableCmd &input);

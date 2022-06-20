@@ -33,6 +33,7 @@ if __name__ == "__main__":
     )
     command.kp = 5
     command.kd = 0.5
+    command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
     ### 生成したcommandはあくまでdefault. 全要素自由に書き換え可能
     ### robot_m2rad : ロボット座標系でのmをradに変換する
     # command.velocity_limit = template.robot_m2rad(command.id, 0.5)
@@ -68,4 +69,9 @@ if __name__ == "__main__":
     command.position = 0
     print(command)
     pub.publish(command)
-    rospy.sleep(3)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
+    rospy.sleep(10)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
+
+    enable_command.is_enable = False
+    pub_enable.publish(enable_command)
+    print(enable_command)
+    rospy.sleep(2)

@@ -23,6 +23,7 @@ class Radius2Meter:
         self._meter_msg.effort = [0] * len(self._meter_msg.name)
         self._pub = rospy.Publisher("/my_joint_state", JointState, queue_size=1)
         rospy.Subscriber("/joint_rad", Float32MultiArray, self.callback)
+        self._dt = 0.01
 
     def callback(self, msg):
 
@@ -34,8 +35,12 @@ class Radius2Meter:
             posi = self._transform.rad2rviz_joint_state(i, theta)
             # vel = self._transform.rad2rviz_joint_state(i, velocity)
             positions[i] = posi
+            velocities[i] = (posi - self._meter_msg.position[i]) / self._dt
+            effort[i] = (velocities[i] - self._meter_msg.velocity[i]) / self._dt
             # velocities[i] = vel
         self._meter_msg.position = positions
+        self._meter_msg.velocity = velocities
+        self._meter_msg.effort = effort
         # meter_msg.velocity = velocities
         # print(meter_msg)
 

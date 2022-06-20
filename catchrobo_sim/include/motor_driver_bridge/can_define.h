@@ -5,7 +5,7 @@
 
 #define CAN_TD p29
 #define CAN_RD p30
-
+#define LED_PIN LED4
 
 #define CAN_ID 0x0 // master CAN ID
 #define CAN_BAUD_RATE 1000000

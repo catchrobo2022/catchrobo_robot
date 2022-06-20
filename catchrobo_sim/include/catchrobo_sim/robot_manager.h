@@ -49,6 +49,8 @@ public:
             delete[] joint_state_.position;
         if (joint_state_.effort != NULL)
             delete[] joint_state_.position;
+        if (joint_rad_.data != NULL)
+            delete[] joint_rad_.data;
     }
     void resetJointState(int joint_num, char *joint_name[])
     {
@@ -101,7 +103,7 @@ public:
 
     // void setPegInHoleCmd(const catchrobo_msgs)
 
-    void getMotorDrivesCommand(bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error, ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    void getMotorDrivesCommand(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
 
         ////もしpeg in holeなら、指示を変える
@@ -136,27 +138,6 @@ public:
         for (size_t i = 0; i < actuator_num_; i++)
         {
             cmd[i].id = i;
-        }
-
-        enable_manager_.check(joint_state_, cmd, is_enable, change_enable, error);
-
-        if (!is_enable)
-        {
-            //// disable時にはコマンドを無入力に切り替え
-            for (int i = 0; i < N_MOTORS; i++)
-            {
-                catchrobo_msgs::MyRosCmd command;
-                command.id = i;
-                command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
-                command.kp = 0;
-                command.kd = 0;
-                command.effort = 0;
-                setRosCmd(command);
-            }
-            std_msgs::Bool cmd;
-            cmd.data = false;
-            setPegInHoleCmd(cmd);
-            return;
         }
     };
 
@@ -200,11 +181,6 @@ public:
         joint_state = joint_rad_;
     };
 
-    void setEnableParams(const catchrobo_msgs::EnableCmd &input)
-    {
-        enable_manager_.setParams(input);
-    }
-
 private:
     MotorManager *(motor_manager_[JOINT_NUM]);
     sensor_msgs::JointState joint_state_;
@@ -214,7 +190,6 @@ private:
     int is_peg_in_hole_mode_;
 
     PegInHoleControl peg_in_hole_control_;
-    EnableManager enable_manager_;
 
     // void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     // {

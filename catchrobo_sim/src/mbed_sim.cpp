@@ -1,4 +1,4 @@
-//#define USE_MBED
+// #define USE_MBED
 
 #ifdef USE_MBED
 #include "mbed.h"
@@ -20,6 +20,15 @@ const int SERIAL_BAUD_RATE = 115200;
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
 RobotManager robot_manager;
+EnableManager enable_manager;
+
+void enableAll(bool is_enable)
+{
+    for (int i = 0; i < JOINT_NUM; i++)
+    {
+        motor_driver_bridge.enableMotor(i, is_enable);
+    }
+}
 
 void pegInHoleCallback(const std_msgs::Bool &input)
 {
@@ -38,37 +47,33 @@ void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 
 void mbed2MotorDriverTimerCallback()
 {
-    bool is_enable;
-    bool change_enable;
+    //// enable check
     catchrobo_msgs::ErrorCode error;
-    ControlResult::ControlResult result[JOINT_NUM];
+    sensor_msgs::JointState joint_state;
+    robot_manager.getJointState(joint_state);
+    enable_manager.check(joint_state, error);
+
+    if (error.error_code != catchrobo_msgs::ErrorCode::NONE)
+    {
+        //// errorありならdisable指示およびerror のpublish
+        enableAll(false);
+        enable_manager.setCurrentEnable(false);
+        ros_bridge.publishError(error);
+        return;
+    }
+
+    //// 初期値は全て0 -> 脱力
     ControlStruct control[JOINT_NUM];
-    robot_manager.getMotorDrivesCommand(is_enable, change_enable, error, control, result);
-    // ROS_INFO_STREAM(is_enable << " " << change_enable << " " << error);
-    /////enable, disableが切り替わるときは、すぐreturn
-    if (change_enable)
+    ControlResult::ControlResult result[JOINT_NUM];
+    if (enable_manager.getEnable())
     {
-        for (int i = 0; i < JOINT_NUM; i++)
-        {
-            motor_driver_bridge.enableMotor(i, is_enable);
-        }
-        if (!is_enable)
-            ros_bridge.publishError(error);
-        return;
+        //// enableなら値を入れる
+        robot_manager.getMotorDrivesCommand(control, result);
+        robot_manager.nextStep(MBED2MOTOR_DT);
     }
-    //// disable中はskip
-    if (!is_enable)
-    {
-        return;
-    }
-
-    /////enable後
-    robot_manager.nextStep(MBED2MOTOR_DT);
-
     //// update target value
     for (int i = 0; i < JOINT_NUM; i++)
     {
-
         motor_driver_bridge.publish(control[i]);
         if (result[i] == ControlResult::FINISH)
         {
@@ -122,7 +127,9 @@ void mbed2RosTimerCallback()
 // }
 void enableCallback(const catchrobo_msgs::EnableCmd &input)
 {
-    robot_manager.setEnableParams(input);
+    enable_manager.setCmd(input);
+    enableAll(input.is_enable);
+    enable_manager.setCurrentEnable(input.is_enable);
 }
 
 int main(int argc, char **argv)

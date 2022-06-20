@@ -82,6 +82,11 @@ rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=115200
 rosrun catchrobo_test mbed_sim_test.py
 ```
 
+motor driverに電源を入れると現在値を取得できる->rvizのアームが動くようになる
+
+
+
+
 printfしたいなら
 ```
 cu -s 921600 -l /dev/ttyACM0

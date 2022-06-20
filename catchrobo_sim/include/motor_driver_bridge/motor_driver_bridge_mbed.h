@@ -11,7 +11,7 @@
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge() : can_(CAN_RD, CAN_TD){};
+    MotorDriverBridge() : can_(CAN_RD, CAN_TD), led(LED_PIN){};
 
     void init(void (*callback_function)(const StateStruct &input))
     {
@@ -42,10 +42,12 @@ public:
         if (is_enable)
         {
             txMsg.data[7] = 0xFC;
+            led = 1;
         }
         else
         {
             txMsg.data[7] = 0xFD;
+            led = 0;
         }
         can_.write(txMsg);
     };
@@ -82,6 +84,7 @@ public:
 
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
+    DigitalOut led;
     void (*callback_function_)(const StateStruct &input);
 
     ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした

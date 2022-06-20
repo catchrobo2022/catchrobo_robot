@@ -27,46 +27,44 @@
 class EnableManager
 {
 public:
-    EnableManager() : already_enable_(false){};
-    void setParams(const catchrobo_msgs::EnableCmd &command)
+    EnableManager() : current_enable_(false){};
+    void setCmd(const catchrobo_msgs::EnableCmd &command)
     {
-        params_ = command;
+        cmd_ = command;
+    };
+    //// motor driver bridgeで指示を変更した際にはこの関数を読んで情報を同期させること
+    void setCurrentEnable(bool is_enable)
+    {
+        current_enable_ = is_enable;
     };
 
-    void check(const sensor_msgs::JointState &state, const ControlStruct (&cmd)[JOINT_NUM], bool &is_enable, bool &change_enable, catchrobo_msgs::ErrorCode &error)
+    void check(const sensor_msgs::JointState &state, catchrobo_msgs::ErrorCode &error)
     {
-        if (params_.is_enable)
+        //// default
+        error.error_code = catchrobo_msgs::ErrorCode::NONE;
+
+        //// disable 状態なら何もしない
+        if (!current_enable_)
         {
-            //// enable指示
-            error.error_code = catchrobo_msgs::ErrorCode::NONE;
-            // if (params_.enable_check)
-            // {
-
-            //     // checkCollision(state, params_, error);
-            //     checkTargetPosition(state, cmd, params_, error);
-            //     checkOverTorque(state, params_, error);
-            //     checkOverVelocity(state, params_, error);
-            //     checkOverPosition(state, params_, error);
-            // }
-
-            is_enable = false;
-            if (error.error_code == catchrobo_msgs::ErrorCode::NONE)
-            {
-                is_enable = true;
-            }
-
-            setEnable(is_enable, change_enable, already_enable_, params_);
+            return;
         }
-        else
-        {
-            is_enable = false;
-            setEnable(is_enable, change_enable, already_enable_, params_);
-        }
+
+        //// enable状態なら制約チェック
+
+        //     // checkCollision(state, cmd_, error);
+        //     checkTargetPosition(state, cmd, cmd_, error);
+        //     checkOverTorque(state, cmd_, error);
+        //     checkOverVelocity(state, cmd_, error);
+        //     checkOverPosition(state, cmd_, error);
+    }
+    bool getEnable()
+    {
+        return current_enable_;
     }
 
 private:
-    catchrobo_msgs::EnableCmd params_;
-    bool already_enable_;
+    catchrobo_msgs::EnableCmd cmd_;
+    bool current_enable_;
 
     // void checkOverPosition(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
     // {
@@ -135,18 +133,4 @@ private:
     //     }
     //     error.error_code = catchrobo_msgs::ErrorCode::COLLISION;
     // }
-
-    void setEnable(bool is_enable, bool &change_enable, bool &already_enable, catchrobo_msgs::EnableCmd &params)
-    {
-        params_.is_enable = is_enable;
-        if (is_enable == already_enable)
-        {
-            change_enable = false;
-        }
-        else
-        {
-            change_enable = true;
-        }
-        already_enable = is_enable;
-    }
 };
