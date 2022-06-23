@@ -53,25 +53,27 @@ void mbed2MotorDriverTimerCallback()
     robot_manager.getJointState(joint_state);
     enable_manager.check(joint_state, error);
 
+    //// errorならdisable指示およびerror のpublish
     if (error.error_code != catchrobo_msgs::ErrorCode::NONE)
     {
-        //// errorありならdisable指示およびerror のpublish
         enableAll(false);
         enable_manager.setCurrentEnable(false);
         ros_bridge.publishError(error);
-        return;
     }
 
     //// 初期値は全て0 -> 脱力
     ControlStruct control[JOINT_NUM] = {};
     ControlResult::ControlResult result[JOINT_NUM] = {};
     // ROS_INFO_STREAM(enable_manager.getEnable());
-    if (enable_manager.getEnable())
+    if (enable_manager.getEnable()) //// enableならtをすすめる
     {
-        //// enableなら値を入れる
-        robot_manager.getMotorDrivesCommand(control, result);
         robot_manager.nextStep(MBED2MOTOR_DT);
     }
+    else //// disableなら脱力指示
+    {
+        robot_manager.disable();
+    }
+    robot_manager.getMotorDrivesCommand(control, result);
     //// update target value
     for (int i = 0; i < JOINT_NUM; i++)
     {
@@ -80,22 +82,21 @@ void mbed2MotorDriverTimerCallback()
         {
             ros_bridge.publishFinishFlag(i);
         }
-
-        // switch (result[i])
-        // {
-        // case ControlResult::RUNNING:
-        //     break;
-        // case ControlResult::FINISH:
-        //     ros_bridge.publishFinishFlag(i);
-        //     break;
-        // // case ControlResult::SET_ORIGIN:
-        // //     motor_driver_bridge.setOrigin(i);
-        // //     ros_bridge.publishFinishFlag(i);
-        // //     break;
-        // default:
-        //     break;
-        // }
     }
+    // switch (result[i])
+    // {
+    // case ControlResult::RUNNING:
+    //     break;
+    // case ControlResult::FINISH:
+    //     ros_bridge.publishFinishFlag(i);
+    //     break;
+    // // case ControlResult::SET_ORIGIN:
+    // //     motor_driver_bridge.setOrigin(i);
+    // //     ros_bridge.publishFinishFlag(i);
+    // //     break;
+    // default:
+    //     break;
+    // }
 }
 
 void mbed2RosTimerCallback()

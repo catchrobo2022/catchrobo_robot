@@ -23,9 +23,9 @@
 class RobotManager
 {
 public:
-    RobotManager() : is_peg_in_hole_mode_(false)
+    RobotManager() : is_peg_in_hole_mode_(false), motor_num_(N_MOTORS)
     {
-        for (int i = 0; i < N_MOTORS; i++)
+        for (int i = 0; i < motor_num_; i++)
         {
             motor_manager_[i] = new MotorManager;
         }
@@ -120,7 +120,7 @@ public:
         if (peg_in_hole_control_.isPegInHoleMode())
         {
             catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
-            for (size_t i = 0; i < N_MOTORS; i++)
+            for (size_t i = 0; i < motor_num_; i++)
             {
                 motor_manager_[i]->getRosCmd(ros_cmd[i]);
             }
@@ -129,7 +129,7 @@ public:
             peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
             ////resultはpeg_in_hole_control_で計算してあるので、dummyを使う
             ControlResult::ControlResult dummy[JOINT_NUM];
-            for (int i = 0; i < N_MOTORS; i++)
+            for (int i = 0; i < motor_num_; i++)
             {
                 motor_manager_[i]->setRosCmd(ros_cmd[i]);
                 motor_manager_[i]->getCmd(cmd[i], dummy[i]);
@@ -194,12 +194,28 @@ public:
         joint_state = joint_rad_;
     };
 
+    void disable()
+    {
+        catchrobo_msgs::MyRosCmd command;
+        command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+        command.kp = 0;
+        command.kd = 0;
+        command.effort = 0;
+        for (size_t i = 0; i < motor_num_; i++)
+        {
+            /* code */
+            command.id = i;
+            setRosCmd(command);
+        }
+    }
+
 private:
     MotorManager *(motor_manager_[JOINT_NUM]);
     sensor_msgs::JointState joint_state_;
     std_msgs::Float32MultiArray joint_rad_;
 
     int actuator_num_;
+    int motor_num_;
     int is_peg_in_hole_mode_;
 
     PegInHoleControl peg_in_hole_control_;

@@ -96,12 +96,8 @@ class RosCmdTemplate:
             id, self._datas.loc["jerk_limit"][id]
         )
 
-        if mode == MyRosCmd.DIRECT_CTRL_MODE or mode == MyRosCmd.GO_ORIGIN_MODE:
-            command.kp = self._datas.loc["velocity_ctrl_kp"][id]
-            command.kd = self._datas.loc["velocity_ctrl_kd"][id]
-        else:
-            command.kp = self._datas.loc["kp"][id]
-            command.kd = self._datas.loc["kd"][id]
+        command.kp = self._datas.loc["kp"][id]
+        command.kd = self._datas.loc["kd"][id]
 
         command.mode = mode
         command.position = rad_transform.robot_m2rad(command.id, robot_position)
@@ -143,4 +139,12 @@ class RosCmdTemplate:
             id, MyRosCmd.GO_ORIGIN_MODE, position, velocity_m, 0
         )
         command.acceleration_limit = self._datas.loc["origin_torque_threshold"][id]
+        return command
+
+    def generate_velocity_command(self, id, velocity_m, has_work_num=0):
+        command = self.generate_ros_command(
+            id, MyRosCmd.DIRECT_CTRL_MODE, 0, velocity_m, has_work_num
+        )
+        command.kp = self._datas.loc["velocity_ctrl_kp"][id]
+        command.kd = self._datas.loc["velocity_ctrl_kd"][id]
         return command
