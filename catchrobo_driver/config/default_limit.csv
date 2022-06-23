@@ -12,3 +12,8 @@ kp,5,5,5,5
 kd,0.05,0.01,0.01,0.01
 inertia,0.13283903,0.13283903,0.13283903,0
 mass,7.753058,1.814869,6.047034,0
+velocity_ctrl_kp,0,0,0,0
+velocity_ctrl_kd,0.5,0.5,0.5,0
+origin_veloicty_m,1,1,1,0
+origin_torque_threshold,1,1,1,0
+origin_position,1,1,1,0

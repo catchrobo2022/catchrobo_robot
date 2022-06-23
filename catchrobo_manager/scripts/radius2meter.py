@@ -26,17 +26,20 @@ class Radius2Meter:
         self._dt = 0.01
 
     def callback(self, msg):
-
-        positions = [0] * len(msg.data)
-        velocities = [0] * len(msg.data)
-        effort = [0] * len(msg.data)
+        joint_num = len(self._meter_msg.name)
+        positions = [0] * joint_num
+        velocities = [0] * joint_num
+        effort = [0] * joint_num
         # print(msg)
-        for i, theta in enumerate(msg.data):
+        for i in range(joint_num):
+            theta = msg.data[i]
             posi = self._transform.rad2rviz_joint_state(i, theta)
             # vel = self._transform.rad2rviz_joint_state(i, velocity)
             positions[i] = posi
             velocities[i] = (posi - self._meter_msg.position[i]) / self._dt
-            effort[i] = (velocities[i] - self._meter_msg.velocity[i]) / self._dt
+            effort[i] = msg.data[
+                i + joint_num
+            ]  # (velocities[i] - self._meter_msg.velocity[i]) / self._dt
             # velocities[i] = vel
         self._meter_msg.position = positions
         self._meter_msg.velocity = velocities

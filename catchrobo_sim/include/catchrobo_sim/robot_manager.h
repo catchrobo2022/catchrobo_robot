@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 
+#define TORQUE_OUTPUT
 // #
 
 class RobotManager
@@ -68,8 +69,12 @@ public:
 
     void resetJointRad(int joint_num)
     {
-        joint_rad_.data_length = joint_num;
-        joint_rad_.data = new float[joint_num];
+        int num = joint_num;
+#ifdef TORQUE_OUTPUT
+        num = num * 2;
+#endif
+        joint_rad_.data_length = num;
+        joint_rad_.data = new float[num];
     }
 #endif
 
@@ -88,7 +93,12 @@ public:
     }
     void resetJointRad(int joint_num)
     {
-        joint_rad_.data.resize(joint_num);
+        int num = joint_num;
+
+#ifdef TORQUE_OUTPUT
+        num = num * 2;
+#endif
+        joint_rad_.data.resize(num);
     }
 #endif
     void setPegInHoleCmd(const std_msgs::Bool &input)
@@ -177,6 +187,9 @@ public:
             StateStruct state;
             motor_manager_[i]->getState(state);
             joint_rad_.data[i] = state.position;
+#ifdef TORQUE_OUTPUT
+            joint_rad_.data[i + actuator_num_] = state.torque;
+#endif
         }
         joint_state = joint_rad_;
     };

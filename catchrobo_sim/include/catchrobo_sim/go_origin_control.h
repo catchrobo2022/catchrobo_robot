@@ -18,9 +18,10 @@ public:
     {
 
         //// 現在値にホールド
-        command.kp = target_.kp;
         //// [WARINIG] 面倒だったので、positionを原点出し時に到達する位置としています
         command.p_des = target_.position;
+        command.v_des = 0;
+        command.kp = target_.kp;
         command.kd = target_.kd;
         command.torque_feed_forward = target_.effort;
         if (is_arrived_)
@@ -31,7 +32,7 @@ public:
         else
         {
             //// [WARINIG] 面倒だったので、acceleration_limitをしきい値とみなして実装しちゃってます
-            if (state.torque > target_.acceleration_limit)
+            if (fabs(state.torque) > target_.acceleration_limit)
             {
                 result = ControlResult::FINISH;
                 offset = state.position - target_.position;

@@ -1,4 +1,4 @@
-// #define USE_MBED
+//  #define USE_MBED
 
 #ifdef USE_MBED
 #include "mbed.h"
@@ -63,8 +63,9 @@ void mbed2MotorDriverTimerCallback()
     }
 
     //// 初期値は全て0 -> 脱力
-    ControlStruct control[JOINT_NUM];
-    ControlResult::ControlResult result[JOINT_NUM];
+    ControlStruct control[JOINT_NUM] = {};
+    ControlResult::ControlResult result[JOINT_NUM] = {};
+    // ROS_INFO_STREAM(enable_manager.getEnable());
     if (enable_manager.getEnable())
     {
         //// enableなら値を入れる

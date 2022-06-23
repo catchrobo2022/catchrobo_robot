@@ -23,12 +23,14 @@ import math
 ### input : ワールド座標系
 class Robot:
     def __init__(self):
+        self.FIELD = "red"
+
         self.OPEN_GRIPPER_RAD = math.pi
         self.CLOSE_GRIPPER_RAD = 0
         self.PEG_IN_HOLE_THRESHOLD_ROBOT = 0.01
-        # [TODO] 原点だしの位置
-        self.TOUCH_POSITION_ROBOT = [0, 0, 0]
-        self.TOUCH_TORQUE_THRESHOLD = 0.3
+        self.GO_ORIGIN_VELOCITY_M = [0.1, -0.1, 0.1]
+        if self.FIELD == "blue":
+            self.GO_ORIGIN_VELOCITY_M[1] *= -1
 
         self._has_work = 0
         self._main_run_ok = False
@@ -85,7 +87,8 @@ class Robot:
             self.enable(enable_check=True)
         self._main_run_ok = True
 
-    def go_robot(self, robot_position, wait=True):
+    ## robot座標系
+    def go_robot_m(self, robot_position, wait=True):
         for i, val in enumerate(robot_position):
             self._motors[i].go(val, self._has_work)
 
@@ -109,7 +112,7 @@ class Robot:
             position[2] = self._current_state_robot.position[2]
 
         robot_position = self._world_robot_transform.world2robot(position)
-        self.go_robot(robot_position, wait)
+        self.go_robot_m(robot_position, wait)
 
     ### gripperを開く
     def open_gripper(self, wait=True):
@@ -171,11 +174,15 @@ class Robot:
         self.open_gripper()
         self._has_work -= 1
 
-    def set_origin(self, id):
-        self._main_run_ok = False
-        self._motors[id].set_origin(
-            self.TOUCH_POSITION_ROBOT[id], self.TOUCH_TORQUE_THRESHOLD
-        )
+    def set_origin(self):
+        self.stop()
+        self.set_origin_each(2)
+        self.set_origin_each(1)
+        self.set_origin_each(0)
+
+    def set_origin_each(self, id):
+        velocity = self.GO_ORIGIN_VELOCITY_M[id]
+        self._motors[id].set_origin(velocity)
         self.wait_arrive(id)
 
     def main_run_ok(self):

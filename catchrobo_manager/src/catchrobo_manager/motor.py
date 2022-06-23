@@ -49,10 +49,8 @@ class Motor:
         )
         self._pub_ros_cmd.publish(ros_command)
 
-    def set_origin(self, position, velocity, torque_threshold, has_work_num):
+    def set_origin(self, velocity):
         self._running = True
-        ros_command = self._ros_cmd_template.generate_ros_command(
-            self._id, MyRosCmd.GO_ORIGIN_MODE, position, velocity, has_work_num
-        )
-        ros_command.acceleration_limit = torque_threshold
+        ros_command = self._ros_cmd_template.generate_origin_command(self._id, velocity)
+        print(ros_command)
         self._pub_ros_cmd.publish(ros_command)
