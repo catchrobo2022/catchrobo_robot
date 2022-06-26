@@ -55,10 +55,10 @@ public:
 
         const float pi = 3.141592653589;
         pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
-        float position_min_m[] = {0, -0.44125, 0, 0};
-        float position_max_m[] = {1.3525, 0.44125, 0.145, 1.570796327};
-        float velocity_limit_m[] = {3.093972094, 3.093972094, 3.093972094, 6.981317008};
-        float torque_limit_m[] = {32.57947937, 32.57947937, 32.57947937, 1.0787315};
+        float position_min_m[] = {0, -0.44125 * 2, 0, 0};
+        float position_max_m[] = {1.3525, 0.44125 * 2, 0.145, 1.570796327};
+        float velocity_limit_m[] = {3.093972094, 3.093972094 * 2, 3.093972094, 6.981317008};
+        float torque_limit_m[] = {32.57947937, 32.57947937 * 2, 32.57947937, 1.0787315};
         for (size_t i = 0; i < motor_num_; i++)
         {
             /* code */
@@ -99,6 +99,7 @@ public:
 
         for (size_t i = 0; i < motor_num_; i++)
         {
+            error.id = i;
             if (!check_position[i].check(state.position[i]))
             {
                 error.error_code = catchrobo_msgs::ErrorCode::OVER_POSITION;
@@ -130,12 +131,12 @@ public:
 
 private:
     catchrobo_msgs::EnableCmd cmd_;
-    const int motor_num_;
     CheckBound check_position[3];
     CheckBound check_velocity[3];
     CheckBound check_torque[3];
     bool current_enable_;
     float pulley_radius_;
+    const int motor_num_;
     //// robot座標系での[m] -> motor回転角度[rad]に変換. gripperは入力をそのまま返す
     float m2rad(int motor_id, float position)
     {

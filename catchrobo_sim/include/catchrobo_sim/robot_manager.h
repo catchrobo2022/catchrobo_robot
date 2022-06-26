@@ -215,8 +215,8 @@ private:
     std_msgs::Float32MultiArray joint_rad_;
 
     int actuator_num_;
-    int motor_num_;
     int is_peg_in_hole_mode_;
+    const int motor_num_;
 
     PegInHoleControl peg_in_hole_control_;
 

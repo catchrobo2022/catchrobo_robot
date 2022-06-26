@@ -31,8 +31,8 @@ if __name__ == "__main__":
         robot_position=1.0,
         robot_end_velocity=0.0,
     )
-    command.kp = 5
-    command.kd = 0.5
+    # command.kp = 5
+    # command.kd = 0.5
     command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
     ### 生成したcommandはあくまでdefault. 全要素自由に書き換え可能
     ### robot_m2rad : ロボット座標系でのmをradに変換する
