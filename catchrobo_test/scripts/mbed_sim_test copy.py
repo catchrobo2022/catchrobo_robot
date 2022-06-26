@@ -21,7 +21,7 @@ if __name__ == "__main__":
     motor[0].mode = MyRosCmd.POSITION_CTRL_MODE
     motor[0].position = 1.5
     motor[0].velocity = 0
-    motor[0].inertia = 1.0
+    motor[0].mass = 1.0
     motor[0].effort = 0
     motor[0].velocity_limit = 0.5
     motor[0].acceleration_limit = 0.3

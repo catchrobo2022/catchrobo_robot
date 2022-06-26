@@ -23,4 +23,9 @@
 <!-- rviz. RobotModelを表示する -->
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true"/>
     <param name="field" value="$(arg field)"/>
+
+<!-- <node pkg="catchrobo_test" type="radius2meter" name="radius2meter" output="screen" respawn="false" respawn_delay="0"> -->
+<!-- </node> -->
+
+
 </launch>
