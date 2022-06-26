@@ -78,32 +78,23 @@ class RosCmdTemplate:
         rad_transform = self._rad_transform
         command = MyRosCmd()
         command.id = id
-        command.position_min = rad_transform.robot_m2rad(
-            id, self._datas.loc["position_min"][id]
-        )
-        command.position_max = rad_transform.robot_m2rad(
-            id, self._datas.loc["position_max"][id]
-        )
+        command.position_min = self._datas.loc["position_min_rad"][id]
+        command.position_max = self._datas.loc["position_max_rad"][id]
         command.velocity_limit = (
-            rad_transform.robot_m2rad(id, self._datas.loc["velocity_limit"][id])
-            * self._velocity_limit_scale
+            self._datas.loc["velocity_limit_rad"][id] * self._velocity_limit_scale
         )
         command.acceleration_limit = (
-            rad_transform.robot_m2rad(id, self._datas.loc["acceleration_limit"][id])
+            self._datas.loc["acceleration_limit_rad"][id]
             * self._accerelation_limit_scale
         )
-        command.jerk_limit = rad_transform.robot_m2rad(
-            id, self._datas.loc["jerk_limit"][id]
-        )
-
+        command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
         command.kp = self._datas.loc["kp"][id]
         command.kd = self._datas.loc["kd"][id]
 
         command.mode = mode
         command.position = rad_transform.robot_m2rad(command.id, robot_position)
-        command.velocity = rad_transform.robot_m2rad(
-            command.id, robot_end_velocity
-        )  # 目標位置での速度
+        # 目標位置での終端速度
+        command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
         mass = sum(self._datas.loc["mass"][id:]) + self._work_mass * has_work_num
         r = rad_transform.get_pulley_radius(id)
@@ -138,7 +129,7 @@ class RosCmdTemplate:
         command = self.generate_ros_command(
             id, MyRosCmd.GO_ORIGIN_MODE, position, velocity_m, 0
         )
-        command.acceleration_limit = self._datas.loc["origin_torque_threshold"][id]
+        command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 
     def generate_velocity_command(self, id, velocity_m, has_work_num=0):

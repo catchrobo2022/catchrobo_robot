@@ -7,8 +7,6 @@ Panels:
         - /RobotModel1/Links1
         - /TF1
         - /TF1/Frames1
-        - /TF1/Frames1/gripper/right_finger1
-        - /TF1/Frames1/world1
         - /TF1/Tree1
       Splitter Ratio: 0.5972973108291626
     Tree Height: 728
@@ -166,7 +164,7 @@ Visualization Manager:
           Value: false
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
