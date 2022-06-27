@@ -16,8 +16,8 @@ import math
 class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
-        self._velocity_limit_scale = 0.2
-        self._accerelation_limit_scale = 0.2
+        self._velocity_limit_scale = 1
+        self._accerelation_limit_scale = 0.1
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
@@ -125,10 +125,10 @@ class RosCmdTemplate:
         return command
 
     def generate_origin_command(self, id, velocity_m):
-        position = self._datas.loc["origin_position"][id]
         command = self.generate_ros_command(
-            id, MyRosCmd.GO_ORIGIN_MODE, position, velocity_m, 0
+            id, MyRosCmd.GO_ORIGIN_MODE, 0, velocity_m, 0
         )
+        command.position = self._datas.loc["origin_position_rad"][id]
         command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 

@@ -66,6 +66,8 @@ MotorDriverSim::MotorDriverSim() : nh_(""), private_nh_("~")
     sub_enable_ = nh_.subscribe("/motor_driver_enable", 5, &MotorDriverSim::enable, this);
     sub_disable_ = nh_.subscribe("/motor_driver_disable", 5, &MotorDriverSim::disable, this);
 
+    private_nh_.param<double>("init_position_rad", state_.position, 0);
+
     ROS_INFO_STREAM("motor id: " << id_ << " dt: " << dt_);
 }
 

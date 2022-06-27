@@ -55,7 +55,7 @@ public:
         {
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
 
-            position_control_.getCmd(current_state_, old_command_, command, result);
+            position_control_.getCmd(t_, current_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
@@ -103,12 +103,26 @@ public:
     }
     void nextStep(float dt)
     {
-        position_control_.nextStep(dt);
+        t_ += dt;
     };
     bool IsPegInHoleMode()
     {
         return (ros_cmd_.mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE);
     }
+
+    void setObstacleInfo(bool enable, bool is_min, float limit)
+    {
+        safe_control_.setObstacleInfo(enable, is_min, limit);
+    }
+
+    // void changePositionMax(float max_rad)
+    // {
+    //     ros_cmd_.position_max = max_rad;
+    // }
+    void resetT()
+    {
+        t_ = 0;
+    };
 
 private:
     StateStruct current_state_;
@@ -119,6 +133,7 @@ private:
 
     //// motorの値 - offset_ = ros内での値
     float offset_;
+    float t_;
 
     PositionControl position_control_;
     DirectControl direct_control_;

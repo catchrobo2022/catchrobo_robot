@@ -2,13 +2,13 @@
 
 #include "motor_driver_bridge/motor_driver_struct.h"
 #include <catchrobo_msgs/MyRosCmd.h>
-
+#include <algorithm>
 // #
 
 class SafeControl
 {
 public:
-    void setCBFparams(double alpha)
+    void setCBFparams(float alpha)
     {
         alpha_ = alpha;
     }
@@ -17,12 +17,25 @@ public:
     {
 
         nanCheck(except_command, command);
-        ControlBarrierFunctions(state, target, command);
-        boundIn(target, command);
+
+        float position_min = 0;
+        float position_max = 0;
+        calcPositionLimit(target, position_min, position_max);
+        ControlBarrierFunctions(position_min, position_max, state, command);
+        boundIn(position_min, position_max, target.velocity_limit, command);
+    }
+    void setObstacleInfo(bool enable, bool is_min, float limit)
+    {
+        obstacle_avoidance_enable_ = enable;
+        obstacle_avoidance_is_min_ = is_min;
+        obstacle_avoidance_limit_ = limit;
     }
 
 private:
-    double alpha_;
+    float alpha_;
+    float obstacle_avoidance_limit_;
+    bool obstacle_avoidance_enable_;
+    bool obstacle_avoidance_is_min_;
     void nanCheck(const ControlStruct &except_command, ControlStruct &command)
     {
         // nanチェック
@@ -48,11 +61,11 @@ private:
         }
     }
 
-    void boundIn(const catchrobo_msgs::MyRosCmd &target, ControlStruct &command)
+    void boundIn(float position_min, float position_max, float velocity_limit, ControlStruct &command)
     {
         //[min, max] にコマンドを入れる
-        bound(target.position_min, target.position_max, command.p_des);
-        bound(-target.velocity_limit, target.velocity_limit, command.v_des);
+        bound(position_min, position_max, command.p_des);
+        bound(-velocity_limit, velocity_limit, command.v_des);
     }
 
     void minPositionCBF(double position_now, double position_min, double alpha, float &target_velocity)
@@ -85,9 +98,26 @@ private:
         }
     }
 
-    void ControlBarrierFunctions(const StateStruct &state, const catchrobo_msgs::MyRosCmd &target, ControlStruct &command)
+    void ControlBarrierFunctions(float position_min, float position_max, const StateStruct &state, ControlStruct &command)
     {
-        minPositionCBF(state.position, target.position_min, alpha_, command.v_des);
-        maxPositionCBF(state.position, target.position_max, alpha_, command.v_des);
+        minPositionCBF(state.position, position_min, alpha_, command.v_des);
+        maxPositionCBF(state.position, position_max, alpha_, command.v_des);
+    }
+
+    void calcPositionLimit(const catchrobo_msgs::MyRosCmd &target, float &position_min, float &position_max)
+    {
+        position_min = target.position_min;
+        position_max = target.position_max;
+        if (obstacle_avoidance_enable_)
+        {
+            if (obstacle_avoidance_is_min_)
+            {
+                position_min = std::max(obstacle_avoidance_limit_, position_min);
+            }
+            else
+            {
+                position_max = std::min(obstacle_avoidance_limit_, position_max);
+            }
+        }
     }
 };

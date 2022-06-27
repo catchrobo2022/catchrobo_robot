@@ -19,27 +19,26 @@ public:
         target_ = cmd;
         float start_posi = joint_state.position;
         float target_position = cmd.position;
-        if (target_position > cmd.position_max)
-        {
-            target_position = cmd.position_max;
-        }
-        else if (target_position < cmd.position_min)
-        {
-            target_position = cmd.position_min;
-        }
+        // if (target_position > cmd.position_max)
+        // {
+        //     target_position = cmd.position_max;
+        // }
+        // else if (target_position < cmd.position_min)
+        // {
+        //     target_position = cmd.position_min;
+        // }
 
         float dist = target_position - start_posi; //移動距離
 
         accel_designer_.reset(cmd.jerk_limit, cmd.acceleration_limit, cmd.velocity_limit,
                               0, cmd.velocity, dist,
                               start_posi, 0);
-        t_ = 0;
         no_target_flag_ = false;
         finish_already_notified_ = false;
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &finished)
+    void getCmd(float t, const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &finished)
     {
         finished = ControlResult::RUNNING;
         if (no_target_flag_)
@@ -51,10 +50,10 @@ public:
         {
             // まだ目標値が与えられた後
 
-            if (t_ < accel_designer_.t_end())
+            if (t < accel_designer_.t_end())
             {
                 //収束していないとき
-                packResult2Cmd(t_, accel_designer_, target_, command);
+                packResult2Cmd(t, accel_designer_, target_, command);
             }
             else
             {
@@ -68,10 +67,8 @@ public:
             }
         }
     };
-    void nextStep(float dt) { t_ += dt; }
 
 private:
-    double t_;
     bool no_target_flag_;
     bool finish_already_notified_;
 

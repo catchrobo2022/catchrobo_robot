@@ -5,6 +5,7 @@
 #include "catchrobo_sim/servo_manager.h"
 #include "catchrobo_sim/peg_in_hole_control.h"
 #include "catchrobo_sim/enable_manager.h"
+#include "catchrobo_sim/obstacle_avoidance.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <std_msgs/Float32MultiArray.h>
@@ -109,16 +110,18 @@ public:
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
     {
         motor_manager_[command.id]->setRosCmd(command);
+        motor_manager_[command.id]->resetT();
     };
 
     // void setPegInHoleCmd(const catchrobo_msgs)
 
     void getMotorDrivesCommand(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     {
-
+        obstacle_avoidance_.changePositionLimit(motor_manager_);
         ////もしpeg in holeなら、指示を変える
         if (peg_in_hole_control_.isPegInHoleMode())
         {
+
             catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
             for (size_t i = 0; i < motor_num_; i++)
             {
@@ -137,6 +140,13 @@ public:
         }
         else
         {
+            catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
+            for (size_t i = 0; i < motor_num_; i++)
+            {
+                motor_manager_[i]->getRosCmd(ros_cmd[i]);
+                // ROS_INFO_STREAM(ros_cmd[i]);
+            }
+
             //// 通常のコントロール
             for (size_t i = 0; i < actuator_num_; i++)
             {
@@ -211,14 +221,15 @@ public:
 
 private:
     MotorManager *(motor_manager_[JOINT_NUM]);
-    sensor_msgs::JointState joint_state_;
-    std_msgs::Float32MultiArray joint_rad_;
+    sensor_msgs::JointState joint_state_;   // JointState型
+    std_msgs::Float32MultiArray joint_rad_; // joint_state_から変換される。joint_state_が更新された後に更新される必要がある
 
     int actuator_num_;
     int is_peg_in_hole_mode_;
     const int motor_num_;
 
     PegInHoleControl peg_in_hole_control_;
+    ObstacleAvoidance obstacle_avoidance_;
 
     // void independentControl(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
     // {

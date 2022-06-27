@@ -16,7 +16,7 @@ public:
     RosBridge() : pub2ros_("joint_rad", new std_msgs::Float32MultiArray),
                   pub_finished_flag_("finished_flag_topic", new std_msgs::Int8),
                   pub_error_("error", new catchrobo_msgs::ErrorCode),
-                  //   sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
+                  sub_from_ros_("my_joint_control", &RosBridge::rosCallback, this),
                   sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this),
                   sub_enable_("enable_cmd", &RosBridge::enableCallback, this),
                   sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this),
@@ -34,7 +34,7 @@ public:
         nh_.advertise(pub2ros_);
         nh_.advertise(pub_finished_flag_);
         nh_.advertise(pub_error_);
-        // nh_.subscribe(sub_from_ros_);
+        nh_.subscribe(sub_from_ros_);
         nh_.subscribe(sub_enable_);
         nh_.subscribe(sub_ros_cmd_);
         nh_.subscribe(sub_peg_in_hole_);
@@ -71,7 +71,7 @@ private:
     ros::Publisher pub_finished_flag_;
     ros::Publisher pub_error_;
 
-    // ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
+    ros::Subscriber<catchrobo_msgs::MyRosCmdArray, RosBridge> sub_from_ros_;
     ros::Subscriber<catchrobo_msgs::MyRosCmd, RosBridge> sub_ros_cmd_;
     ros::Subscriber<catchrobo_msgs::EnableCmd, RosBridge> sub_enable_;
     ros::Subscriber<std_msgs::Bool, RosBridge> sub_peg_in_hole_;
