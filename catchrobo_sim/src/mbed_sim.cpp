@@ -1,4 +1,4 @@
-//  #define USE_MBED
+// #define USE_MBED
 
 #ifdef USE_MBED
 #include "mbed.h"
@@ -13,8 +13,8 @@
 #include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 
-const float MBED2ROS_DT = 0.01;  // 10Hz
-const float MBED2MOTOR_DT = 0.2; // 500Hz
+const float MBED2ROS_DT = 0.01;    // 10Hz
+const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 
 MotorDriverBridge motor_driver_bridge;
@@ -150,6 +150,9 @@ int main(int argc, char **argv)
     //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
     for (size_t i = 0; i < N_MOTORS; i++)
     {
+#ifdef USE_MBED
+        wait(0.5);
+#endif
         motor_driver_bridge.setOrigin(i);
     }
 

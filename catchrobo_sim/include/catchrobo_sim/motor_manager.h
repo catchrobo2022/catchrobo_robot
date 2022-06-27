@@ -11,7 +11,7 @@
 class MotorManager
 {
 public:
-    MotorManager()
+    MotorManager() : offset_(0)
     {
         old_command_.p_des = 0;
         old_command_.v_des = 0;

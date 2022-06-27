@@ -24,9 +24,12 @@ if __name__ == "__main__":
     print(enable_command)
     rospy.sleep(1)
 
-    command = template.generate_origin_command(0, 0.1)
+    command = template.generate_origin_command(2, 0.05)
+    command.acceleration_limit = 1
+    command.kd = 0.5
     print(command)
     pub.publish(command)
+    rospy.sleep(10)
     # command = template.generate_ros_command(
     #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
@@ -44,7 +47,7 @@ if __name__ == "__main__":
     # pub.publish(command)
     # rospy.sleep(10)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
 
-    # enable_command.is_enable = False
-    # pub_enable.publish(enable_command)
-    # print(enable_command)
+    enable_command.is_enable = False
+    pub_enable.publish(enable_command)
+    print(enable_command)
     rospy.sleep(2)
