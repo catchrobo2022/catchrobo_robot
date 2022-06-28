@@ -65,6 +65,10 @@ ros/node_handle.h
 https://os.mbed.com/teams/catchrobo2022/
 
 
+注意事項：ノイズにより値がぶっ飛ぶことがある。原点出しはかなり近くから行う。
+motorの電源を入れてからmbedを開始→rosserial開始
+の流れにすることで、初期値をほぼ0とできる。
+
 ```
 roslaunch catchrobo_description catchrobo_display.launch 
 
