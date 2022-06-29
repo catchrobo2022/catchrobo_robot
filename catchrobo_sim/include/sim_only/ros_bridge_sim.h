@@ -28,12 +28,12 @@ public:
         enable_callback_function_ = enable_callback_function;
         peg_in_hole_callack_function_ = peg_in_hole_callack_function;
         pub2ros_ = nh_->advertise<std_msgs::Float32MultiArray>("joint_rad", 1);
-        pub_finished_flag_ = nh_->advertise<std_msgs::Int8>("finished_flag_topic", 5);
+        // pub_finished_flag_ = nh_->advertise<std_msgs::Int8>("finished_flag_topic", 5);
         pub_error_ = nh_->advertise<catchrobo_msgs::ErrorCode>("error", 5);
-        sub_from_ros_ = nh_->subscribe("my_joint_control", 1, &RosBridge::rosCallback, this);
+        // sub_from_ros_ = nh_->subscribe("my_joint_control", 1, &RosBridge::rosCallback, this);
         sub_ros_cmd_ = nh_->subscribe("ros_cmd", 10, &RosBridge::rosCallback2, this);
         sub_enable_ = nh_->subscribe("enable_cmd", 1, &RosBridge::enableCmdCallback, this);
-        sub_peg_in_hole_ = nh_->subscribe("peg_in_hole_cmd", 1, &RosBridge::pegInHoleCallback, this);
+        // sub_peg_in_hole_ = nh_->subscribe("peg_in_hole_cmd", 1, &RosBridge::pegInHoleCallback, this);
     };
     void publishJointState(const std_msgs::Float32MultiArray &joint_state)
     {
@@ -44,7 +44,7 @@ public:
     {
         std_msgs::Int8 msg;
         msg.data = data;
-        pub_finished_flag_.publish(msg);
+        // pub_finished_flag_.publish(msg);
     };
     void publishError(catchrobo_msgs::ErrorCode msg)
     {

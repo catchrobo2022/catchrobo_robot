@@ -26,9 +26,17 @@ if __name__ == "__main__":
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
+        id=0,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=1.0,
+        robot_end_velocity=0.0,
+    )
+    print(command)
+    pub.publish(command)
+    command = template.generate_ros_command(
         id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=-0.3,
+        robot_position=1.0,
         robot_end_velocity=0.0,
     )
     print(command)
@@ -39,9 +47,17 @@ if __name__ == "__main__":
         robot_position=1.0,
         robot_end_velocity=0.0,
     )
-    # command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
     print(command)
     pub.publish(command)
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1.0,
+    #     robot_end_velocity=0.0,
+    # )
+    # # command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
+    # print(command)
+    # pub.publish(command)
     # command.kp = 5
     # command.kd = 0.5
     ### 生成したcommandはあくまでdefault. 全要素自由に書き換え可能
@@ -73,7 +89,7 @@ if __name__ == "__main__":
     rospy.sleep(5)
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=2,
+        id=0,
         mode=MyRosCmd.POSITION_CTRL_MODE,
         robot_position=0.0,
         robot_end_velocity=0.0,
@@ -83,21 +99,37 @@ if __name__ == "__main__":
     command = template.generate_ros_command(
         id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.3,
+        robot_position=0.0,
         robot_end_velocity=0.0,
     )
-    # command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
     print(command)
     pub.publish(command)
+    command = template.generate_ros_command(
+        id=2,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=0.0,
+        robot_end_velocity=0.0,
+    )
+    print(command)
+    pub.publish(command)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.3,
+    #     robot_end_velocity=0.0,
+    # )
+    # # command.acceleration_limit = template.robot_m2rad(command.id, 0.5)
+    # print(command)
+    # pub.publish(command)
 
     # ### 原点に戻る
     # command.mode = MyRosCmd.POSITION_CTRL_MODE
     # command.position = 0
     # print(command)
     # pub.publish(command)
-    # rospy.sleep(10)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
+    rospy.sleep(10)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
 
-    # enable_command.is_enable = False
-    # pub_enable.publish(enable_command)
-    # print(enable_command)
+    enable_command.is_enable = False
+    pub_enable.publish(enable_command)
+    print(enable_command)
     rospy.sleep(2)
