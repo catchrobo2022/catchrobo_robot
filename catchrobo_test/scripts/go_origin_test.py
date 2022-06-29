@@ -24,7 +24,7 @@ if __name__ == "__main__":
     print(enable_command)
     rospy.sleep(1)
 
-    command = template.generate_origin_command(2, 0.05)
+    command = template.generate_origin_command(0, 0.05)
     command.acceleration_limit = 1
     command.kd = 0.5
     print(command)
