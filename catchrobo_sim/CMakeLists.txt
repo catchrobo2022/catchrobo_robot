@@ -105,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES catchrobo_sim
+ LIBRARIES catchrobo_sim motor_driver_bridge sim_only
  CATKIN_DEPENDS catchrobo_msgs roscpp rospy sensor_msgs
  DEPENDS system_lib
 )

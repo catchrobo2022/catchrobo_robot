@@ -1,94 +1,167 @@
+// #define USE_MBED
+
+#ifdef USE_MBED
+#include "mbed.h"
+#include "motor_driver_bridge/motor_driver_bridge_mbed.h"
+#include "catchrobo_sim/ros_bridge_mbed.h"
+#else
+#include <ros/ros.h>
+#include "sim_only/motor_driver_bridge_sim.h"
+#include "sim_only/ros_bridge_sim.h"
+#include "sim_only/ticker_sim.h"
+#endif
+#include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/JointState.h>
-#include <catchrobo_msgs/ControlStruct.h>
-#include <catchrobo_msgs/StateStruct.h>
-#include <catchrobo_msgs/MyRosCmdArray.h>
+const float MBED2ROS_DT = 0.01;    // 10Hz
+const float MBED2MOTOR_DT = 0.002; // 500Hz
+const int SERIAL_BAUD_RATE = 115200;
 
-#include <string>
-#include <vector>
+MotorDriverBridge motor_driver_bridge;
+RosBridge ros_bridge;
+RobotManager robot_manager;
+EnableManager enable_manager;
 
-class MbedSim
+void enableAll(bool is_enable)
 {
-public:
-    MbedSim() : nh_(""), private_nh_("~")
+    for (int i = 0; i < JOINT_NUM; i++)
     {
-        RosSetup();
-        robot_manager_.init(motor_driver_cmd_dt_);
-        ROS_INFO("init finish");
-    };
+        motor_driver_bridge.enableMotor(i, is_enable);
+    }
+}
 
-private:
-    RobotManager robot_manager_;
-    ros::NodeHandle nh_;
-    ros::NodeHandle private_nh_;
-    ros::Publisher pub2ros_;
-    ros::Publisher pub2motor_;
-    ros::Subscriber sub_from_motor_;
-    ros::Subscriber sub_from_ros_;
-    ros::Timer mbed2ros_timer_;
-    ros::Timer mbed2motor_timer_;
+void pegInHoleCallback(const std_msgs::Bool &input)
+{
+    robot_manager.setPegInHoleCmd(input);
+}
 
-    float motor_driver_cmd_dt_;
-
-    void RosSetup()
-    {
-        float mbed2ros_dt;
-        private_nh_.param<float>("mbed2ros_dt", mbed2ros_dt, 0.02);
-        mbed2ros_timer_ = nh_.createTimer(ros::Duration(mbed2ros_dt), &MbedSim::mbed2RosTimerCallback, this);
-
-        private_nh_.param<float>("motor_driver_cmd_dt_", motor_driver_cmd_dt_, 0.002);
-        mbed2motor_timer_ = nh_.createTimer(ros::Duration(motor_driver_cmd_dt_), &MbedSim::mbed2MotorDriverTimerCallback, this);
-
-        std::string input_topic_name, output_topic_name;
-        private_nh_.param<std::string>("output_topic_to_ros", output_topic_name, "my_joint_state");
-        pub2ros_ = nh_.advertise<sensor_msgs::JointState>(output_topic_name, 1);
-
-        private_nh_.param<std::string>("output_topic_to_motor", output_topic_name, "motor_driver_cmd");
-        pub2motor_ = nh_.advertise<catchrobo_msgs::ControlStruct>(output_topic_name, 1);
-
-        private_nh_.param<std::string>("input_topic", input_topic_name, "motor_driver_state");
-        sub_from_motor_ = nh_.subscribe(input_topic_name, 50, &MbedSim::CANCallback, this);
-
-        private_nh_.param<std::string>("input_topic_from_ros", input_topic_name, "my_joint_control");
-        sub_from_ros_ = nh_.subscribe(input_topic_name, 50, &MbedSim::rosCallback, this);
-    };
-
-    void mbed2RosTimerCallback(const ros::TimerEvent &event)
-    {
-
-        sensor_msgs::JointState joint_state;
-        robot_manager_.getJointState(joint_state);
-        pub2ros_.publish(joint_state);
-    };
-
-    void mbed2MotorDriverTimerCallback(const ros::TimerEvent &event)
-    {
-        catchrobo_msgs::ControlStruct cmd;
-        for (size_t i = 0; i < 4; i++)
-        {
-            robot_manager_.getCmd(i, cmd);
-            pub2motor_.publish(cmd);
-        }
-    };
-
-    void rosCallback(const catchrobo_msgs::MyRosCmdArray::ConstPtr &input)
-    {
-        robot_manager_.setRosCmd(*input);
-    };
-
-    void CANCallback(const catchrobo_msgs::StateStruct::ConstPtr &input)
-    {
-        robot_manager_.setCurrentState(*input);
-    };
+void motorDriverCallback(const StateStruct &input)
+{
+    robot_manager.setCurrentState(input);
 };
+
+void rosCallback(const catchrobo_msgs::MyRosCmd &command)
+{
+    robot_manager.setRosCmd(command);
+}
+
+void mbed2MotorDriverTimerCallback()
+{
+    //// enable check
+    catchrobo_msgs::ErrorCode error;
+    sensor_msgs::JointState joint_state;
+    robot_manager.getJointState(joint_state);
+    enable_manager.check(joint_state, error);
+
+    //// errorならdisable指示およびerror のpublish
+    if (error.error_code != catchrobo_msgs::ErrorCode::NONE)
+    {
+        enableAll(false);
+        enable_manager.setCurrentEnable(false);
+        ros_bridge.publishError(error);
+    }
+
+    //// 初期値は全て0 -> 脱力
+    // ROS_INFO_STREAM(enable_manager.getEnable());
+    if (enable_manager.getEnable()) //// enableならtをすすめる
+    {
+        robot_manager.nextStep(MBED2MOTOR_DT);
+    }
+    else //// disableなら脱力指示
+    {
+        robot_manager.disable();
+        // ROS_INFO_STREAM("disable");
+    }
+    ControlStruct control[JOINT_NUM] = {};
+    ControlResult::ControlResult result[JOINT_NUM] = {};
+    robot_manager.getMotorDrivesCommand(control, result);
+    //// update target value
+    for (int i = 0; i < JOINT_NUM; i++)
+    {
+        motor_driver_bridge.publish(control[i]);
+        if (result[i] == ControlResult::FINISH)
+        {
+            ros_bridge.publishFinishFlag(i);
+        }
+    }
+    // switch (result[i])
+    // {
+    // case ControlResult::RUNNING:
+    //     break;
+    // case ControlResult::FINISH:
+    //     ros_bridge.publishFinishFlag(i);
+    //     break;
+    // // case ControlResult::SET_ORIGIN:
+    // //     motor_driver_bridge.setOrigin(i);
+    // //     ros_bridge.publishFinishFlag(i);
+    // //     break;
+    // default:
+    //     break;
+    // }
+}
+
+void mbed2RosTimerCallback()
+{
+    //// radius
+    // sensor_msgs::JointState joint_state;
+    // robot_manager.getJointState(joint_state);
+
+    std_msgs::Float32MultiArray joint_state;
+    robot_manager.getJointRad(joint_state);
+    ros_bridge.publishJointState(joint_state);
+};
+
+// void enableCallback(const std_msgs::Bool &input)
+// {
+//     if (input.data)
+//     {
+//         for (int i = 0; i < N_MOTORS; i++)
+//         {
+//             motor_driver_bridge.enableMotor(i);
+//         }
+//     }
+//     else
+//     {
+//         for (int i = 0; i < N_MOTORS; i++)
+//         {
+//             motor_driver_bridge.disableMotor(i);
+//         }
+//     }
+// }
+void enableCallback(const catchrobo_msgs::EnableCmd &input)
+{
+    enable_manager.setCmd(input);
+    enableAll(input.is_enable);
+    enable_manager.setCurrentEnable(input.is_enable);
+}
 
 int main(int argc, char **argv)
 {
+#ifndef USE_MBED
     ros::init(argc, argv, "mbed_sim");
-    ROS_INFO("START");
-    MbedSim sample_node;
-    ros::spin();
-    return 0;
+    ros::NodeHandle nh("");
+    motor_driver_bridge.setNodeHandlePtr(&nh);
+    ros_bridge.setNodeHandlePtr(&nh);
+#endif
+
+    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
+    motor_driver_bridge.init(motorDriverCallback);
+
+    //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
+    for (size_t i = 0; i < N_MOTORS; i++)
+    {
+#ifdef USE_MBED
+        wait(0.5);
+#endif
+        motor_driver_bridge.setOrigin(i);
+    }
+
+    //// motor driverへの指示開始
+    Ticker ticker_motor_driver_send;
+    ticker_motor_driver_send.attach(&mbed2MotorDriverTimerCallback, MBED2MOTOR_DT);
+
+    //// ros へのフィードバック開始
+    Ticker ticker;
+    ticker.attach(&mbed2RosTimerCallback, MBED2ROS_DT);
+    ros_bridge.spin();
 }

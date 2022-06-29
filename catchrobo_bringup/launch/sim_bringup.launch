@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="field" default="red" /> 
+    <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
+        <arg name="field" value="$(arg field)"/>
+    </include>
+    <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
+</launch>
