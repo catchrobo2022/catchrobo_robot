@@ -28,7 +28,6 @@ MbedManager sample_node;
 void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 {
     sample_node.rosCallback(command);
-    //    ROS_INFO_STREAM(command);
 }
 
 void motorDriverCallback(const StateStruct &input)

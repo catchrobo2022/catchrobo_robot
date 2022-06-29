@@ -62,7 +62,6 @@ void mbed2MotorDriverTimerCallback()
     }
 
     //// 初期値は全て0 -> 脱力
-    // ROS_INFO_STREAM(enable_manager.getEnable());
     if (enable_manager.getEnable()) //// enableならtをすすめる
     {
         robot_manager.nextStep(MBED2MOTOR_DT);
@@ -70,7 +69,6 @@ void mbed2MotorDriverTimerCallback()
     else //// disableなら脱力指示
     {
         robot_manager.disable();
-        // ROS_INFO_STREAM("disable");
     }
     ControlStruct control[JOINT_NUM] = {};
     ControlResult::ControlResult result[JOINT_NUM] = {};

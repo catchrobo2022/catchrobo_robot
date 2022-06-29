@@ -14,11 +14,11 @@ class ObstacleAvoidance
 {
 private:
     Obstacle obstacles_rad[1];
-    void changePositionLimitAsideObstacle(int change_axis, int obstacle_num, MotorManager *(motor_manager_[JOINT_NUM]))
+    void changePositionLimitAsideObstacle(int change_axis, int obstacle_num, MotorManager (&motor_manager_)[N_MOTORS])
     {
 
         StateStruct state;
-        motor_manager_[change_axis]->getState(state);
+        motor_manager_[change_axis].getState(state);
 
         float position = state.position;
         float obstacle_min = obstacles_rad[obstacle_num].edge[change_axis][0];
@@ -26,11 +26,11 @@ private:
         bool near_min = fabs(position - obstacle_min) < fabs(position - obstacle_max);
         if (near_min)
         {
-            motor_manager_[change_axis]->setObstacleInfo(true, false, obstacle_min);
+            motor_manager_[change_axis].setObstacleInfo(true, false, obstacle_min);
         }
         else
         {
-            motor_manager_[change_axis]->setObstacleInfo(true, true, obstacle_max);
+            motor_manager_[change_axis].setObstacleInfo(true, true, obstacle_max);
         }
     }
 
@@ -38,15 +38,15 @@ public:
     ObstacleAvoidance(/* args */);
     ~ObstacleAvoidance();
 
-    void changePositionLimit(MotorManager *(motor_manager_[JOINT_NUM]))
+    void changePositionLimit(MotorManager (&motor_manager_)[N_MOTORS])
     {
 
         int obstacle_num = 0;
         bool aside_obstacle[] = {false, false, false}; //// 現在値のi軸成分がが障害物のi座標に入っていればtrue. □ * の位置関係にいるときは、y軸がtrueとなる.
-        for (size_t i = 0; i < 3; i++)
+        for (size_t i = 0; i < N_MOTORS; i++)
         {
             StateStruct state;
-            motor_manager_[i]->getState(state);
+            motor_manager_[i].getState(state);
             float position = state.position;
             float obstacle_min = obstacles_rad[obstacle_num].edge[i][0];
             float obstacle_max = obstacles_rad[obstacle_num].edge[i][1];
@@ -56,7 +56,7 @@ public:
             }
 
             //// obstacle　infoの初期化
-            motor_manager_[i]->setObstacleInfo(false, 0, 0); //// 後ろ２つの引数はdummy.使われない
+            motor_manager_[i].setObstacleInfo(false, 0, 0); //// 後ろ２つの引数はdummy.使われない
         }
 
         // 障害物に当たりそうならまずzを動かす

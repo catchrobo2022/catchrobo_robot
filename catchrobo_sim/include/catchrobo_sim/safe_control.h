@@ -42,7 +42,6 @@ private:
         if (isnan(command.p_des) || isnan(command.v_des) || isnan(command.torque_feed_forward))
         {
             //異常時
-            // ROS_INFO_STREAM(command);
             command = except_command;
         }
     }
@@ -52,12 +51,10 @@ private:
         if (target < min)
         {
             target = min;
-            // ROS_INFO_STREAM("min");
         }
         if (target > max)
         {
             target = max;
-            // ROS_INFO_STREAM("max");
         }
     }
 
@@ -79,7 +76,6 @@ private:
         if (target_velocity < temp)
         {
             target_velocity = temp;
-            // ROS_INFO_STREAM("min CBF");
         }
     }
 
@@ -94,7 +90,6 @@ private:
         if (target_velocity > temp)
         {
             target_velocity = temp;
-            // ROS_INFO_STREAM("max CBF");
         }
     }
 
