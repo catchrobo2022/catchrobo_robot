@@ -189,5 +189,9 @@ class Robot:
         return self._main_run_ok
 
     def error_callback(self, msg):
-        self.stop()
-        self._error = msg
+        if msg.error_code == ErrorCode.FINISH:
+            id = msg.id
+            self._motors[id].finish()
+        else:
+            self.stop()
+            self._error = msg
