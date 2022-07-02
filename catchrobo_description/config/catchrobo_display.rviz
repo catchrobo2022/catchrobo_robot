@@ -7,6 +7,7 @@ Panels:
         - /RobotModel1/Links1
         - /TF1/Frames1
         - /TF1/Tree1
+        - /OverlayDiagnostic4
       Splitter Ratio: 0.5972973108291626
     Tree Height: 250
   - Class: rviz/Selection
@@ -187,6 +188,78 @@ Visualization Manager:
                               {}
       Update Interval: 0
       Value: true
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor0"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor0"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor1"
+      left: 128
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor1"
+      left: 128
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor2"
+      left: 256
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor2"
+      left: 257
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -215,7 +288,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.5381767749786377
+      Distance: 4.00977897644043
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -230,10 +303,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9647965431213379
+      Pitch: 0.8047966957092285
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.9067987203598022
+      Yaw: 1.9917957782745361
     Saved: ~
 Window Geometry:
   Displays:
