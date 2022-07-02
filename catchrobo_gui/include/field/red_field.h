@@ -69,10 +69,8 @@ public:
 private Q_SLOTS:
   void obj_Clicked();
   void gl_Clicked();
-  void initialize();
-  void start();
-  void pause();
-  void stop();
+  void menu_panel();
+  void reset_menu();
   void touch_rm();
   void touch_tar();
   void countdown();

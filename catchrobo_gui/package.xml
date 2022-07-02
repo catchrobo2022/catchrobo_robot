@@ -19,6 +19,8 @@
   <depend>eigen</depend>
   <depend>qtbase5-dev</depend>
 
+  <depend>visualization_msgs</depend>
+
   <export>
     <rviz plugin="${prefix}/plugin_description.xml"/>
   </export>

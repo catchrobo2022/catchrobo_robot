@@ -10,6 +10,7 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Float32.h>
 #include <QTimer>
 
 #include <OGRE/OgreSceneNode.h>
@@ -24,6 +25,7 @@
 #include <ros/package.h>
 #include <iostream>
 
+#include <jsk_rviz_plugins/Pictogram.h>
 
 namespace field
 {
@@ -34,6 +36,7 @@ Blue::Blue(QWidget *parent) :
     ui->setupUi(this);
     project_path = ros::package::getPath("catchrobo_gui");
     this->set_icon();
+    this->reset_menu();
     //this->setStyleSheet("background-color: Blue;");
     ui->shootbox->setStyleSheet("background-color: rgb(0,255,0);");
     ui->comAREA->setStyleSheet("background-color: rgb(210,210,210);");
@@ -54,14 +57,15 @@ Blue::Blue(QWidget *parent) :
       findChild<QFrame*>(QString("frm"+QString::number(num)))->setLineWidth(2);
     }
 
-    ui->bt_add->setChecked(1);
-
     //rostopic
     pub_obj = nh_.advertise<std_msgs::Int32MultiArray>("obj_rigo", 1);
     sub_obj = n.subscribe("obj_giro", sendtime, &Blue::arrayback_obj, this);
 
     pub_gl = nh_.advertise<std_msgs::Int32MultiArray>("gl_rigo", 1);
     sub_gl = n.subscribe("gl_giro", sendtime, &Blue::arrayback_gl, this);
+
+    //pictgram_pub = nh_.advertise<jsk_rviz_plugins::Pictogram>("jsk_rviz_plugins/Pictogram", 1);
+    float_pub = nh_.advertise<std_msgs::Float32>("abc", 10);
 
     pub_menu = nh_.advertise<std_msgs::Int8>("menu", 1);
 
@@ -88,13 +92,13 @@ void Blue::onInitialize()
     connect(findChild<QPushButton*>(QString("gl"+QString::number(i))), SIGNAL(clicked()), this, SLOT(gl_Clicked()));
   }
 
-  connect(findChild<QPushButton*>(QString("bt_init")), SIGNAL(clicked()), this, SLOT(initialize()));
-  connect(findChild<QPushButton*>(QString("bt_sta")), SIGNAL(clicked()), this, SLOT(start()));
-  connect(findChild<QPushButton*>(QString("bt_pus")), SIGNAL(clicked()), this, SLOT(pause()));
-  connect(findChild<QPushButton*>(QString("bt_stp")), SIGNAL(clicked()), this, SLOT(stop()));
+  connect(findChild<QPushButton*>(QString("origin")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("calib")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("init")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("start")), SIGNAL(clicked()), this, SLOT(menu_panel()));
 
-  connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
-  connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
+  //connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
+  //connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
   //QTimer::singleShot(sendtime, this, SLOT(hogehoge));
 }
 
@@ -260,44 +264,50 @@ void Blue::count_gl(){
   this->count_score();
 }
 
-void Blue::initialize(){
+void Blue::menu_panel(){
   status = 0;
-  ui->bt_init->setChecked(1);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(0);
+  QPushButton * btn = dynamic_cast<QPushButton*>(sender());
+  QString name = btn->objectName();
+  if(QString("origin") == name){
+    if(QString("origin") == btn->text()){
+      btn->setText("Really?");
+    }else{
+      status = 1;
+      btn->setText("origin");
+      ui->origin->setEnabled(0);
+      ui->calib->setEnabled(1);
+      ui->init->setEnabled(1);
+    }
+  }else if(QString("calib") == name){
+    status = 2;
+    ui->calib->setEnabled(0);
+    ui->init->setEnabled(1);
+    this->jsk_show();
+  }else if(QString("init") == name){
+    status = 3;
+    ui->calib->setEnabled(0);
+    ui->init->setEnabled(0);
+    ui->start->setEnabled(1);
+  }else if(QString("start") == name){
+    status = 4;
+    ti = 180.0;
+    stop_ti = 0;
+    QTimer::singleShot(100, this, SLOT(countdown()));
+    ui->start->setEnabled(0);
+    ui->origin->setEnabled(1);
+  }
+
   this->send_menu_msgs(false);
-  ti = 180.0;
   this->timer();
 }
-void Blue::start(){
-  status = 1;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(1);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(0);
-  this->send_menu_msgs(false);
-  stop_ti = 0;
-  QTimer::singleShot(100, this, SLOT(countdown()));
+
+void Blue::reset_menu(){
+  ui->origin->setEnabled(1);
+  ui->calib->setEnabled(0);
+  ui->init->setEnabled(0);
+  ui->start->setEnabled(0);
 }
-void Blue::pause(){
-  status = 2;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(1);
-  ui->bt_stp->setChecked(0);
-  this->send_menu_msgs(false);
-}
-void Blue::stop(){
-  status = 3;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(1);
-  this->send_menu_msgs(false);
-  stop_ti = 1;
-  this->timer();
-}
+/*
 void Blue::touch_rm(){
   touch_mode = 0;
   ui->bt_add->setChecked(1);
@@ -308,6 +318,7 @@ void Blue::touch_tar(){
   ui->bt_add->setChecked(0);
   ui->bt_tar->setChecked(1);
 }
+*/
 void Blue::count_score(){
   int score = 0;
   int bonus = 1;
@@ -344,7 +355,7 @@ void Blue::timer(){
 
 void Blue::countdown(){
   ti -= 0.1;
-  if(ti >= 0 && stop_ti == 0){
+  if(ti != 0 && stop_ti == 0){
     this->timer();
     QTimer::singleShot(100, this, SLOT(countdown()));
   }
@@ -367,6 +378,50 @@ void Blue::marker_gl(int num, int i){
   }
   findChild<QFrame*>(QString("frm"+QString::number(num)))->setStyleSheet("color: rgb(255,170,0)");
   gl_frame[num] = i*2;
+}
+
+void Blue::jsk_show(){
+    std_msgs::Float32 float_data;
+    float_data.data = sin(0.02 * 2 * M_PI);
+    float_pub.publish(float_data);
+
+    /*
+    pictgram.header.frame_id = "base_link";
+    pictgram.header.stamp = ros::Time::now();
+    pictgram.pose.position.z = 0.3;
+    pictgram.pose.orientation.y = -0.71;
+    pictgram.pose.orientation.w = 0.71;
+    pictgram.action = jsk_rviz_plugins::Pictogram::ADD;
+    pictgram.color.r = 1.0;
+    pictgram.color.a = 1.0;
+
+    if (type_count % 4 == 0)
+    {
+      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
+      pictgram.character = "fa-angle-down";
+      pictgram.size = 0.5;
+    }
+    else if (type_count % 4 == 1)
+    {
+      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
+      pictgram.character = "tag";
+      pictgram.size = 0.5;
+    }
+    else if (type_count % 4 == 2)
+    {
+      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
+      pictgram.character = "down";
+      pictgram.size = 0.5;
+    }
+    else
+    {
+      pictgram.mode = jsk_rviz_plugins::Pictogram::STRING_MODE;
+      pictgram.character = "CHAR";
+      pictgram.size = 0.2;
+    }
+    pictgram_pub.publish(pictgram);
+    type_count++;
+    */
 }
 
 }
