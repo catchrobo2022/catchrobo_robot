@@ -8,6 +8,9 @@ import diagnostic_msgs
 from catchrobo_msgs.msg import ErrorCode
 import std_msgs
 from enum import IntEnum
+import time
+
+DERAY = 3
 
 class Status(IntEnum):
     NONE=0
@@ -16,27 +19,41 @@ class Status(IntEnum):
     OVER_TORQUE=3
     FAR_TARGET_POSITION=4
     COLLISION=5
+    FINISH=6
 
 motor_error = [Status.NONE,Status.NONE,Status.NONE]
+start_time = time.time()
+motor_time = [0,0,0]
 
 def callback(msg):
     motor_error[msg.id] = msg.error_code
+    for i in range(3):
+        if motor_error[i] == Status.FINISH:
+            motor_time[i] = time.time() 
+        else:
+            motor_time[i] = 0
 
 def check_motor0(stat):
     if motor_error[0] == Status.NONE:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.OK, "OK")
+    elif motor_error[0] == Status.FINISH:
+        stat.summary(diagnostic_msgs.msg.DiagnosticStatus.WARN, Status(motor_error[0]))
     else:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.ERROR, Status(motor_error[0]))
     return stat
 def check_motor1(stat):
     if motor_error[1] == Status.NONE:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.OK, "OK")
+    elif motor_error[1] == Status.FINISH:
+        stat.summary(diagnostic_msgs.msg.DiagnosticStatus.WARN, Status(motor_error[1]))
     else:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.ERROR, Status(motor_error[1]))
     return stat
 def check_motor2(stat):
     if motor_error[2] == Status.NONE:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.OK, "OK")
+    elif motor_error[2] == Status.FINISH:
+        stat.summary(diagnostic_msgs.msg.DiagnosticStatus.WARN, Status(motor_error[2]))
     else:
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.ERROR, Status(motor_error[2]))
     return stat
@@ -55,3 +72,7 @@ if __name__=='__main__':
     while not rospy.is_shutdown():
         updater.update()
         rospy.sleep(0.1)
+        for i in range(3):
+            if motor_time[i] != 0:
+                if time.time()-motor_time[i] > DERAY:
+                    motor_error[i] = Status.NONE

@@ -4,7 +4,7 @@ import rospy
 from catchrobo_msgs.msg import ErrorCode
 import std_msgs
 
-motor_error = [0,1,0]
+motor_error = [0,1,6]
 
 if __name__=='__main__':
     rospy.init_node('motor_status_')
