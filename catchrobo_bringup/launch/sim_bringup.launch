@@ -5,4 +5,7 @@
         <arg name="field" value="$(arg field)"/>
     </include>
     <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
+
+    <node pkg="catchrobo_gui" type="motor_debug.py" name="motor_status">
+    </node>
 </launch>

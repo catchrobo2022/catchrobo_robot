@@ -7,38 +7,14 @@
 
 struct Obstacle
 {
-    float edge[3][2]; // x(min, max),y(min, rad),z(min, max) の順
+    float edge[3][2]; // x(min, max),y(min, rad),z(min, max) の順. edge[0][1]でx軸のmaxが手に入る
 };
 
 class ObstacleAvoidance
 {
 private:
     Obstacle obstacles_rad[1];
-    void changePositionLimitAsideObstacle(int change_axis, int obstacle_num, MotorManager (&motor_manager_)[N_MOTORS])
-    {
-
-        StateStruct state;
-        motor_manager_[change_axis].getState(state);
-
-        float position = state.position;
-        float obstacle_min = obstacles_rad[obstacle_num].edge[change_axis][0];
-        float obstacle_max = obstacles_rad[obstacle_num].edge[change_axis][1];
-        bool near_min = fabs(position - obstacle_min) < fabs(position - obstacle_max);
-        if (near_min)
-        {
-            motor_manager_[change_axis].setObstacleInfo(true, false, obstacle_min);
-        }
-        else
-        {
-            motor_manager_[change_axis].setObstacleInfo(true, true, obstacle_max);
-        }
-    }
-
-public:
-    ObstacleAvoidance(/* args */);
-    ~ObstacleAvoidance();
-
-    void changePositionLimit(MotorManager (&motor_manager_)[N_MOTORS])
+    void avoidSurface(MotorManager (&motor_manager_)[N_MOTORS])
     {
 
         int obstacle_num = 0;
@@ -82,6 +58,70 @@ public:
             changePositionLimitAsideObstacle(change_axis, obstacle_num, motor_manager_);
             // ROS_INFO_STREAM("x obstacle");
         }
+    }
+
+    void changePositionLimitAsideObstacle(int change_axis, int obstacle_num, MotorManager (&motor_manager_)[N_MOTORS])
+    {
+
+        StateStruct state;
+        motor_manager_[change_axis].getState(state);
+
+        float position = state.position;
+        float obstacle_min = obstacles_rad[obstacle_num].edge[change_axis][0];
+        float obstacle_max = obstacles_rad[obstacle_num].edge[change_axis][1];
+        bool near_min = fabs(position - obstacle_min) < fabs(position - obstacle_max);
+        if (near_min)
+        {
+            motor_manager_[change_axis].setObstacleInfo(true, false, obstacle_min);
+        }
+        else
+        {
+            motor_manager_[change_axis].setObstacleInfo(true, true, obstacle_max);
+        }
+    }
+
+    void noCollisionPlan(MotorManager (&motor_manager_)[N_MOTORS])
+    {
+        int obstacle_num = 0;
+
+        catchrobo_msgs::MyRosCmd ros_cmd[N_MOTORS];
+        for (size_t i = 0; i < N_MOTORS; i++)
+        {
+            motor_manager_[i].getRosCmd(ros_cmd[i]);
+        }
+
+        float z_top = obstacles_rad[obstacle_num].edge[2][1];
+        //// 下から上に向かうときは何も変えなくて大丈夫
+        if (ros_cmd[2].position > z_top)
+        {
+            return;
+        }
+        //// 下が目標値のときは壁より下がりすぎないよう注意
+
+        //// 壁をまたぐかチェック
+        if (isOverHill(ros_cmd[0].position, ros_cmd[1].position, obstacles_rad[obstacle_num]))
+        {
+            motor_manager_[2].setObstacleInfo(true, true, z_top);
+        }
+    }
+
+    bool isOverHill(float target_x, float target_y, Obstacle &obstacle)
+    {
+        ////丘をまたぐとき
+        // return true
+
+        //// でなければ
+        return false;
+    }
+
+public:
+    ObstacleAvoidance(/* args */);
+    ~ObstacleAvoidance();
+
+    void changePositionLimit(MotorManager (&motor_manager_)[N_MOTORS])
+    {
+        avoidSurface(motor_manager_);
+        noCollisionPlan(motor_manager_);
     }
 };
 
