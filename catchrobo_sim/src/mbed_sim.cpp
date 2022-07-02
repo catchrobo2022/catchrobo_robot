@@ -1,5 +1,5 @@
-// #define USE_MBED
-
+//  #define USE_MBED
+#define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
@@ -146,7 +146,9 @@ int main(int argc, char **argv)
 #endif
 
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
-    motor_driver_bridge.init(motorDriverCallback);
+
+    int motor_directions[] = {-1, -1, -1, 1};
+    motor_driver_bridge.init(motorDriverCallback, motor_directions);
 
     //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
     for (size_t i = 0; i < N_MOTORS; i++)

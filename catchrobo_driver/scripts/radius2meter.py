@@ -41,6 +41,11 @@ class Radius2Meter:
                 i + joint_num
             ]  # (velocities[i] - self._meter_msg.velocity[i]) / self._dt
             # velocities[i] = vel
+
+        # for i in range(3):
+        #     positions[i] *= -1
+        #     velocities[i] *= -1
+        #     effort[i] *= -1
         self._meter_msg.position = positions
         self._meter_msg.velocity = velocities
         self._meter_msg.effort = effort

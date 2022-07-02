@@ -119,11 +119,15 @@ class Robot:
         if not self._main_run_ok:
             return
         self._motors[3].go(self.OPEN_GRIPPER_RAD)
+        if wait:
+            self.wait_arrive(3)
 
     def close_gripper(self, wait=True):
         if not self._main_run_ok:
             return
         self._motors[3].go(self.CLOSE_GRIPPER_RAD)
+        if wait:
+            self.wait_arrive(3)
 
     def peg_in_hole(self):
         if not self._main_run_ok:

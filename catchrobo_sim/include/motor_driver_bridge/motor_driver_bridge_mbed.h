@@ -13,9 +13,14 @@ class MotorDriverBridge
 public:
     MotorDriverBridge() : can_(CAN_RD, CAN_TD), led(LED_PIN){};
 
-    void init(void (*callback_function)(const StateStruct &input))
+    void init(void (*callback_function)(const StateStruct &input), const int (&direction)[4])
     {
         callback_function_ = callback_function;
+        // direction_ = direction;
+        for (size_t i = 0; i < 4; i++)
+        {
+            direction_[i] = direction[i];
+        }
 
         can_.frequency(CAN_BAUD_RATE);
         can_.attach(callback(this, &MotorDriverBridge::canCallback)); // attach 'CAN receive-complete' interrupt handler
@@ -85,6 +90,8 @@ public:
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
     DigitalOut led;
+    int direction_[4]; // motorの動く向き. 配列数が直打ちなのが微妙すぎる。
+
     void (*callback_function_)(const StateStruct &input);
 
     ////IDについて : motor driverのCAN_IDは1,2,...だが、1始まりだとプログラムが面倒。なのでインターフェースとしてはmotor drive の id を 0,1,...とし、内部で1を足す実装とした
@@ -111,13 +118,16 @@ private:
     {
         /// unpack ints from can buffer ///
         int id = rxMsg.data[0];
+
         int p_int = (rxMsg.data[1] << 8) | rxMsg.data[2];
         int v_int = (rxMsg.data[3] << 4) | (rxMsg.data[4] >> 4);
         int i_int = ((rxMsg.data[4] & 0xF) << 8) | rxMsg.data[5];
         /// convert unsigned ints to floats ///
-        float p = uint_to_float(p_int, P_MIN, P_MAX, 16);
-        float v = uint_to_float(v_int, V_MIN, V_MAX, 12);
-        float i = uint_to_float(i_int, -I_MAX, I_MAX, 12);
+        int list_id = CanId2ListId(id);
+        int direction = direction_[list_id];
+        float p = uint_to_float(p_int, P_MIN, P_MAX, 16) * direction;
+        float v = uint_to_float(v_int, V_MIN, V_MAX, 12) * direction;
+        float i = uint_to_float(i_int, -I_MAX, I_MAX, 12) * direction;
 
         state.id = CanId2ListId(id);
         state.position = p;
@@ -128,11 +138,12 @@ private:
     void pack_cmd(const ControlStruct &control, CANMessage &txMsg)
     {
         /// limit data to be within bounds ///
-        float p_des = fminf(fmaxf(P_MIN, control.p_des), P_MAX);
-        float v_des = fminf(fmaxf(V_MIN, control.v_des), V_MAX);
+        int direction = direction_[control.id];
+        float p_des = fminf(fmaxf(P_MIN, control.p_des), P_MAX) * direction;
+        float v_des = fminf(fmaxf(V_MIN, control.v_des), V_MAX) * direction;
         float kp = fminf(fmaxf(KP_MIN, control.kp), KP_MAX);
         float kd = fminf(fmaxf(KD_MIN, control.kd), KD_MAX);
-        float torque_feed_forward = fminf(fmaxf(I_MIN, control.torque_feed_forward), I_MAX);
+        float torque_feed_forward = fminf(fmaxf(I_MIN, control.torque_feed_forward), I_MAX) * direction;
         /// convert floats to unsigned ints ///
         int p_int = float_to_uint(p_des, P_MIN, P_MAX, 16);
         int v_int = float_to_uint(v_des, V_MIN, V_MAX, 12);

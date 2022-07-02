@@ -93,5 +93,6 @@ motor driverに電源を入れると現在値を取得できる->rvizのアー�
 
 printfしたいなら
 ```
+sudo chmod a+rw /dev/ttyACM0 
 cu -s 921600 -l /dev/ttyACM0
 ```
