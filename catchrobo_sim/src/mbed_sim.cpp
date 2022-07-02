@@ -79,7 +79,10 @@ void mbed2MotorDriverTimerCallback()
         motor_driver_bridge.publish(control[i]);
         if (result[i] == ControlResult::FINISH)
         {
-            ros_bridge.publishFinishFlag(i);
+            error.id = i;
+            error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+            ros_bridge.publishError(error);
+            // ros_bridge.publishFinishFlag(i);
         }
     }
     // switch (result[i])

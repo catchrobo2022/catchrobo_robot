@@ -4,6 +4,7 @@ uint8 OVER_VELOCITY=2
 uint8 OVER_TORQUE=3
 uint8 FAR_TARGET_POSITION=4
 uint8 COLLISION=5
+uint8 FINISH = 6
 
 uint8 id
 uint8 error_code
