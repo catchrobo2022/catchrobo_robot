@@ -13,7 +13,12 @@
 #include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 
-const float MBED2ROS_DT = 0.01;    // 10Hz
+#ifdef USB_MBED
+const float MBED2ROS_DT = 1; // 10Hz
+#else
+const float MBED2ROS_DT = 0.01; // 10Hz
+#endif
+
 const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 
