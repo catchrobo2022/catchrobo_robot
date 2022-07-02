@@ -20,6 +20,8 @@
 #include <rviz/ogre_helpers/arrow.h>
 #include <geometry_msgs/PointStamped.h>
 
+#include <jsk_rviz_plugins/Pictogram.h>
+
 namespace Ui {
 class Blue;
 }
@@ -43,12 +45,15 @@ public:
     int touch_mode=0;
     float ti=180.0;
     int stop_ti = 0;
+    int type_count = 0;
 
     std_msgs::Int32MultiArray array_obj;
     std_msgs::Int32MultiArray array_gl;
     std_msgs::Int8 menu;
 
     std::string project_path;
+
+    jsk_rviz_plugins::Pictogram pictgram;
 
     void onInitialize() override;
     void set_icon();
@@ -65,14 +70,13 @@ public:
     void timer();
     void marker_obj(int num, int i);
     void marker_gl(int num, int i);
+    void jsk_show();
 
 private Q_SLOTS:
   void obj_Clicked();
   void gl_Clicked();
-  void initialize();
-  void start();
-  void pause();
-  void stop();
+  void menu_panel();
+  void reset_menu();
   void touch_rm();
   void touch_tar();
   void countdown();
@@ -92,6 +96,8 @@ protected:
   ros::Publisher pub_obj;
   ros::Publisher pub_gl;
   ros::Publisher pub_menu;
+  ros::Publisher pictgram_pub;
+  ros::Publisher float_pub;
   ros::Subscriber sub_obj;
   ros::Subscriber sub_gl;
   ros::Timer ti_; 

@@ -64,8 +64,13 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   )
+
+
+#add_executable(catchrobo_gui src/basic_shapes.cpp)
+#target_link_libraries(basic_shapes ${catkin_LIBRARIES})
 ## add library path ##
 link_directories(${catkin_LIBRARY_DIRS})
+
 
 # source codes #
 

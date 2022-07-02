@@ -34,6 +34,7 @@ Red::Red(QWidget *parent) :
     ui->setupUi(this);
     project_path = ros::package::getPath("catchrobo_gui");
     this->set_icon();
+    this->reset_menu();
     //this->setStyleSheet("background-color: Red;");
     ui->shootbox->setStyleSheet("background-color: rgb(0,255,0);");
     ui->comAREA->setStyleSheet("background-color: rgb(210,210,210);");
@@ -53,8 +54,6 @@ Red::Red(QWidget *parent) :
       findChild<QFrame*>(QString("frm"+QString::number(num)))->setStyleSheet("color: rgb(0,255,0)");
       findChild<QFrame*>(QString("frm"+QString::number(num)))->setLineWidth(2);
     }
-
-    ui->bt_add->setChecked(1);
 
     //rostopic
     pub_obj = nh_.advertise<std_msgs::Int32MultiArray>("obj_rigo", 1);
@@ -88,13 +87,13 @@ void Red::onInitialize()
     connect(findChild<QPushButton*>(QString("gl"+QString::number(i))), SIGNAL(clicked()), this, SLOT(gl_Clicked()));
   }
 
-  connect(findChild<QPushButton*>(QString("bt_init")), SIGNAL(clicked()), this, SLOT(initialize()));
-  connect(findChild<QPushButton*>(QString("bt_sta")), SIGNAL(clicked()), this, SLOT(start()));
-  connect(findChild<QPushButton*>(QString("bt_pus")), SIGNAL(clicked()), this, SLOT(pause()));
-  connect(findChild<QPushButton*>(QString("bt_stp")), SIGNAL(clicked()), this, SLOT(stop()));
+  connect(findChild<QPushButton*>(QString("origin")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("calib")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("init")), SIGNAL(clicked()), this, SLOT(menu_panel()));
+  connect(findChild<QPushButton*>(QString("start")), SIGNAL(clicked()), this, SLOT(menu_panel()));
 
-  connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
-  connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
+  //connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
+  //connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
   //QTimer::singleShot(sendtime, this, SLOT(hogehoge));
 }
 
@@ -260,44 +259,49 @@ void Red::count_gl(){
   this->count_score();
 }
 
-void Red::initialize(){
+void Red::menu_panel(){
   status = 0;
-  ui->bt_init->setChecked(1);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(0);
+  QPushButton * btn = dynamic_cast<QPushButton*>(sender());
+  QString name = btn->objectName();
+  if(QString("origin") == name){
+    if(QString("origin") == btn->text()){
+      btn->setText("Really?");
+    }else{
+      status = 1;
+      btn->setText("origin");
+      ui->origin->setEnabled(0);
+      ui->calib->setEnabled(1);
+      ui->init->setEnabled(1);
+    }
+  }else if(QString("calib") == name){
+    status = 2;
+    ui->calib->setEnabled(0);
+    ui->init->setEnabled(1);
+  }else if(QString("init") == name){
+    status = 3;
+    ui->calib->setEnabled(0);
+    ui->init->setEnabled(0);
+    ui->start->setEnabled(1);
+  }else if(QString("start") == name){
+    status = 4;
+    ti = 180.0;
+    stop_ti = 0;
+    QTimer::singleShot(100, this, SLOT(countdown()));
+    ui->start->setEnabled(0);
+    ui->origin->setEnabled(1);
+  }
+
   this->send_menu_msgs(false);
-  ti = 180.0;
   this->timer();
 }
-void Red::start(){
-  status = 1;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(1);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(0);
-  this->send_menu_msgs(false);
-  stop_ti = 0;
-  QTimer::singleShot(100, this, SLOT(countdown()));
+
+void Red::reset_menu(){
+  ui->origin->setEnabled(1);
+  ui->calib->setEnabled(0);
+  ui->init->setEnabled(0);
+  ui->start->setEnabled(0);
 }
-void Red::pause(){
-  status = 2;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(1);
-  ui->bt_stp->setChecked(0);
-  this->send_menu_msgs(false);
-}
-void Red::stop(){
-  status = 3;
-  ui->bt_init->setChecked(0);
-  ui->bt_sta->setChecked(0);
-  ui->bt_pus->setChecked(0);
-  ui->bt_stp->setChecked(1);
-  this->send_menu_msgs(false);
-  stop_ti = 1;
-  this->timer();
-}
+/*
 void Red::touch_rm(){
   touch_mode = 0;
   ui->bt_add->setChecked(1);
@@ -308,6 +312,7 @@ void Red::touch_tar(){
   ui->bt_add->setChecked(0);
   ui->bt_tar->setChecked(1);
 }
+*/
 void Red::count_score(){
   int score = 0;
   int bonus = 1;
