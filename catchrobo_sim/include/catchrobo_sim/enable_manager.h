@@ -53,25 +53,24 @@ public:
     EnableManager() : current_enable_(false), motor_num_(3)
     {
 
-        const float pi = 3.141592653589;
-        pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
-        float position_min_m[] = {0, -0.44125, 0, 0};
-        float position_max_m[] = {1.3525, 0.44125, 0.145, 1.570796327};
-        float velocity_limit_m[] = {3.093972094, 3.093972094, 3.093972094, 6.981317008};
-        float torque_limit_m[] = {32.57947937, 32.57947937, 32.57947937, 1.0787315};
+        // const float pi = 3.141592653589;
+        // pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
+        float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
+        float position_min_rad[] = {0, -25.67088441, 0};
+        float velocity_limit_rad[] = {180, 180, 180};
+        float torque_limit_rad[] = {136.2719005, 156.7212355, 278.8550066};
         for (size_t i = 0; i < motor_num_; i++)
         {
-            /* code */
-            float pos_min = m2rad(i, position_min_m[i]);
-            float pos_max = m2rad(i, position_max_m[i]);
-            float vel_min = m2rad(i, -velocity_limit_m[i]);
-            float vel_max = m2rad(i, velocity_limit_m[i]);
-            float torque_min = m2rad(i, -torque_limit_m[i]);
-            float torque_max = m2rad(i, torque_limit_m[i]);
+            // float pos_min = m2rad(i, position_min_m[i]);
+            // float pos_max = m2rad(i, position_max_m[i]);
+            // float vel_min = m2rad(i, -velocity_limit_m[i]);
+            // float vel_max = m2rad(i, velocity_limit_m[i]);
+            // float torque_min = m2rad(i, -torque_limit_m[i]);
+            // float torque_max = m2rad(i, torque_limit_m[i]);
 
-            check_position[i].init(pos_min, pos_max);
-            check_velocity[i].init(vel_min, vel_max);
-            check_torque[i].init(torque_min, torque_max);
+            check_position[i].init(position_min_rad[i], position_max_rad[i]);
+            check_velocity[i].init(-velocity_limit_rad[i], velocity_limit_rad[i]);
+            check_torque[i].init(-torque_limit_rad[i], torque_limit_rad[i]);
         }
     };
     void setCmd(const catchrobo_msgs::EnableCmd &command)
@@ -99,6 +98,7 @@ public:
 
         for (size_t i = 0; i < motor_num_; i++)
         {
+            error.id = i;
             if (!check_position[i].check(state.position[i]))
             {
                 error.error_code = catchrobo_msgs::ErrorCode::OVER_POSITION;
@@ -130,22 +130,22 @@ public:
 
 private:
     catchrobo_msgs::EnableCmd cmd_;
-    const int motor_num_;
     CheckBound check_position[3];
     CheckBound check_velocity[3];
     CheckBound check_torque[3];
     bool current_enable_;
-    float pulley_radius_;
+    // float pulley_radius_;
+    const int motor_num_;
     //// robot座標系での[m] -> motor回転角度[rad]に変換. gripperは入力をそのまま返す
-    float m2rad(int motor_id, float position)
-    {
-        float ret = position / pulley_radius_;
-        if (motor_id == 1)
-        {
-            ret *= 0.5;
-        }
-        return ret;
-    }
+    // float m2rad(int motor_id, float position)
+    // {
+    //     float ret = position / pulley_radius_;
+    //     if (motor_id == 1)
+    //     {
+    //         ret *= 0.5;
+    //     }
+    //     return ret;
+    // }
 
     // void checkOverPosition(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
     // {

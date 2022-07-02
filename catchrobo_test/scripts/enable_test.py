@@ -18,14 +18,14 @@ if __name__ == "__main__":
 
     ################################################### motor on 指示
     enable_command = template.generate_enable_command()
-    enable_command.enable_check = True
+    enable_command.enable_check = False
     rospy.sleep(1)  # rosが起動するのを待つ
     pub_enable.publish(enable_command)
     print(enable_command)
 
     ################################################# joint command
     ### enable内に戻る
-    command = template.generate_velocity_command(0, 7, 0)
+    command = template.generate_velocity_command(0, 10, 0)
     command.position_max = template.robot_m2rad(command.id, 10000)
     command.velocity_limit = template.robot_m2rad(command.id, 15)
     print(command)

@@ -66,6 +66,8 @@ MotorDriverSim::MotorDriverSim() : nh_(""), private_nh_("~")
     sub_enable_ = nh_.subscribe("/motor_driver_enable", 5, &MotorDriverSim::enable, this);
     sub_disable_ = nh_.subscribe("/motor_driver_disable", 5, &MotorDriverSim::disable, this);
 
+    private_nh_.param<double>("init_position_rad", state_.position, 0);
+
     ROS_INFO_STREAM("motor id: " << id_ << " dt: " << dt_);
 }
 
@@ -74,7 +76,6 @@ void MotorDriverSim::sampleCallback(const catchrobo_msgs::ControlStruct::ConstPt
     if (input->id == id_)
     {
         cmd_ = *input;
-        // ROS_INFO_STREAM("cb " << cmd_);
     }
 }
 
@@ -86,13 +87,6 @@ void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
     {
         vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
     }
-    // if (cmd_.id == 0)
-    // {
-    //     ROS_INFO_STREAM("current " << state_.position);
-    //     ROS_INFO_STREAM("cmd " << cmd_);
-    //     ROS_INFO_STREAM("velocity" << vel);
-    // }
-
     state_.velocity = vel;
     state_.position += state_.velocity * dt_;
     // state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;

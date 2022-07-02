@@ -36,6 +36,7 @@ public:
             {
                 result = ControlResult::FINISH;
                 offset = state.position - target_.position;
+                is_arrived_ = true;
                 return;
             }
             else

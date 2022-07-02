@@ -35,6 +35,7 @@ public:
         data.kp = control.kp;
         data.kd = control.kd;
         pub_.publish(data);
+
     }
 
     void enableMotor(int id, bool is_enable)

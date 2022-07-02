@@ -1,4 +1,4 @@
-//  #define USE_MBED
+// #define USE_MBED
 
 #ifdef USE_MBED
 #include "mbed.h"
@@ -62,9 +62,6 @@ void mbed2MotorDriverTimerCallback()
     }
 
     //// 初期値は全て0 -> 脱力
-    ControlStruct control[JOINT_NUM] = {};
-    ControlResult::ControlResult result[JOINT_NUM] = {};
-    // ROS_INFO_STREAM(enable_manager.getEnable());
     if (enable_manager.getEnable()) //// enableならtをすすめる
     {
         robot_manager.nextStep(MBED2MOTOR_DT);
@@ -73,6 +70,8 @@ void mbed2MotorDriverTimerCallback()
     {
         robot_manager.disable();
     }
+    ControlStruct control[JOINT_NUM] = {};
+    ControlResult::ControlResult result[JOINT_NUM] = {};
     robot_manager.getMotorDrivesCommand(control, result);
     //// update target value
     for (int i = 0; i < JOINT_NUM; i++)
@@ -149,6 +148,9 @@ int main(int argc, char **argv)
     //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
     for (size_t i = 0; i < N_MOTORS; i++)
     {
+#ifdef USE_MBED
+        wait(0.5);
+#endif
         motor_driver_bridge.setOrigin(i);
     }
 

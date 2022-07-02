@@ -1,0 +1,13 @@
+<library path="libcatchrobo_gui">
+  <class name="field/Blue" type="field::Blue" base_class_type="rviz::Panel">
+    <description>
+        Panel plugin.
+    </description>
+  </class>
+  <class name="field/Red" type="field::Red" base_class_type="rviz::Panel">
+    <description>
+        Panel plugin.
+    </description>
+  </class>
+
+</library>

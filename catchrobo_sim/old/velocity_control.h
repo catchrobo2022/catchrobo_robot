@@ -43,21 +43,6 @@ private:
         cmd.p_des = target.position;
         cmd.v_des = target.velocity;
 
-        //        double accel = (target.velocity - state.velocity) / dt_;
-        //        if (accel > target.acceleration_limit)
-        //        {
-        //            accel = target.acceleration_limit;
-        //            cmd.v_des = state.velocity + accel * dt_;
-        //            //            ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
-        //        }
-        //        if (accel < -target.acceleration_limit)
-        //        {
-        //            accel = -target.acceleration_limit;
-        //            cmd.v_des = state.velocity + accel * dt_;
-        //        }
-
-        //        ROS_INFO_STREAM(target);
-        // ROS_INFO_STREAM("cmd.v_des" << cmd.v_des);
         cmd.torque_feed_forward = target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
