@@ -36,11 +36,6 @@ class Command():
         self.command_array = MyRosCmdArray()  # MyRosCmdArray型の自作msg型のインスタンス
         self.manualInput()
 
-    #設定したやつを出力用変数に突っ込む
-    def setCommandArray(self):
-        self.command_array.command_array = [
-            self.command_x, self.command_y, self.command_z, self.command_g]
-
     def getCommandX(self):
         return self.command_x
 
@@ -56,28 +51,10 @@ class Command():
     #　手動で値をいじりたいとき用
     #  初期化で値をいじる（引数に入れてつかわないから変更には使えない）
     #　position ,velocityだけの変更なら関数いらん
+    #　いらない
     def manualInput(self):
         print("input")
         print("フィールド全部試す")
-        # self.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
-        # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
-        # self.command_x.position = self.template.robot_m2rad(self.command_x.id, 1.0)
-        # self.command_x.velocity = self.template.robot_m2rad(self.command_x.id, 1.0)
-        # self.command_x.inertia = 1.0
-        # self.command_x.effort = 0
-
-        # kp>kdで位置制御　kp=0 kd=1とかで速度制御
-        # 位置制御でもkdが大きくないと早く動かない 5mm の移動ならkp50 kd10ぐらいでいいかも
-        # self.command_x.kp = 50
-        # self.command_x.kd = 10
-        # self.command_y.kp = 0
-        # self.command_y.kd = 1
-        # self.command_z.kp = 0
-        # self.command_z.kd = 1
-        # self.command_g.kp = 0
-        # self.command_g.kd = 1
-
-
 
 class Manual():
     def __init__(self, Button):
@@ -108,8 +85,6 @@ class Manual():
         # 一つだけの軸で指令を送りたい場合用
         self.pub_ros_cmd = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
         self.pub_enable_cmd = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
-        # まとめて4軸分の指令を送るよう
-        self.pub_my_joint_control = rospy.Publisher("/my_joint_control", MyRosCmdArray, queue_size=1)
         self.pub_manual_mode = rospy.Publisher("/enable_manual_mode", Int16, queue_size=1)
 
         rospy.Subscriber("/joy", Joy, self.joyCallback, queue_size=1)
@@ -120,15 +95,16 @@ class Manual():
         self.joy_state = joy_msg
         self.manualControl()
 
-        self.pub_my_joint_control.publish(self.command.command_array)
         self.pub_enable_cmd.publish(self.command.enable_command)
         # print(self.command.enable_command)
         self.pub_manual_mode.publish(self.enable_manual)
         
         #一つだけの軸で指令を送りたい場合用
-        #self.pub_ros_cmd.publish(self.command.command_g)
+        self.pub_ros_cmd.publish(self.command.command_x)
+        self.pub_ros_cmd.publish(self.command.command_y)
+        self.pub_ros_cmd.publish(self.command.command_z)
+        # gripperだけ押したときにpub
 
-        
 
     #　現在位置取得用
     def jointCallback(self, joint_state_msg):
@@ -137,7 +113,6 @@ class Manual():
             for i in range(4):
                 self.joint_current_pos[i] = self.joint_state_feedback.position[i]
             self.joint_current_pos[1] *= 2
-        #print(self.joint_current_pos[1])
 
     def getMsg(self):
         return self.joy_state
@@ -159,27 +134,9 @@ class Manual():
             self.command.command_z.kp = KP_ALL
             self.command.command_z.kd = KD_ALL
         elif(axe_num == 3):  # g
-            self.command.command_g.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_g.mode = MyRosCmd.POSITION_CTRL_MODE
             self.command.command_g.kp = KP_ALL
             self.command.command_g.kd = KD_ALL
-        # KP_ALL = 50
-        # KD_ALL = 10
-        # if(axe_num == 0): # x
-        #     self.command.command_x.mode = MyRosCmd.POSITION_CTRL_MODE
-        #     self.command.command_x.kp = KP_ALL
-        #     self.command.command_x.kd = KD_ALL
-        # elif(axe_num == 1): # y
-        #     self.command.command_y.mode = MyRosCmd.POSITION_CTRL_MODE
-        #     self.command.command_y.kp = KP_ALL
-        #     self.command.command_y.kd = KD_ALL
-        # elif(axe_num == 2):  # z
-        #     self.command.command_z.mode = MyRosCmd.POSITION_CTRL_MODE
-        #     self.command.command_z.kp = KP_ALL
-        #     self.command.command_z.kd = KD_ALL
-        # elif(axe_num == 3):  # g
-        #     self.command.command_g.mode = MyRosCmd.POSITION_CTRL_MODE
-        #     self.command.command_g.kp = KP_ALL
-        #     self.command.command_g.kd = KD_ALL
         
 
     # 速度制御のパラメーラ設定
@@ -265,14 +222,12 @@ class Manual():
             self.posSet(0)
             self.position_var_manual[0] += cmd_tmp.robot_m2rad(
                 cmd_x.id, 0.005*self.COLOR_NUM)
-            # self.position_var_manual[0] += cmd_tmp.robot_m2rad(cmd_x.id, 0.5)
             self.button_count[b_num.RIGHT_LEFT] = 1
             print("b_left")
         elif(joy_a[b_num.RIGHT_LEFT] == -1 and self.button_count[b_num.RIGHT_LEFT] == 0):
             self.posSet(0)
             self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
                 cmd_x.id, 0.005*self.COLOR_NUM)
-            # self.position_var_manual[0] -= cmd_tmp.robot_m2rad(cmd_x.id, 0.5)
             self.button_count[b_num.RIGHT_LEFT] = 1
             print("b_right")
         elif(joy_a[b_num.RIGHT_LEFT] == 0):
@@ -284,14 +239,12 @@ class Manual():
             self.posSet(1)
             self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
                 cmd_y.id, 0.005*self.COLOR_NUM)
-            # self.position_var_manual[1] += cmd_tmp.robot_m2rad(cmd_y.id, 1)
             self.button_count[b_num.UP_DOWN] = 1
             print("b_forward")
         elif(joy_a[b_num.UP_DOWN] == -1 and self.button_count[b_num.UP_DOWN] == 0):
             self.posSet(1)
             self.position_var_manual[1] += cmd_tmp.robot_m2rad(
                 cmd_y.id, 0.005*self.COLOR_NUM)
-            # self.position_var_manual[1] -= cmd_tmp.robot_m2rad(cmd_y.id, 1)
             self.button_count[b_num.UP_DOWN] = 1
             print("b_back")
         elif(joy_a[b_num.UP_DOWN] == 0):
@@ -301,6 +254,7 @@ class Manual():
         ### 指令値適当
         #gripper
         # grab # release
+        # ここでpubしてる
         if(joy_b[b_num.CIRCLE] == 1 and self.button_count[b_num.CIRCLE] == 0):
             self.posSet(3)
             self.position_var_manual[3] = cmd_tmp.robot_m2rad(cmd_g.id, 1.5)
@@ -308,6 +262,7 @@ class Manual():
             print("release")
         elif(joy_b[b_num.CIRCLE] == 0 and self.button_count[b_num.CIRCLE] == 1):
             self.button_count[b_num.CIRCLE] = 2
+            self.pub_ros_cmd.publish(self.command.command_g)
         elif(joy_b[b_num.CIRCLE] == 1 and self.button_count[b_num.CIRCLE] == 2):
             self.posSet(3)
             self.position_var_manual[3] = cmd_tmp.robot_m2rad(cmd_g.id, 0.0)
@@ -315,6 +270,7 @@ class Manual():
             print("grab")
         elif(joy_b[b_num.CIRCLE] == 0 and self.button_count[b_num.CIRCLE] == 3):
             self.button_count[b_num.CIRCLE] = 0
+            self.pub_ros_cmd.publish(self.command.command_g)
 
         
         # 自動→手動切り替え
@@ -331,7 +287,7 @@ class Manual():
         
         # 原点にもどす
         # 長押ししてね
-        # よくわからないけど、しきい値がある　29ぐらい 0.5mぐらいの位置？
+        # よくわからないけど、しきい値がある　29ぐらい 0.5mぐらいの位置？ なおった？
         if(joy_b[b_num.SQUARE] == 1):
             #原点に戻す処理
             print("zero")
@@ -350,8 +306,6 @@ class Manual():
             cmd_z.position = self.position_var_manual[2] + \
                 cmd_tmp.robot_m2rad(cmd_z.id, self.joint_current_pos[2])
             cmd_g.position = self.position_var_manual[3]
-            # cmd_g.position = self.position_var_manual[3] + \
-            #     cmd_tmp.robot_m2rad(cmd_g.id, self.joint_current_pos[3])
 
 
         # 待機　pause
@@ -376,14 +330,12 @@ class Manual():
             print("restart")
 
 
-        self.command.setCommandArray()
-
     # pauseのときの処理
+    # gripperだけ止めない
     def pauseProcess(self):
         cmd_x = self.command.command_x
         cmd_y = self.command.command_y
         cmd_z = self.command.command_z
-        cmd_g = self.command.command_g
         cmd_tmp = self.command.template
 
         #位置　現在位置を保持
@@ -393,13 +345,10 @@ class Manual():
             cmd_y.id, self.joint_current_pos[1])
         cmd_z.position = cmd_tmp.robot_m2rad(
             cmd_z.id, self.joint_current_pos[2])
-        cmd_g.position = cmd_tmp.robot_m2rad(
-            cmd_g.id, self.joint_current_pos[3])
         #速度　すべて初期値
         cmd_x.velocity = cmd_tmp.robot_m2rad(cmd_x.id, 0.0)
         cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, 0.0)
         cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
-        cmd_g.velocity = cmd_tmp.robot_m2rad(cmd_g.id, 0.0)
 
     def showButtonRole(self):
         print('''
@@ -410,9 +359,11 @@ class Manual():
         horizontal button : pos x
         vertical button : pos y
 
-        circle : gripper grab
-        cross : girpper release
+        circle : gripper grab & release
+        cross : pause
         square : zero point
+
+        ps: manual on
 
         touch_pad : show button role
 
