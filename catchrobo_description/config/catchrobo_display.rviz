@@ -7,7 +7,6 @@ Panels:
         - /RobotModel1/Links1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /OverlayDiagnostic4
       Splitter Ratio: 0.5972973108291626
     Tree Height: 250
   - Class: rviz/Selection
@@ -260,6 +259,30 @@ Visualization Manager:
       stall duration: 5
       top: 100
       type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: gripper"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 256
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: gripper"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 356
+      type: EVA
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -288,16 +311,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.00977897644043
+      Distance: 6.580430507659912
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.48523446917533875
-        Y: 0.28688547015190125
-        Z: -0.5317886471748352
+        X: 0.11358759552240372
+        Y: 0.38088473677635193
+        Z: -0.7604147791862488
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
