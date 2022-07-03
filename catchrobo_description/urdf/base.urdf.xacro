@@ -21,13 +21,13 @@
     <link name="base/base_link">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/base.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full.dae" scale="${visual_mesh_scale}"/>
         </geometry>
         <material name="white"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/base.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/base_full.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
