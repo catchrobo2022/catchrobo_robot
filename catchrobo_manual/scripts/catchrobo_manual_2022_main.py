@@ -173,14 +173,18 @@ class Manual():
 
         #速度制御
         # kp0だから、positionは更新しなくていい
+        # 速度を一気に調整用
+        VELOCITY_VAR=1.0
         # x軸
         if(joy_a[b_num.LX] > 0.3):
             self.velSet(0)
-            cmd_x.velocity = cmd_tmp.robot_m2rad(cmd_x.id, 3.0*self.COLOR_NUM)
+            cmd_x.velocity = cmd_tmp.robot_m2rad(
+                cmd_x.id, VELOCITY_VAR*self.COLOR_NUM)
             # print("left")
         elif(joy_a[b_num.LX] < -0.3):
             self.velSet(0)
-            cmd_x.velocity = cmd_tmp.robot_m2rad(cmd_x.id, -3.0*self.COLOR_NUM)
+            cmd_x.velocity = cmd_tmp.robot_m2rad(
+                cmd_x.id, (-1)*VELOCITY_VAR*self.COLOR_NUM)
             # print("right")
         else:
             cmd_x.velocity = cmd_tmp.robot_m2rad(cmd_x.id, 0.0)
@@ -189,11 +193,13 @@ class Manual():
         #y軸
         if(joy_a[b_num.LY] > 0.3):
             self.velSet(1)
-            cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, -3.0*self.COLOR_NUM)
+            cmd_y.velocity = cmd_tmp.robot_m2rad(
+                cmd_y.id, (-1)*VELOCITY_VAR*self.COLOR_NUM)
             # print("forward")
         elif(joy_a[b_num.LY] < -0.3):
             self.velSet(1)
-            cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, 3.0*self.COLOR_NUM)
+            cmd_y.velocity = cmd_tmp.robot_m2rad(
+                cmd_y.id, VELOCITY_VAR*self.COLOR_NUM)
             # print("back")
         else:
             cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, 0.0)
@@ -203,11 +209,11 @@ class Manual():
         #これは位置制御がいいね。速度制御はいらいらする
         if(joy_b[b_num.L1] == 1):
             self.velSet(2)
-            cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 3.0)
+            cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, VELOCITY_VAR)
             # print("up")
         elif(joy_b[b_num.L2] == 1):
             self.velSet(2)
-            cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, -3.0)
+            cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, (-1)*VELOCITY_VAR)
             # print("down")
         else:
             cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
