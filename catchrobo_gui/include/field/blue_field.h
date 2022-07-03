@@ -50,6 +50,7 @@ public:
     std_msgs::Int32MultiArray array_obj;
     std_msgs::Int32MultiArray array_gl;
     std_msgs::Int8 menu;
+    std_msgs::Int8 arrow;
 
     std::string project_path;
 
@@ -96,6 +97,7 @@ protected:
   ros::Publisher pub_obj;
   ros::Publisher pub_gl;
   ros::Publisher pub_menu;
+  ros::Publisher pub_arrow;
   ros::Publisher pictgram_pub;
   ros::Publisher float_pub;
   ros::Subscriber sub_obj;

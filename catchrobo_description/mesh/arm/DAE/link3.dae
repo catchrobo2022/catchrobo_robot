@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.78.0 commit date:2016-09-26, commit time:12:42, hash:4bb1e22</authoring_tool>
     </contributor>
-    <created>2022-05-25T10:10:26</created>
-    <modified>2022-05-25T10:10:26</modified>
+    <created>2022-06-29T08:52:15</created>
+    <modified>2022-06-29T08:52:15</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -79,7 +79,7 @@
   </library_lights>
   <library_images/>
   <library_effects>
-    <effect id="Material__116-effect">
+    <effect id="Material__107-effect">
       <profile_COMMON>
         <technique sid="common">
           <blinn>
@@ -113,8 +113,8 @@
     </effect>
   </library_effects>
   <library_materials>
-    <material id="Material__116-material" name="Material__116">
-      <instance_effect url="#Material__116-effect"/>
+    <material id="Material__107-material" name="Material__107">
+      <instance_effect url="#Material__107-effect"/>
     </material>
   </library_materials>
   <library_geometries>
@@ -152,7 +152,7 @@
         <vertices id="_____b_h1-mesh-vertices">
           <input semantic="POSITION" source="#_____b_h1-mesh-positions"/>
         </vertices>
-        <polylist material="Material__116-material" count="1916">
+        <polylist material="Material__107-material" count="1916">
           <input semantic="VERTEX" source="#_____b_h1-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#_____b_h1-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#_____b_h1-mesh-map-0" offset="2" set="0"/>
@@ -180,7 +180,7 @@
               <instance_geometry url="#_____b_h1-mesh" name="Untitled">
                 <bind_material>
                   <technique_common>
-                    <instance_material symbol="Material__116-material" target="#Material__116-material"/>
+                    <instance_material symbol="Material__107-material" target="#Material__107-material"/>
                   </technique_common>
                 </bind_material>
               </instance_geometry>

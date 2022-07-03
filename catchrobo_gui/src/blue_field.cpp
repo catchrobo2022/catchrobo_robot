@@ -68,6 +68,10 @@ Blue::Blue(QWidget *parent) :
     float_pub = nh_.advertise<std_msgs::Float32>("abc", 10);
 
     pub_menu = nh_.advertise<std_msgs::Int8>("menu", 1);
+    pub_arrow = nh_.advertise<std_msgs::Int8>("arrow_sub", 1);
+
+    arrow.data = 0;
+    pub_arrow.publish(arrow);
 
     array_obj.data.resize(obj_num);
     array_gl.data.resize(obj_num);
@@ -265,12 +269,12 @@ void Blue::count_gl(){
 }
 
 void Blue::menu_panel(){
-  status = 0;
   QPushButton * btn = dynamic_cast<QPushButton*>(sender());
   QString name = btn->objectName();
   if(QString("origin") == name){
     if(QString("origin") == btn->text()){
       btn->setText("Really?");
+      status = 0;
     }else{
       status = 1;
       btn->setText("origin");
@@ -279,26 +283,40 @@ void Blue::menu_panel(){
       ui->init->setEnabled(1);
     }
   }else if(QString("calib") == name){
-    status = 2;
-    ui->calib->setEnabled(0);
-    ui->init->setEnabled(1);
-    this->jsk_show();
+    if(QString("1st point") == btn->text()){
+      status = 3;
+      arrow.data = 5;
+      btn->setText("2nd point");
+    }else if(QString("2nd point") == btn->text()){
+      status = 4;
+      arrow.data = 6;
+      btn->setText("3rd point");
+    }else if(QString("3rd point") == btn->text()){
+      status = 5;
+      arrow.data = 4;
+      btn->setText("1st point");
+    }else{
+      arrow.data = 4;
+      btn->setText("1st point");
+      status = 2;
+    }
+    pub_arrow.publish(arrow);
   }else if(QString("init") == name){
-    status = 3;
+    ui->calib->setText("2.Calib");
+    status = 6;
+    arrow.data = 0;
+    pub_arrow.publish(arrow);
     ui->calib->setEnabled(0);
     ui->init->setEnabled(0);
     ui->start->setEnabled(1);
   }else if(QString("start") == name){
-    status = 4;
+    status = 7;
     ti = 180.0;
     stop_ti = 0;
     QTimer::singleShot(100, this, SLOT(countdown()));
     ui->start->setEnabled(0);
     ui->origin->setEnabled(1);
   }
-
-  this->send_menu_msgs(false);
-  this->timer();
 }
 
 void Blue::reset_menu(){
