@@ -1,24 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from catchrobo_manager.next_action_enum import NextAction
 
+from geometry_msgs.msg import Point
+
+from catchrobo_manager.next_action_enum import NextAction
+from catchrobo_manager.jagarico.jagarico_database import JagaricoDatabase
+from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
 
 class WorkManager:
     def __init__(self, field):
-        # [TODO] csv読み込み
+        # [TODO] csv読み込み　
         # targetをGUIに教える
-        pass
 
-    def get_target(self):
+        self._database = JagaricoDatabase()
+        self._database.readCsv(field)
+        self._calculator=TargetJagaricoCalculator()
+
+    def get_target_id(self):
+        target_id = self._calculator.calcTarget(self._database)
+        return target_id
+    
+    def get_target_posi(self):
         ### [TODO] 目標ビスコ位置計算
-        position = [0, 0, 0]
+        target_id = self._calculator.calcTarget(self._database)
+        # geometry_msgのPoint型でpositionを渡す（去年のがそうなってた）
+        position = self._database.getPosi(target_id)
         ### [TODO] next_action計算
 
         return position
 
     def pick(self):
-        ### [TODO] ビスコ取得
-
+        ### [TODO] じゃがりこ取得
+        pick_id=self.get_target_id()
+        self._database.delete(pick_id)
+        
         next_action = NextAction.PICK
         return next_action
 
