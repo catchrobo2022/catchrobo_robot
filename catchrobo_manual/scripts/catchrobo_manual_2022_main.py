@@ -174,7 +174,7 @@ class Manual():
         #速度制御
         # kp0だから、positionは更新しなくていい
         # 速度を一気に調整用
-        VELOCITY_VAR=1.0
+        VELOCITY_VAR=0.1
         # x軸
         if(joy_a[b_num.LX] > 0.3):
             self.velSet(0)
