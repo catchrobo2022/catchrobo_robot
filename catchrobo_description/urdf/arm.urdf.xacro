@@ -53,7 +53,7 @@
     <joint name="${prefix}arm/joint2" type="prismatic">
       <parent link="${prefix}arm/link1"/>
       <child link="${prefix}arm/link2_1"/>
-      <origin xyz="0 0.1035 0" rpy="0 ${-90*M_PI/180} ${180*M_PI/180}"/>
+      <origin xyz="0 0.1135 0" rpy="0 ${-90*M_PI/180} ${180*M_PI/180}"/>
       <axis xyz="0 0 1"/>
       <limit lower="-0.43925" upper="0.43925" effort="10" velocity="5" acceleration="5"/>
     </joint>  
@@ -75,7 +75,7 @@
     <joint name="${prefix}arm/joint2_mimic" type="prismatic">
       <parent link="${prefix}arm/link2_1"/>
       <child link="${prefix}arm/link2_2"/>
-      <origin xyz="0.0422 0 0" rpy="0 0 0"/>
+      <origin xyz="0.044 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="-0.43925" upper="${0.43925*2}" effort="10" velocity="5" acceleration="5"/>
        <mimic joint="${prefix}arm/joint2" multiplier="1" offset="0" />
@@ -98,7 +98,7 @@
     <joint name="${prefix}arm/joint3" type="prismatic">
       <parent link="${prefix}arm/link2_2"/>
       <child link="${prefix}arm/link3"/>
-      <origin xyz="0.025 0 -0.0095" rpy="${90*M_PI/180} 0 0"/>
+      <origin xyz="0.0266 0 -0.0095" rpy="${90*M_PI/180} 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="0" upper="0.145" effort="10" velocity="5" acceleration="5"/>
     </joint>  
