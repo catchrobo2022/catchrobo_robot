@@ -55,6 +55,7 @@ public:
             led = 0;
         }
         can_.write(txMsg);
+        wait(0.1);
     };
 
     // void disableMotor(int id)

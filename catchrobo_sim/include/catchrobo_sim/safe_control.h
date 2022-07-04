@@ -8,6 +8,8 @@
 class SafeControl
 {
 public:
+    SafeControl() : alpha_(0), obstacle_avoidance_limit_(0),
+                    obstacle_avoidance_enable_(false), obstacle_avoidance_is_min_(false) {}
     void setCBFparams(float alpha)
     {
         alpha_ = alpha;

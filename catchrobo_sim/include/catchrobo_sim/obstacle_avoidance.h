@@ -89,7 +89,7 @@ private:
 
         for (size_t i = 0; i < N_MOTORS; i++)
         {
-        motor_manager_[i].getState(state[i]);
+            motor_manager_[i].getState(state[i]);
             motor_manager_[i].getRosCmd(ros_cmd[i]);
         }
 
@@ -104,7 +104,7 @@ private:
         float now_x = state[0].position;
         float now_y = state[1].position;
         //// 壁をまたぐかチェック
-        if (isOverHill(ros_cmd[0].position, ros_cmd[1].position,now_x,now_y, obstacles_rad[obstacle_num]))
+        if (isOverHill(ros_cmd[0].position, ros_cmd[1].position, now_x, now_y, obstacles_rad[obstacle_num]))
         {
             motor_manager_[2].setObstacleInfo(true, true, z_top);
         }
@@ -115,64 +115,81 @@ private:
         int target_grid = positionGrid(obstacle, target_x, target_y);
         int now_grid = positionGrid(obstacle, now_x, now_y);
 
+        ROS_INFO_STREAM("target : " << target_grid << " now: " << now_grid);
         ////丘をまたぐときreturn true // でなければreturn false
 
         switch (now_grid)
         {
         case 0:
-            if(target_grid==11 || target_grid==12 ||target_grid==21 ||target_grid==22) return true;
+            if (target_grid == 11 || target_grid == 12 || target_grid == 21 || target_grid == 22)
+                return true;
             break;
         case 1:
-            if(10<target_grid && target_grid<22) return true;
+            if (10 < target_grid && target_grid < 22)
+                return true;
             break;
         case 2:
-            if(target_grid==10 || target_grid==11 ||target_grid==20 ||target_grid==21) return true;
+            if (target_grid == 10 || target_grid == 11 || target_grid == 20 || target_grid == 21)
+                return true;
             break;
         case 10:
-            if(target_grid==1 || target_grid==2 ||target_grid==11 || target_grid==12 ||target_grid==21 ||target_grid==22) return true;
+            if (target_grid == 1 || target_grid == 2 || target_grid == 11 || target_grid == 12 || target_grid == 21 || target_grid == 22)
+                return true;
             break;
         case 11:
             return true;
             break;
         case 12:
-            if(target_grid==0 || target_grid==1 ||target_grid==10 || target_grid==11 ||target_grid==20 ||target_grid==21) return true;
+            if (target_grid == 0 || target_grid == 1 || target_grid == 10 || target_grid == 11 || target_grid == 20 || target_grid == 21)
+                return true;
             break;
         case 20:
-            if(target_grid==1 || target_grid==2 ||target_grid==11 ||target_grid==12) return true;
+            if (target_grid == 1 || target_grid == 2 || target_grid == 11 || target_grid == 12)
+                return true;
             break;
         case 21:
-            if(0<target_grid && target_grid<12) return true;
+            if (0 < target_grid && target_grid < 12)
+                return true;
             break;
         case 22:
-            if(target_grid==0 || target_grid==1 ||target_grid==10 || target_grid==11) return true;
+            if (target_grid == 0 || target_grid == 1 || target_grid == 10 || target_grid == 11)
+                return true;
             break;
         default:
             return false;
             break;
         }
+        return false;
     }
 
-    //// 9マスに分解 //returnは10の位がx, 1の位がy 
-    int positionGrid(Obstacle &obstacle, float pos_x, float pos_y){
+    //// 9マスに分解 //returnは10の位がx, 1の位がy
+    int positionGrid(const Obstacle &obstacle, float pos_x, float pos_y)
+    {
         // [0,2]|[1,2]|[2,2]
         // [0,1]|[1,1]|[2,1]
         // [0,0]|[1,0]|[2,0]
-        
-        float ob_x_min=obstacle.edge[0][0];
-        float ob_x_max=obstacle.edge[0][1];
-        float ob_y_min=obstacle.edge[1][0];
-        float ob_y_max=obstacle.edge[1][1];
+
+        float ob_x_min = obstacle.edge[0][0];
+        float ob_x_max = obstacle.edge[0][1];
+        float ob_y_min = obstacle.edge[1][0];
+        float ob_y_max = obstacle.edge[1][1];
         int x_num = 0;
         int y_num = 0;
-        if (pos_x<ob_x_min) x_num = 0;
-        else if (ob_x_min<pos_x && pos_x<ob_x_max) x_num = 1;
-        else if(ob_x_max<pos_x) x_num = 2;
+        if (pos_x < ob_x_min)
+            x_num = 0;
+        else if (ob_x_min <= pos_x && pos_x < ob_x_max)
+            x_num = 1;
+        else
+            x_num = 2;
 
-        if (pos_y<ob_y_min) y_num = 0;
-        else if (ob_y_min<pos_y && pos_y<ob_y_max) y_num = 1;
-        else if(ob_y_max<pos_y) y_num = 2;
+        if (pos_y < ob_y_min)
+            y_num = 0;
+        else if (ob_y_min <= pos_y && pos_y < ob_y_max)
+            y_num = 1;
+        else
+            y_num = 2;
 
-        return x_num*10+y_num;
+        return x_num * 10 + y_num;
     }
 
 public:

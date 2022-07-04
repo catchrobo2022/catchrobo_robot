@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     ################################################### motor on 指示
     enable_command = template.generate_enable_command()
-    enable_command.enable_check = False
+    # enable_command.enable_check = False
     rospy.sleep(1)  # rosが起動するのを待つ
     pub_enable.publish(enable_command)
     print(enable_command)
@@ -29,19 +29,19 @@ if __name__ == "__main__":
     command = template.generate_ros_command(
         id=0,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=1.0,
+        robot_position=1.5,
         robot_end_velocity=0.0,
     )
     print(command)
     pub.publish(command)
-    # command = template.generate_ros_command(
-    #     id=1,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=1.0,
-    #     robot_end_velocity=0.0,
-    # )
-    # print(command)
-    # pub.publish(command)
+    command = template.generate_ros_command(
+        id=2,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=0.0,
+        robot_end_velocity=0.0,
+    )
+    print(command)
+    pub.publish(command)
     # command = template.generate_ros_command(
     #     id=2,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
@@ -95,6 +95,7 @@ if __name__ == "__main__":
         robot_position=0.0,
         robot_end_velocity=0.0,
     )
+    command.position = 0
     print(command)
     pub.publish(command)
     # command = template.generate_ros_command(

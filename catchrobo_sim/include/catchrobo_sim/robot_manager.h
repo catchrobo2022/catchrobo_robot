@@ -218,13 +218,17 @@ public:
     {
         catchrobo_msgs::MyRosCmd command;
         command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+
         command.kp = 0;
         command.kd = 0;
         command.effort = 0;
         for (size_t i = 0; i < motor_num_; i++)
         {
             /* code */
+            StateStruct state;
+            motor_manager_[i].getState(state);
             command.id = i;
+            command.position = state.position;
             setRosCmd(command);
         }
     }
