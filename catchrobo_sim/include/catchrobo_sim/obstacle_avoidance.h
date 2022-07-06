@@ -115,7 +115,7 @@ private:
         int target_grid = positionGrid(obstacle, target_x, target_y);
         int now_grid = positionGrid(obstacle, now_x, now_y);
 
-        ROS_INFO_STREAM("target : " << target_grid << " now: " << now_grid);
+        // ROS_INFO_STREAM("target : " << target_grid << " now: " << now_grid);
         ////丘をまたぐときreturn true // でなければreturn false
 
         switch (now_grid)

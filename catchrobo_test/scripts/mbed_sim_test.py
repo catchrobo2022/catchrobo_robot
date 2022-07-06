@@ -27,7 +27,7 @@ if __name__ == "__main__":
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=0,
+        id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
         robot_position=1.5,
         robot_end_velocity=0.0,
@@ -90,12 +90,20 @@ if __name__ == "__main__":
     rospy.sleep(5)
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=0,
+        id=2,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=0.13,
+        robot_end_velocity=0.0,
+    )
+    print(command)
+    pub.publish(command)
+
+    command = template.generate_ros_command(
+        id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
         robot_position=0.0,
         robot_end_velocity=0.0,
     )
-    command.position = 0
     print(command)
     pub.publish(command)
     # command = template.generate_ros_command(

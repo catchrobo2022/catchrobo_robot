@@ -8,6 +8,7 @@ from catchrobo_driver.ros_cmd_template import RosCmdTemplate
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 
+import numpy as np
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
@@ -16,8 +17,14 @@ if __name__ == "__main__":
     robot.enable()
     rospy.sleep(1)
     robot.start()
-    robot.go(1, 0.9, 0.7)
-    robot.go(0, 0.9, 0.7)
+
+    target_mm = [113.3, 0, 93.5]
+    target_m = []
+    for mm in target_mm:
+        target_m.append(mm * 0.001)
+
+    robot.go(*target_m)
+    robot.go_robot_m(0, 0, 0)
     # robot.stop()
     # rospy.loginfo("stop")
     # robot.go(1, 0.9, 0.7)

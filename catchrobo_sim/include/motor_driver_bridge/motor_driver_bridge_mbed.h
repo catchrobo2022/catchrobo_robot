@@ -11,7 +11,7 @@
 class MotorDriverBridge
 {
 public:
-    MotorDriverBridge() : can_(CAN_RD, CAN_TD), led(LED_PIN){};
+    MotorDriverBridge() : can_(CAN_RD, CAN_TD), led(LED_PIN), is_locked_(false){};
 
     void init(void (*callback_function)(const StateStruct &input), const int (&direction)[4])
     {
@@ -31,7 +31,7 @@ public:
     {
         CANMessage txMsg;
         pack_cmd(control, txMsg);
-        can_.write(txMsg);
+        can_write(txMsg);
     };
     void enableMotor(int id, bool is_enable)
     {
@@ -54,7 +54,7 @@ public:
             txMsg.data[7] = 0xFD;
             led = 0;
         }
-        can_.write(txMsg);
+        can_write(txMsg);
         wait(0.1);
     };
 
@@ -70,7 +70,7 @@ public:
     //     txMsg.data[5] = 0xFF;
     //     txMsg.data[6] = 0xFF;
     //     txMsg.data[7] = 0xFD;
-    //     can_.write(txMsg);
+    //     can_write(txMsg);
     // }
 
     void setOrigin(int id)
@@ -85,13 +85,14 @@ public:
         txMsg.data[5] = 0xFF;
         txMsg.data[6] = 0xFF;
         txMsg.data[7] = 0xFE;
-        can_.write(txMsg);
+        can_write(txMsg);
     }
 
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
     DigitalOut led;
     int direction_[4]; // motorの動く向き. 配列数が直打ちなのが微妙すぎる。
+    int is_locked_;
 
     void (*callback_function_)(const StateStruct &input);
 
@@ -162,5 +163,15 @@ private:
         txMsg.data[7] = t_int & 0xff;
 
         txMsg.id = listId2CANId(control.id);
+    }
+    void can_write(const CANMessage &msg)
+    {
+        while (is_locked_)
+        {
+            wait(0.01);
+        }
+        is_locked_ = true;
+        can_.write(msg);
+        is_locked_ = false;
     }
 };
