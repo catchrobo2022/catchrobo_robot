@@ -12,26 +12,31 @@
 #endif
 #include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
+#include "catchrobo_sim/gripper_manager.h"
 
 #ifdef USB_MBED
 const float MBED2ROS_DT = 1; // 10Hz
 #else
 const float MBED2ROS_DT = 0.01; // 10Hz
-#endif
 
+void wait(float t){}; // simlatorで存在しないため
+#endif
+const float MBED2SERVO_DT = 0.1;
 const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
 RobotManager robot_manager;
+GripperManager gripper_manager;
 EnableManager enable_manager;
 
 void enableAll(bool is_enable)
 {
-    for (int i = 0; i < JOINT_NUM; i++)
+    for (int i = 0; i < N_MOTORS; i++)
     {
         motor_driver_bridge.enableMotor(i, is_enable);
+        wait(0.1);
     }
 }
 
@@ -48,6 +53,7 @@ void motorDriverCallback(const StateStruct &input)
 void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 {
     robot_manager.setRosCmd(command);
+    gripper_manager.setRosCmd(command);
 }
 
 void mbed2MotorDriverTimerCallback()
@@ -75,11 +81,11 @@ void mbed2MotorDriverTimerCallback()
     {
         robot_manager.disable();
     }
-    ControlStruct control[JOINT_NUM] = {};
-    ControlResult::ControlResult result[JOINT_NUM] = {};
+    ControlStruct control[N_MOTORS] = {};
+    ControlResult::ControlResult result[N_MOTORS] = {};
     robot_manager.getMotorDrivesCommand(control, result);
     //// update target value
-    for (int i = 0; i < JOINT_NUM; i++)
+    for (int i = 0; i < N_MOTORS; i++)
     {
         motor_driver_bridge.publish(control[i]);
         if (result[i] == ControlResult::FINISH)
@@ -90,20 +96,6 @@ void mbed2MotorDriverTimerCallback()
             // ros_bridge.publishFinishFlag(i);
         }
     }
-    // switch (result[i])
-    // {
-    // case ControlResult::RUNNING:
-    //     break;
-    // case ControlResult::FINISH:
-    //     ros_bridge.publishFinishFlag(i);
-    //     break;
-    // // case ControlResult::SET_ORIGIN:
-    // //     motor_driver_bridge.setOrigin(i);
-    // //     ros_bridge.publishFinishFlag(i);
-    // //     break;
-    // default:
-    //     break;
-    // }
 }
 
 void mbed2RosTimerCallback()
@@ -114,31 +106,23 @@ void mbed2RosTimerCallback()
 
     std_msgs::Float32MultiArray joint_state;
     robot_manager.getJointRad(joint_state);
+    joint_rad.data[motor_num_] = gripper_manager.getJointRad();
     ros_bridge.publishJointState(joint_state);
 };
-
-// void enableCallback(const std_msgs::Bool &input)
-// {
-//     if (input.data)
-//     {
-//         for (int i = 0; i < N_MOTORS; i++)
-//         {
-//             motor_driver_bridge.enableMotor(i);
-//         }
-//     }
-//     else
-//     {
-//         for (int i = 0; i < N_MOTORS; i++)
-//         {
-//             motor_driver_bridge.disableMotor(i);
-//         }
-//     }
-// }
 void enableCallback(const catchrobo_msgs::EnableCmd &input)
 {
     enable_manager.setCmd(input);
     enableAll(input.is_enable);
     enable_manager.setCurrentEnable(input.is_enable);
+}
+
+void gripperTimerCallback()
+{
+    gripper_manager.nextStep(MBED2MOTOR_DT);
+
+    ControlStruct control;
+    ControlResult::ControlResult result;
+    gripper_manager.getMotorDrivesCommand(control, result);
 }
 
 int main(int argc, char **argv)
