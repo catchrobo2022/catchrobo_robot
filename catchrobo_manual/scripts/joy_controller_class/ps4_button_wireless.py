@@ -22,3 +22,5 @@ class PS4Button_wireless:
     SQUARE = 0
     TOUCH_PAD=13
     PS=12
+    OPTIONS=9
+    SHARE=8

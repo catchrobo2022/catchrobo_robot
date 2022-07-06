@@ -38,7 +38,8 @@ class RosCmdTemplate:
         ### 本当に危険なとき用の制約を設定
         enable_command = EnableCmd()
         ### motor電源を入れる
-        enable_command.is_enable = True
+        enable_command.is_enable = False
+        ### 可動域外だとdisableになる安全機能のonoff
         enable_command.enable_check = True
         ### x, y, zの順
         ### 可動域
