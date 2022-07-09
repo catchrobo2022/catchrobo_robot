@@ -41,15 +41,17 @@ public:
             velocity_control_.setRosCmd(ros_cmd_, current_state_);
             break;
         case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
-            // go_origin_control_.setRosCmd(ros_cmd_, current_state_);
+            go_origin_control_.setOffset(no_offset_state_, ros_cmd_, offset_);
 
-            // catchrobo_msgs::MyRosCmd command;
-            // command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
-            // command.kp = 0;
-            // command.kd = 0;
-            // command.effort = 0;
-
-            // setRosCmd(command);
+            {
+                //// [WARN] 面倒なので再帰関数
+                catchrobo_msgs::MyRosCmd command;
+                command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+                command.kp = 0;
+                command.kd = 0;
+                command.effort = 0;
+                setRosCmd(command);
+            }
             break;
 
         default:
@@ -102,7 +104,8 @@ public:
     //高Hz (500Hz)で呼ばれる
     void setCurrentState(const StateStruct &state)
     {
-        current_state_ = state;
+        no_offset_state_ = state;
+        current_state_ = no_offset_state_;
         current_state_.position -= offset_;
     }
 
@@ -142,6 +145,7 @@ public:
 
 private:
     StateStruct current_state_;
+    StateStruct no_offset_state_;
 
     ControlStruct old_command_;
 

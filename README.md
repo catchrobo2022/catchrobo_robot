@@ -74,7 +74,7 @@ motorの電源を入れてからmbedを開始→rosserial開始
 の流れにすることで、初期値をほぼ0とできる。
 
 ```
-roslaunch catchrobo_description catchrobo_display.launch 
+roslaunch catchrobo_bringup bringup_base.launch 
 
 sudo chmod a+rw /dev/ttyACM0 
 rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
