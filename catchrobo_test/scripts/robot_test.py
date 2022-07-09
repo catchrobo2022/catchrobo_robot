@@ -15,7 +15,7 @@ if __name__ == "__main__":
     robot = Robot()
     rospy.sleep(1)  # rosが起動するのを待つ
     robot.enable()
-    rospy.sleep(1)
+    rospy.sleep(2)
     robot.start()
 
     target_mm = [113.3, 0, 93.5]

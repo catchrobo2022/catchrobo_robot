@@ -26,6 +26,10 @@ rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテス�
 p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 ```
 
+```
+float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
+```
+
 
 ## mbedへの移行
 1. catchrobo_sim/include/catchrobo_simをzip化する

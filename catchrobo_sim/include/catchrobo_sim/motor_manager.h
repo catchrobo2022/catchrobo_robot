@@ -2,6 +2,7 @@
 
 #include "catchrobo_sim/position_control.h"
 #include "catchrobo_sim/direct_control.h"
+#include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
 #include "catchrobo_sim/go_origin_control.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
@@ -36,10 +37,19 @@ public:
             position_control_.setRosCmd(ros_cmd_, current_state_);
             break;
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.setRosCmd(ros_cmd_, current_state_);
+            // direct_control_.setRosCmd(ros_cmd_, current_state_);
+            velocity_control_.setRosCmd(ros_cmd_, current_state_);
             break;
         case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
-            go_origin_control_.setRosCmd(ros_cmd_, current_state_);
+            // go_origin_control_.setRosCmd(ros_cmd_, current_state_);
+
+            // catchrobo_msgs::MyRosCmd command;
+            // command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+            // command.kp = 0;
+            // command.kd = 0;
+            // command.effort = 0;
+
+            // setRosCmd(command);
             break;
 
         default:
@@ -58,19 +68,24 @@ public:
             position_control_.getCmd(t_, current_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
+            // case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
+            //     direct_control_.getCmd(current_state_, old_command_, command, result);
+            //     safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
+            //     break;
+
         case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.getCmd(current_state_, old_command_, command, result);
+            velocity_control_.getCmd(current_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
 
-        case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
-            ////原点だしではoffset無しの値がほしい
-            {
-                StateStruct no_offset_state = current_state_;
-                no_offset_state.position += offset_;
-                go_origin_control_.getCmd(no_offset_state, old_command_, command, result, offset_);
-            }
-            break;
+            // case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
+            //     ////原点だしではoffset無しの値がほしい
+            //     {
+            //         StateStruct no_offset_state = current_state_;
+            //         no_offset_state.position += offset_;
+            //         go_origin_control_.getCmd(no_offset_state, old_command_, command, result, offset_);
+            //     }
+            //     break;
 
         default:
             command = old_command_;
@@ -104,6 +119,7 @@ public:
     void nextStep(float dt)
     {
         t_ += dt;
+        velocity_control_.setDt(dt);
     };
     bool IsPegInHoleMode()
     {
@@ -137,6 +153,7 @@ private:
 
     PositionControl position_control_;
     DirectControl direct_control_;
+    VelocityControl velocity_control_;
     SafeControl safe_control_;
     GoOriginControl go_origin_control_;
 };
