@@ -33,6 +33,8 @@ https://qiita.com/Yuya-Shimizu/items/4bed435e65cefc6d2df1
 
 roslaunch catchrobo_manual manual_xbox.launch
 
+roslaunch catchrobo_manual manual_ps4.launch
+
 
 メインプログラム
 # roslaunch catchrobo_test test.launch
