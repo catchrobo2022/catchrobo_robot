@@ -18,9 +18,6 @@
 #include <vector>
 #include <string>
 
-#define TORQUE_OUTPUT
-// #
-
 class RobotManager
 {
 public:
@@ -65,16 +62,26 @@ public:
         joint_state_.position = new double[joint_num]; //(double *)malloc(sizeof(double)*joint_num)
         joint_state_.velocity = new double[joint_num];
         joint_state_.effort = new double[joint_num];
+
+        for (int i = 0; i < joint_num; i++)
+        {
+            joint_state_.position[i] = 0;
+            joint_state_.velocity[i] = 0;
+            joint_state_.effort[i] = 0;
+        }
     }
 
     void resetJointRad(int joint_num)
     {
         int num = joint_num;
-#ifdef TORQUE_OUTPUT
         num = num * 2;
-#endif
         joint_rad_.data_length = num;
         joint_rad_.data = new float[num];
+
+        for (int i = 0; i < num; i++)
+        {
+            joint_rad_.data[i] = 0;
+        }
     }
 #endif
 
@@ -94,10 +101,7 @@ public:
     void resetJointRad(int joint_num)
     {
         int num = joint_num;
-
-#ifdef TORQUE_OUTPUT
         num = num * 2;
-#endif
         joint_rad_.data.resize(num);
     }
 #endif
@@ -113,23 +117,26 @@ public:
             motor_manager_[command.id].setRosCmd(command);
             motor_manager_[command.id].resetT();
         }
-        else
-        {
-            servo_manager_.setRosCmd(command);
-            servo_manager_.resetT();
-        }
     };
 
     // void setPegInHoleCmd(const catchrobo_msgs)
 
-    void getMotorDrivesCommand(ControlStruct (&cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    void getMotorDrivesCommand(ControlStruct (&cmd)[N_MOTORS], ControlResult::ControlResult (&result)[N_MOTORS])
     {
         obstacle_avoidance_.changePositionLimit(motor_manager_);
-        ////もしpeg in holeなら、指示を変える
-        if (peg_in_hole_control_.isPegInHoleMode())
-        {
 
-            catchrobo_msgs::MyRosCmd ros_cmd[JOINT_NUM];
+        if (!peg_in_hole_control_.isPegInHoleMode())
+        {
+            //// 通常のコントロール
+            for (size_t i = 0; i < motor_num_; i++)
+            {
+                motor_manager_[i].getCmd(cmd[i], result[i]);
+            }
+        }
+        else
+        {
+            ////もしpeg in holeなら、指示を変える
+            catchrobo_msgs::MyRosCmd ros_cmd[N_MOTORS];
             for (size_t i = 0; i < motor_num_; i++)
             {
                 motor_manager_[i].getRosCmd(ros_cmd[i]);
@@ -138,25 +145,16 @@ public:
             motor_manager_[2].getState(z_state);
             peg_in_hole_control_.getCmd(z_state, ros_cmd, result);
             ////resultはpeg_in_hole_control_で計算してあるので、dummyを使う
-            ControlResult::ControlResult dummy[JOINT_NUM];
+            ControlResult::ControlResult dummy[N_MOTORS];
             for (int i = 0; i < motor_num_; i++)
             {
                 motor_manager_[i].setRosCmd(ros_cmd[i]);
                 motor_manager_[i].getCmd(cmd[i], dummy[i]);
             }
         }
-        else
-        {
-            //// 通常のコントロール
-            for (size_t i = 0; i < motor_num_; i++)
-            {
-                motor_manager_[i].getCmd(cmd[i], result[i]);
-            }
-        }
-        servo_manager_.getCmd(cmd[motor_num_], result[motor_num_]);
 
         ///// cmdのidを上書き。初期値である0になっている場合があるため
-        for (size_t i = 0; i < actuator_num_; i++)
+        for (size_t i = 0; i < motor_num_; i++)
         {
             cmd[i].id = i;
         }
@@ -168,8 +166,6 @@ public:
         {
             motor_manager_[i].nextStep(dt);
         }
-        servo_manager_.nextStep(dt);
-
         peg_in_hole_control_.nextStep(dt);
     }
 
@@ -178,10 +174,6 @@ public:
         if (state.id < motor_num_)
         {
             motor_manager_[state.id].setCurrentState(state);
-        }
-        else
-        {
-            servo_manager_.setCurrentState(state);
         }
     };
     void getJointState(sensor_msgs::JointState &joint_state)
@@ -193,10 +185,6 @@ public:
             motor_manager_[i].getState(state);
             setJointState(i, state, joint_state_);
         }
-
-        StateStruct state;
-        servo_manager_.getState(state);
-        setJointState(motor_num_, state, joint_state_);
         joint_state = joint_state_;
     };
 
@@ -204,12 +192,10 @@ public:
     {
         sensor_msgs::JointState joint_state;
         getJointState(joint_state);
-        for (size_t i = 0; i < actuator_num_; i++)
+        for (size_t i = 0; i < motor_num_; i++)
         {
             joint_rad_.data[i] = joint_state.position[i];
-#ifdef TORQUE_OUTPUT
             joint_rad_.data[i + actuator_num_] = joint_state.effort[i];
-#endif
         }
         joint_rad = joint_rad_;
     };
@@ -218,20 +204,23 @@ public:
     {
         catchrobo_msgs::MyRosCmd command;
         command.mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+
         command.kp = 0;
         command.kd = 0;
         command.effort = 0;
         for (size_t i = 0; i < motor_num_; i++)
         {
             /* code */
+            StateStruct state;
+            motor_manager_[i].getState(state);
             command.id = i;
+            command.position = state.position;
             setRosCmd(command);
         }
     }
 
 private:
     MotorManager motor_manager_[N_MOTORS];
-    ServoManager servo_manager_;
     sensor_msgs::JointState joint_state_;   // JointState型
     std_msgs::Float32MultiArray joint_rad_; // joint_state_から変換される。joint_state_が更新された後に更新される必要がある
 

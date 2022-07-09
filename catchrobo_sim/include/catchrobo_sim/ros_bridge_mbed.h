@@ -20,7 +20,7 @@ public:
                   sub_ros_cmd_("ros_cmd", &RosBridge::rosCallback2, this),
                   sub_enable_("enable_cmd", &RosBridge::enableCallback, this),
                   //                  sub_peg_in_hole_("peg_in_hole_cmd", &RosBridge::pegInHoleCallback, this),
-                  led_(LED1){};
+                  led_(LED3){};
 
     void init(int ros_baudrate, void (*callback_function)(const catchrobo_msgs::MyRosCmd &command),
               void (*enable_callback_function)(const catchrobo_msgs::EnableCmd &input),

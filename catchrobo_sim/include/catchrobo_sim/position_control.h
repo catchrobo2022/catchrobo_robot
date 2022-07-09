@@ -58,7 +58,8 @@ public:
             else
             {
                 //収束後
-                command = except_command;
+                packAfterFinish(target_, command);
+                // command = except_command;
                 if (!finish_already_notified_)
                 {
                     finished = ControlResult::FINISH;
@@ -81,6 +82,16 @@ private:
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
         cmd.torque_feed_forward = target.net_inertia * accel_designer.a(t) + target.effort;
+        cmd.kp = target.kp;
+        cmd.kd = target.kd;
+    }
+
+    void packAfterFinish(const catchrobo_msgs::MyRosCmd &target, ControlStruct &cmd)
+    {
+        cmd.id = target.id;
+        cmd.p_des = target.position;
+        cmd.v_des = target.velocity;
+        cmd.torque_feed_forward = target.net_inertia * 0 + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }

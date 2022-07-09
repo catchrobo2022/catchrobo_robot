@@ -48,7 +48,7 @@ public:
     //     theta = 0;
     //     // accel_curve_.reset(cmd.jerk_limit, cmd.acceleration_limit, joint_state.velocity, cmd.velocity);
     // };
-    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[N_MOTORS], ControlResult::ControlResult (&result)[N_MOTORS])
     {
         if (!params_.data)
         {
