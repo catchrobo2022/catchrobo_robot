@@ -1,0 +1,3 @@
+<launch>
+    <node name="manual_xbox_node" pkg="catchrobo_manual" type="catchrobo_manual_2022_xbox.py" output="screen"/>
+</launch>
