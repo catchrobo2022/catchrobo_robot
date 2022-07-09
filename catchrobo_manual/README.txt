@@ -29,8 +29,9 @@ https://qiita.com/Yuya-Shimizu/items/4bed435e65cefc6d2df1
 手動プログラム
 # rosrun catchrobo_manual catchrobo_manual_2022.py
 # rosrun catchrobo_manual catchrobo_manual_2022_main.py
+# roslaunch catchrobo_manual manual.launch field:="red"
 
-roslaunch catchrobo_manual manual.launch field:="red"
+roslaunch catchrobo_manual manual_xbox.launch
 
 
 メインプログラム
