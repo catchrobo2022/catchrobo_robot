@@ -150,7 +150,7 @@ class Robot:
 
     def enable(self, enable_check=True):
 
-        enable_command = self._ros_cmd_template.generate_enable_command()
+        enable_command = self._ros_cmd_template.generate_enable_command(True)
 
         if self._error.error_code == ErrorCode.NONE:
             enable_command.enable_check = enable_check

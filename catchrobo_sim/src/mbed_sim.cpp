@@ -21,7 +21,7 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 
 void wait(float t){}; // simlatorで存在しないため
 #endif
-const float MBED2SERVO_DT = 0.1;
+const float MBED2GRIPPER_DT = 0.1;
 const float MBED2MOTOR_DT = 0.002; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 
@@ -72,7 +72,6 @@ void mbed2MotorDriverTimerCallback()
         ros_bridge.publishError(error);
     }
 
-    //// 初期値は全て0 -> 脱力
     if (enable_manager.getEnable()) //// enableならtをすすめる
     {
         robot_manager.nextStep(MBED2MOTOR_DT);
@@ -81,10 +80,10 @@ void mbed2MotorDriverTimerCallback()
     {
         robot_manager.disable();
     }
+    //// update target value
     ControlStruct control[N_MOTORS] = {};
     ControlResult::ControlResult result[N_MOTORS] = {};
     robot_manager.getMotorDrivesCommand(control, result);
-    //// update target value
     for (int i = 0; i < N_MOTORS; i++)
     {
         motor_driver_bridge.publish(control[i]);
@@ -104,10 +103,10 @@ void mbed2RosTimerCallback()
     // sensor_msgs::JointState joint_state;
     // robot_manager.getJointState(joint_state);
 
-    std_msgs::Float32MultiArray joint_state;
-    robot_manager.getJointRad(joint_state);
-    joint_rad.data[motor_num_] = gripper_manager.getJointRad();
-    ros_bridge.publishJointState(joint_state);
+    std_msgs::Float32MultiArray joint_rad;
+    robot_manager.getJointRad(joint_rad);
+    joint_rad.data[N_MOTORS] = gripper_manager.getJointRad();
+    ros_bridge.publishJointState(joint_rad);
 };
 void enableCallback(const catchrobo_msgs::EnableCmd &input)
 {
@@ -118,11 +117,20 @@ void enableCallback(const catchrobo_msgs::EnableCmd &input)
 
 void gripperTimerCallback()
 {
-    gripper_manager.nextStep(MBED2MOTOR_DT);
 
     ControlStruct control;
     ControlResult::ControlResult result;
     gripper_manager.getMotorDrivesCommand(control, result);
+    gripper_manager.nextStep(MBED2GRIPPER_DT);
+
+    if (result == ControlResult::FINISH)
+    {
+        catchrobo_msgs::ErrorCode error;
+        error.id = N_MOTORS;
+        error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+        ros_bridge.publishError(error);
+        // ros_bridge.publishFinishFlag(i);
+    }
 }
 
 int main(int argc, char **argv)
@@ -142,10 +150,8 @@ int main(int argc, char **argv)
     //// 初期値を暫定原点にする。後にROS指示で原点だしを行う
     for (size_t i = 0; i < N_MOTORS; i++)
     {
-#ifdef USE_MBED
-        wait(0.5);
-#endif
         motor_driver_bridge.setOrigin(i);
+        wait(0.5);
     }
 
     //// motor driverへの指示開始
@@ -155,5 +161,8 @@ int main(int argc, char **argv)
     //// ros へのフィードバック開始
     Ticker ticker;
     ticker.attach(&mbed2RosTimerCallback, MBED2ROS_DT);
+
+    Ticker ticker_gripper;
+    ticker_gripper.attach(&gripperTimerCallback, MBED2GRIPPER_DT);
     ros_bridge.spin();
 }

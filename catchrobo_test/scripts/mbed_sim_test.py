@@ -17,7 +17,7 @@ if __name__ == "__main__":
     template = RosCmdTemplate()
 
     ################################################### motor on 指示
-    enable_command = template.generate_enable_command()
+    enable_command = template.generate_enable_command(True, False)
     # enable_command.enable_check = False
     rospy.sleep(1)  # rosが起動するのを待つ
     pub_enable.publish(enable_command)

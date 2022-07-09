@@ -32,15 +32,15 @@ class RosCmdTemplate:
         datas = pd.read_csv(csv, index_col=0)
         return datas
 
-    def generate_enable_command(self):
+    def generate_enable_command(self, is_enable=False, enable_check=True):
         rad_transform = self._rad_transform
 
         ### 本当に危険なとき用の制約を設定
         enable_command = EnableCmd()
         ### motor電源を入れる
-        enable_command.is_enable = False
+        enable_command.is_enable = is_enable
         ### 可動域外だとdisableになる安全機能のonoff
-        enable_command.enable_check = True
+        enable_command.enable_check = enable_check
         ### x, y, zの順
         ### 可動域
         # enable_command.position_min = [

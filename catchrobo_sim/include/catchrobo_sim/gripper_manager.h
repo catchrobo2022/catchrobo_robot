@@ -31,7 +31,7 @@ public:
     ////本当はMyRosCmdArrayを受け取るのがキレイだが、配列要素数を取得する計算がPCとmbedで変わってしまうため、MyRosCmdで受け取るようにしている。
     void setRosCmd(const catchrobo_msgs::MyRosCmd &command)
     {
-        if (command.id > motor_num_)
+        if (command.id >= motor_num_)
         {
             servo_manager_.setRosCmd(command);
             servo_manager_.resetT();
@@ -42,7 +42,7 @@ public:
 
     void getMotorDrivesCommand(ControlStruct &cmd, ControlResult::ControlResult &result)
     {
-        servo_manager_.getCmd(cmd, result[);
+        servo_manager_.getCmd(cmd, result);
         ///// cmdのidを上書き。初期値である0になっている場合があるため
         cmd.id = motor_num_;
     };
