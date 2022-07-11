@@ -12,49 +12,119 @@ from catchrobo_manager.robot import Robot
 from std_msgs.msg import Int8
 
 
+class GuiMenu:
+    NONE = 0
+    ORIGIN = 1
+    CALIBLATION = 2
+    POINT1 = 3
+    POINT2 = 4
+    POINT3 = 5
+    INIT = 6
+    START = 7
+
+
 class GameManager:
     def __init__(self):
         # [TODO] ros paramで受け取る
-        self.Z_ABOVE_ZYAGARIKO = 1
+        self.Z_ABOVE_ZYAGARIKO = 0.13
         self.DIFF_Z_ZYAGARIKO_PUT = 0.3
         self.MAX_HAS_WORK = 5
-        self._field = "red"
+        self.FIELD = "red"
+        self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
+        self.INIT_X_m = 1.12333
+        self.INIT_Y_m = 0.845 * self.FIELD_SIGN
+        self.INIT_Z_m = 0.13
+        self.SAFE_Z_m = 0.13
 
         # self._use_main_thread = False
         self._next_target = NextAction.PICK
-        self._work_manager = WorkManager(self._field)
-        self._box_manager = ShootingBoxManager(self._field)
-        self._robot = Robot()
+        self._work_manager = WorkManager(self.FIELD)
+        self._box_manager = ShootingBoxManager(self.FIELD)
+        self._robot = Robot(self.FIELD)
 
         self._rate = rospy.Rate(10)
+        self._gui_msg = GuiMenu.NONE
+        self._manual_msg = ManualCommand.NONE
+        rospy.Subscriber("mannual_command", Int8, self.manual_callback)
+        rospy.Subscriber("menu", Int8, self.gui_callback)
 
-        rospy.Subscriber("mannual_command", Int8, self.manualCallback)
+    def gui_callback(self, msg):
+        self._gui_msg = msg.data
 
-    def manualCallback(self, msg):
-        if msg.data == ManualCommand.START:
-            self._robot.start()
-        elif msg.data == ManualCommand.STOP:
-            self._robot.stop()
-        elif msg.data == ManualCommand.ENABLE:
-            self._robot.enable()
-        elif msg.data == ManualCommand.DISABLE:
-            self._robot.disable()
-        elif msg.data == ManualCommand.SET_ORIGIN:
-            self.set_origin()
+    def manual_callback(self, msg):
+        self._manual_msg = msg.data
 
-    def set_origin(self):
-        ### enable
-        self._robot.enable(enable_check=False)
-        ### z軸setorigin
-        self._robot.set_origin(2)
-        ### y軸 setorigin
-        self._robot.set_origin(1)
-        ### x軸 setorign
-        self._robot.set_origin(0)
-        ### グリッパー開く
+    def main_actions(self):
+
+        ### stop flagがたった瞬間に途中でも高速でループが終わる
+        ### じゃがりこ掴む
+        if self._next_target == NextAction.PICK:
+            rospy.loginfo("Go to work")
+            #### [WARN] zは安全域スタートの想定
+            ### 目標じゃがりこ計算
+            work_position = self._work_manager.get_target_posi()
+            ### じゃがりこへxy移動
+            self._robot.go(x=work_position[0], y=work_position[1], z=self.SAFE_Z_m)
+            if self._robot.has_work():
+                ### じゃがりこ重ねる
+                self._robot.go(z=self.DIFF_Z_ZYAGARIKO_PUT + work_position[2])
+            ### グリッパー開く
+            self._robot.open_gripper()
+            ### じゃがりこをつかめる位置へ行く
+            self._robot.go(z=work_position[2])
+            ### つかむ
+            rospy.loginfo("pick")
+            self._robot.pick()
+            self._next_target = self._work_manager.pick()
+            if self._robot.has_work() > self.MAX_HAS_WORK:
+                ### これ以上つかめなければshoot
+                self._next_target = NextAction.SHOOT
+            ### 上空へ上がる
+            self._robot.go(z=self.SAFE_Z_m)
+
+        # シュート
+        elif self._next_target == NextAction.SHOOT:
+            rospy.loginfo("Go to shooting box")
+            ### 目標シューティング位置計算
+            box_position = self._box_manager.get_target_posi()
+            ### 穴上へxy移動
+            self._robot.go(x=box_position[0], y=box_position[1], z=self.SAFE_Z_m)
+            ### 下ろす
+            self._robot.go(z=work_position[2])
+            ### ぐりぐり
+            # self._robot.peg_in_hole()
+            # shoot
+            rospy.loginfo("shoot")
+            self._robot.shoot()
+            self._box_manager.shoot()
+            if self._robot.has_work() == 0:
+                ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
+                self._next_target = NextAction.PICK
+            if self._box_manager.get_open_num() == 0:
+                ### もうシュート場所がなければ終了
+                self._next_target = NextAction.END
+
+                ### 上空へ上がる
+                self._robot.go(z=self.SAFE_Z_m)
+
+        # 全部取り終わった
+        elif self._next_target == NextAction.END:
+            self._robot.go(z=self.SAFE_Z_m)
+            self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
+            self._robot.mannual_on()
+
+    def init_actions(self):
+        rospy.loginfo("init action start")
+        # [TODO] 厳密な値
+        self._robot.start()
+        self._robot.enable()
+        self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
         self._robot.open_gripper()
-        ### じゃがりこにあたらない高さまでzを下ろす
-        self._robot.go(z=self.Z_ABOVE_ZYAGARIKO)
+        self._robot.close_gripper()
+        self._robot.open_gripper()
+        self._robot.mannual_on()
+
+        rospy.loginfo("init action finish")
 
     def spin(self):
         # ### callback呼び出しのため、別スレッドで重複呼び出しの可能性がある。
@@ -62,63 +132,21 @@ class GameManager:
         #     ### 重複していたら新規は作らない
         #     return
         # self._use_main_thread = True
-
+        rospy.loginfo("game manager spin start")
         while not rospy.is_shutdown():
+            if self._gui_msg == GuiMenu.ORIGIN:
+                self._robot.set_origin()
+            elif self._gui_msg == GuiMenu.INIT:
+                self.init_actions()
+            elif self._gui_msg == GuiMenu.START:
+                self._robot.start()
+
+            self._gui_msg = GuiMenu.NONE
+
             if self._robot.main_run_ok():
+                self.main_actions()
+            else:
                 self._rate.sleep()
-                continue
-
-            ### stop flagがたった瞬間に途中でも高速でループが終わる
-            ### じゃがりこ掴む
-            if self._next_target == NextAction.PICK:
-                ### 目標じゃがりこ計算
-                work_position = self._work_manager.get_target()
-                ### 上空へ上がる
-                self._robot.go(z=self.Z_ABOVE_ZYAGARIKO)
-                ### じゃがりこへxy移動
-                self._robot.go(x=work_position[0], y=work_position[1])
-                if self._robot.has_work():
-                    ### じゃがりこ重ねる
-                    self._robot.go(z=self.DIFF_Z_ZYAGARIKO_PUT + work_position[2])
-                ### グリッパー開く
-                self._robot.open_gripper()
-                ### じゃがりこをつかめる位置へ行く
-                self._robot.go(z=work_position[2])
-                ### つかむ
-                self._robot.pick()
-                ### 次のacution じゃがりこを一列取りきったらshoot,
-                self._next_target = self._work_manager.pick()
-                ### これ以上つかめなければshoot
-                if self._robot.has_work() > self.MAX_HAS_WORK:
-                    self._next_target = NextAction.SHOOT
-
-            # シュート
-            elif self._next_target == NextAction.SHOOT:
-                ### 目標シューティング位置計算
-                box_position = self._box_manager.get_target()
-                ### 上空へ上がる
-                self._robot.go(z=self.Z_ABOVE_ZYAGARIKO)
-                ### 穴上へxy移動
-                self._robot.go(x=box_position[0], y=box_position[1])
-                ### 下ろす
-                self._robot.go(z=work_position[2])
-                ### ぐりぐり
-                self._robot.peg_in_hole()
-                # shoot
-                self._robot.shoot()
-                self._box_manager.shoot()
-                ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
-                if self._robot.has_work() == 0:
-                    self._next_target = NextAction.PICK
-                ### もうシュート場所がなければ終了
-                if self._box_manager.get_open_num() == 0:
-                    self._next_target = NextAction.END
-
-            # 全部取り終わった
-            elif self._next_target == NextAction.END:
-                self._robot.go(z=self.Z_ABOVE_ZYAGARIKO)
-                self._robot.go(0, 0, 0)
-                break
 
 
 if __name__ == "__main__":

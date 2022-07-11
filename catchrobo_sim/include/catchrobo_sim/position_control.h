@@ -33,6 +33,7 @@ public:
             command = except_command;
             return;
         }
+
         if (finish_already_notified_)
         {
             //// 収束後

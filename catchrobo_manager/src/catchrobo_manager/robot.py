@@ -22,15 +22,12 @@ import math
 
 ### input : ワールド座標系
 class Robot:
-    def __init__(self):
-        self.FIELD = "red"
+    def __init__(self, field):
+        self.FIELD = field
 
         self.OPEN_GRIPPER_RAD = math.pi
         self.CLOSE_GRIPPER_RAD = 0
         self.PEG_IN_HOLE_THRESHOLD_ROBOT = 0.01
-        self.GO_ORIGIN_VELOCITY_M = [0.1, -0.1, 0.1]
-        if self.FIELD == "blue":
-            self.GO_ORIGIN_VELOCITY_M[1] *= -1
 
         self._has_work = 0
         self._main_run_ok = False
@@ -55,7 +52,7 @@ class Robot:
         self._ros_cmd_template = RosCmdTemplate()
         self._enable_command = self._ros_cmd_template.generate_enable_command()
         #  絶対座標→ロボット座標系変換
-        self._world_robot_transform = WorldRobotTransform()
+        self._world_robot_transform = WorldRobotTransform(self.FIELD)
 
     def world2robot_transform(self, id, position):
         return position
@@ -70,7 +67,7 @@ class Robot:
         self._motors[msg.data].finish()
 
     ### 指示変更やめ
-    def stop(self):
+    def mannual_on(self):
         self._main_run_ok = False
         for i in range(len(self._motors)):
             self._motors[i].finish()
@@ -97,22 +94,26 @@ class Robot:
             for i in range(len(self._motors)):
                 self.wait_arrive(i)
 
+    def run_motor(self, id, robot_position_m):
+        self._motors[id].go(robot_position_m, self._has_work)
+
+    def wait_all(self):
+        for i in range(len(self._motors)):
+            self.wait_arrive(i)
+
     ### 絶対座標系
     def go(self, x=None, y=None, z=None, wait=True):
         ### stop flagが立ったら指示しない
         if not self._main_run_ok:
             return
 
-        position = [x, y, z]
-        if x is None:
-            position[0] = self._current_state_robot.position[0]
-        if y is None:
-            position[1] = self._current_state_robot.position[1]
-        if z is None:
-            position[2] = self._current_state_robot.position[2]
+        positions = [x, y, z]
+        for id, position in enumerate(positions):
+            if position is not None:
+                robot_m = self._world_robot_transform.world2robot_each(id, position)
+                self.run_motor(id, robot_m)
 
-        robot_position = self._world_robot_transform.world2robot(position)
-        self.go_robot_m(robot_position, wait)
+        self.wait_all()
 
     ### gripperを開く
     def open_gripper(self, wait=True):
@@ -150,21 +151,16 @@ class Robot:
 
     def enable(self, enable_check=True):
 
-        enable_command = self._ros_cmd_template.generate_enable_command(True)
-
-        if self._error.error_code == ErrorCode.NONE:
-            enable_command.enable_check = enable_check
-        else:
-            ### recovery mode. 復帰のためenable_checkは無し
-            enable_command.enable_check = False
-
+        enable_command = self._ros_cmd_template.generate_enable_command(
+            True, enable_check
+        )
         self._pub_enable.publish(enable_command)
         print(enable_command)
+        rospy.sleep(1)
 
     def disable(self):
-        self.stop()
-        enable_command = self._ros_cmd_template.generate_enable_command()
-        enable_command.is_enable = False
+        self.mannual_on()
+        enable_command = self._ros_cmd_template.generate_enable_command(False)
         self._pub_enable.publish(enable_command)
 
     def has_work(self):
@@ -179,15 +175,16 @@ class Robot:
         self._has_work -= 1
 
     def set_origin(self):
-        self.stop()
-        self.set_origin_each(2)
-        self.set_origin_each(1)
+        rospy.loginfo("set origin")
         self.set_origin_each(0)
+        rospy.sleep(0.3)
+        self.set_origin_each(1)
+        rospy.sleep(0.3)
+        self.set_origin_each(2)
+        rospy.sleep(0.3)
 
     def set_origin_each(self, id):
-        velocity = self.GO_ORIGIN_VELOCITY_M[id]
-        self._motors[id].set_origin(velocity)
-        self.wait_arrive(id)
+        self._motors[id].set_origin(0)
 
     def main_run_ok(self):
         return self._main_run_ok
@@ -197,5 +194,5 @@ class Robot:
             id = msg.id
             self._motors[id].finish()
         else:
-            self.stop()
+            self.mannual_on()
             self._error = msg
