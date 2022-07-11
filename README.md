@@ -6,32 +6,10 @@
 
 ## Requirement
 - sudo apt install ros-melodic-rosserial-mbed
+- jsk-plugin(入れ方忘れました)
+- joy con系
 
-
-## How to use
-### show robot
-```
-roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
-
-```
-
-### mbed simulator demo
-```
-roslaunch catchrobo_bringup sim_bringup.launch field="red"  # or blue
-rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテストドライバ。自由に書き換え可能
-```
-
-シミュレーターの位置更新は下の式で実行される。kp, kdの値を変えるとそれっぽい変化をする.
-```
-p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
-```
-
-```
-float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
-```
-
-
-## mbedへの移行
+### mbedへの移行
 1. catchrobo_sim/include/catchrobo_simをzip化する
 1. mbed compilerでプログラム名を選択し右クリック
 1. インポートを選択
@@ -73,6 +51,18 @@ https://os.mbed.com/teams/catchrobo2022/
 motorの電源を入れてからmbedを開始→rosserial開始
 の流れにすることで、初期値をほぼ0とできる。
 
+
+
+
+## How to use
+### show robot
+```
+roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
+
+```
+
+### 実機
+
 ```
 roslaunch catchrobo_bringup bringup_base.launch 
 
@@ -81,9 +71,9 @@ rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
 rosrun catchrobo_test mbed_sim_test.py
 ```
 
-Xbeeあり
+#### Xbeeあり
 ```
-roslaunch catchrobo_description catchrobo_display.launch 
+roslaunch catchrobo_bringup bringup_base.launch 
 
 sudo chmod a+rw /dev/ttyUSB0 
 rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=115200
@@ -92,11 +82,44 @@ rosrun catchrobo_test mbed_sim_test.py
 
 motor driverに電源を入れると現在値を取得できる->rvizのアームが動くようになる
 
-
-
-
-printfしたいなら
+#### printfしたいなら
 ```
 sudo chmod a+rw /dev/ttyACM0 
 cu -s 921600 -l /dev/ttyACM0
+```
+
+### test用
+#### workアルゴリズムテスト
+```
+roslaunch catchrobo_bringup sim_bringup.launch 
+rosrun catchrobo_manager work_manager.py 
+```
+
+#### shooterアルゴリズムテスト用
+```
+roslaunch catchrobo_bringup sim_bringup.launch 
+rosrun catchrobo_manager shooting_box_manager.py 
+```
+
+#### mainプログラム テスト
+```
+roslaunch catchrobo_bringup sim_bringup.launch 
+rosrun catchrobo_manager game_manager.py 
+```
+
+
+#### mbed simulator demo
+```
+roslaunch catchrobo_bringup sim_bringup.launch field="red"  # or blue
+rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテストドライバ。自由に書き換え可能
+```
+
+シミュレーターの位置更新は下の式で実行される。kp, kdの値を変えるとそれっぽい変化をする.
+```
+p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
+```
+
+実機のモタドラは以下のダイナミクスで動く
+```
+float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
 ```

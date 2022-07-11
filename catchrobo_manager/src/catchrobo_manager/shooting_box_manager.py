@@ -14,7 +14,7 @@ class ShootingBoxManager:
         self._calculator = TargetShootingBoxCalculator()
 
         self.EXIST_KEY = "exist"
-        msg_template = [0] * self._database.getIdNum()
+        msg_template = [False] * self._database.getIdNum()
         self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template)
 
     def get_target_id(self):
@@ -42,7 +42,7 @@ class ShootingBoxManager:
         msg = self._gui.getMsg()
         for i, val in enumerate(msg.data):
             # rospy.loginfo("i, val {}{}".format(i,val))
-            self._database.updateState(i, self.EXIST_KEY, int(val))
+            self._database.updateState(i, self.EXIST_KEY, bool(val))
 
 
 if __name__ == "__main__":

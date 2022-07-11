@@ -28,7 +28,7 @@ class TargetShootingBoxCalculator:
             minimum = None
         else:
             # "exist"がfalseのみの"priority"の列
-            minimum = database._objects[not exist]["priority"].idxmin()
+            minimum = database._objects[~exist]["priority"].idxmin()
         return minimum
 
 
