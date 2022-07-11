@@ -1,30 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.jagarico.database import Database
 from jagarico.target_shooting_box_calculator import TargetShootingBoxCalculator
-
-import pandas as pd
-import numpy as np
-
-import rospy
-import rospkg
-
-
-from std_msgs.msg import Int32MultiArray
+from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 
 class ShootingBoxManager:
     def __init__(self, field):
-        # [TODO] targetをGUIに教える
-
         self._database = Database()
         csv_name = field + "_shoot.csv"
         self._database.readCsv(csv_name)
         self._calculator = TargetShootingBoxCalculator()
 
+        self.EXIST_KEY = "exist"
+        msg_template = [0] * self._database.getIdNum()
+        self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template)
+
     def get_target_id(self):
+        self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
@@ -36,6 +30,7 @@ class ShootingBoxManager:
     def shoot(self):
         pick_id = self.get_target_id()
         self._database.updateState(pick_id, "exist", True)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_open_num(self):
         return self._database.count("exist", False)
@@ -43,6 +38,25 @@ class ShootingBoxManager:
     def canGoCommon(self):
         return self._database.count("exist", True) >= 1
 
+    def update_by_gui(self):
+        msg = self._gui.getMsg()
+        for i, val in enumerate(msg.data):
+            # rospy.loginfo("i, val {}{}".format(i,val))
+            self._database.updateState(i, self.EXIST_KEY, int(val))
+
+
+if __name__ == "__main__":
+    import rospy
+
+    rospy.init_node("test")
+    manager = ShootingBoxManager("red")
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+
+        id = manager.get_target_id()
+        rospy.loginfo(id)
+        manager.shoot()
+        rate.sleep()
     #################################去年のプログラム
 
 

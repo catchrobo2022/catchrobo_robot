@@ -66,3 +66,6 @@ class Database:
     def count(self, key, value):
         exist = self._objects[key]
         return np.sum(exist == value)
+
+    def getColumn(self, key):
+        return self._objects[key]
