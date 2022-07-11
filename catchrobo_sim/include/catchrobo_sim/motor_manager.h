@@ -12,7 +12,7 @@
 class MotorManager
 {
 public:
-    MotorManager() : offset_(0), t_(0)
+    MotorManager() : offset_(0), t_(0), dt_(0)
     {
         old_command_.p_des = 0;
         old_command_.v_des = 0;
@@ -23,6 +23,11 @@ public:
         current_state_.position = 0;
         current_state_.velocity = 0;
         current_state_.torque = 0;
+
+        old_state_.position = 0;
+        old_state_.velocity = 0;
+        old_state_.torque = 0;
+
         double cbf_params = 1;
         safe_control_.setCBFparams(cbf_params);
     };
@@ -107,6 +112,8 @@ public:
         no_offset_state_ = state;
         current_state_ = no_offset_state_;
         current_state_.position -= offset_;
+        current_state_.velocity = (no_offset_state_.position - old_state_.position) / dt_;
+        old_state_ = no_offset_state_;
     }
 
     //低Hz (50Hz)で呼ばれる
@@ -121,6 +128,7 @@ public:
     }
     void nextStep(float dt)
     {
+        dt_ = dt;
         t_ += dt;
         velocity_control_.setDt(dt);
     };
@@ -132,6 +140,11 @@ public:
     void setObstacleInfo(bool enable, bool is_min, float limit)
     {
         safe_control_.setObstacleInfo(enable, is_min, limit);
+    }
+
+    void changeTarget(bool temp_mode, float target_position)
+    {
+        position_control_.changeTarget(temp_mode, target_position, current_state_);
     }
 
     // void changePositionMax(float max_rad)
@@ -146,6 +159,7 @@ public:
 private:
     StateStruct current_state_;
     StateStruct no_offset_state_;
+    StateStruct old_state_;
 
     ControlStruct old_command_;
 
@@ -154,6 +168,8 @@ private:
     //// motorの値 - offset_ = ros内での値
     float offset_;
     float t_;
+    float velocity_;
+    float dt_;
 
     PositionControl position_control_;
     DirectControl direct_control_;

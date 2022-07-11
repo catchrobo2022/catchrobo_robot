@@ -82,6 +82,7 @@ private:
 
     void noCollisionPlan(MotorManager (&motor_manager_)[N_MOTORS])
     {
+        bool temp_mode = false;
         int obstacle_num = 0;
 
         catchrobo_msgs::MyRosCmd ros_cmd[N_MOTORS];
@@ -94,20 +95,22 @@ private:
         }
 
         float z_top = obstacles_rad[obstacle_num].edge[2][1];
-        //// 下から上に向かうときは何も変えなくて大丈夫
         if (ros_cmd[2].position > z_top)
         {
-            return;
+            //// 下から上に向かうときは何も変えなくて大丈夫
+            temp_mode = false;
         }
-        //// 下が目標値のときは壁より下がりすぎないよう注意
-
-        float now_x = state[0].position;
-        float now_y = state[1].position;
-        //// 壁をまたぐかチェック
-        if (isOverHill(ros_cmd[0].position, ros_cmd[1].position, now_x, now_y, obstacles_rad[obstacle_num]))
+        else
         {
-            motor_manager_[2].setObstacleInfo(true, true, z_top);
+            //// 下が目標値のときは壁より下がりすぎないよう注意
+            float now_x = state[0].position;
+            float now_y = state[1].position;
+            //// 壁をまたぐときは、一時的に目標値変えモード
+            temp_mode = isOverHill(ros_cmd[0].position, ros_cmd[1].position, now_x, now_y, obstacles_rad[obstacle_num]);
         }
+        ////目標値変換(トグル的な関数なので、何回呼び出しても、temp_modeが変化したタイミングでしか機能しない。
+        ////         また、temp_mode = falseなら第二変数は機能しない)
+        motor_manager_[2].changeTarget(temp_mode, z_top + 0.1); //// 壁ちょい上を目指す
     }
 
     bool isOverHill(float target_x, float target_y, float now_x, float now_y, Obstacle &obstacle)
