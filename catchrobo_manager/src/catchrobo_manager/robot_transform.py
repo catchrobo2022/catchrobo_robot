@@ -8,7 +8,7 @@ import numpy as np
 class WorldRobotTransform:
     def __init__(self, field):
         # world座標でみたrobot座標原点
-        self._robot_origin = np.array([0.675, 0.845, 0.00445, 0])
+        self._robot_origin = np.array([0, 0.845, 0.00445, 0])
         if field == "blue":
             self._robot_origin[1] *= -1
 

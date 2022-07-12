@@ -42,10 +42,10 @@ class WorkManager:
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
         ## [TODO] 次動作計算アルゴリズム
-        ## 次も連続してじゃがりこを回収するなら
-        next_action = NextAction.PICK
         ## もうシュートするなら
         next_action = NextAction.SHOOT
+        ## 次も連続してじゃがりこを回収するなら
+        next_action = NextAction.PICK
         return next_action
 
     def setCanGoCommon(self, flag):

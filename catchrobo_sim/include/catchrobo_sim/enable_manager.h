@@ -55,8 +55,9 @@ public:
 
         // const float pi = 3.141592653589;
         // pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
-        float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
-        float position_min_rad[] = {0, -25.67088441, 0};
+        float epsilon = 0.1; // ジャストenableに引っかかることがあるので、ちょっと多めに取る
+        float position_max_rad[] = {78.68526044 + epsilon, 25.67088441 + epsilon, 8.435758051 + epsilon};
+        float position_min_rad[] = {0 - epsilon, -25.67088441 - epsilon, 0 - epsilon};
         float velocity_limit_rad[] = {180, 180, 180};
         float torque_limit_rad[] = {136.2719005, 156.7212355, 278.8550066};
         for (size_t i = 0; i < motor_num_; i++)

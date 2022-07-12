@@ -28,3 +28,10 @@ class RadTransform:
 
     def get_pulley_radius(self, id):
         return self._pulley_radius[id]
+
+
+### test 用
+if __name__ == "__main__":
+    transform = RadTransform()
+    ret = transform.robot_m2rad(2, 0.063 - 0.00445)
+    print(ret)

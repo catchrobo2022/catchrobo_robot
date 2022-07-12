@@ -112,8 +112,8 @@ class Robot:
             if position is not None:
                 robot_m = self._world_robot_transform.world2robot_each(id, position)
                 self.run_motor(id, robot_m)
-
-        self.wait_all()
+        if wait:
+            self.wait_all()
 
     ### gripperを開く
     def open_gripper(self, wait=True):
