@@ -9,22 +9,23 @@
 
 #include <limits>
 
-class PositionControl
+class PositionControlWithCBF
 {
 public:
-    PositionControl() : no_target_flag_(true), finish_already_notified_(false), temp_target_flag_(false), final_target_position_(0){};
+    PositionControlWithCBF() : no_target_flag_(true), finish_already_notified_(false), temp_target_flag_(false), final_target_position_(0), dt_(0) {}
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
         target_ = cmd;
         final_target_position_ = cmd.position;
-        setAccelDesigner(cmd, joint_state);
+        // setAccelDesigner(cmd, joint_state);
         no_target_flag_ = false;
         finish_already_notified_ = false;
         temp_target_flag_ = false;
     };
 
     // dt間隔で呼ばれる想定. except_command : 例外時に返す値。
-    void getCmd(float t, const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &finished)
+
+    void getCmd(float t_, const StateStruct &state, const ControlStruct &except_command, ControlStruct &command, ControlResult::ControlResult &finished)
     {
         finished = ControlResult::RUNNING;
         if (no_target_flag_)
@@ -41,16 +42,12 @@ public:
             return;
         }
 
-        if (t < accel_designer_.t_end())
+        float dist = target_.position - state.position;
+        float convergence_threshold_ = 0.1;
+        if (fabs(dist) < convergence_threshold_)
         {
-            //収束していないとき
-            packResult2Cmd(t, accel_designer_, target_, command);
-        }
-        else
-        {
-            //収束後
-            // packAfterFinish(target_, command);
-            command = except_command;
+            //// 収束済み
+            packAfterFinish(target_, command);
             if (temp_target_flag_)
             {
                 //// 一時目標変換していたとき
@@ -58,8 +55,11 @@ public:
             }
             finished = ControlResult::FINISH;
             finish_already_notified_ = true;
+            return;
         }
-    };
+
+        calcCBF(state.velocity, target_, state, command);
+    }
 
     void changeTarget(bool temp_mode, float target_position, const StateStruct &joint_state)
     {
@@ -77,16 +77,33 @@ public:
         }
         temp_target_flag_ = temp_mode;
     }
-    void setDt(float dt) {}
+
+    void setDt(float dt)
+    {
+        dt_ = dt;
+    }
 
 private:
     bool no_target_flag_;
     bool finish_already_notified_;
     bool temp_target_flag_;
+    float dt_;
 
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
     float final_target_position_;
+
+    void bound(double min, double max, float &target)
+    {
+        if (target < min)
+        {
+            target = min;
+        }
+        if (target > max)
+        {
+            target = max;
+        }
+    }
 
     void setAccelDesigner(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
@@ -128,6 +145,46 @@ private:
         cmd.kd = target.kd;
     }
 
+    void calcCBF(float current_velocity, const catchrobo_msgs::MyRosCmd target, const StateStruct &state, ControlStruct &command)
+    {
+        float dt = dt_;
+        float dist = target_.position - state.position;
+        float acceleration_limit = target.acceleration_limit;
+        int sign = (dist > 0) - (dist < 0);
+        float accel = sign * acceleration_limit;
+
+        float alpha = target.jerk_limit / target.acceleration_limit;
+        if (sign * current_velocity > 0)
+        {
+            ////　進行方向と目標値が同じで、velocity != 0のときは、ブレーキできるようCBF
+            //// CBF
+            if (dist > 0)
+            {
+                float h = dist - 0.5 * current_velocity * current_velocity / acceleration_limit;
+                // ROS_INFO_STREAM("h : " << h);
+                accel = acceleration_limit * (-1 + alpha * h / current_velocity);
+            }
+            else
+            {
+                float h = -dist - 0.5 * current_velocity * current_velocity / acceleration_limit;
+                accel = acceleration_limit * (1 + alpha * h / current_velocity);
+            }
+            // ROS_INFO_STREAM("cbf : " << accel);
+        }
+        bound(-acceleration_limit, acceleration_limit, accel);
+
+        float target_velocity = current_velocity + accel * dt;
+
+        command.id = target.id;
+        command.v_des = target_velocity;
+        command.p_des = state.position + target_velocity * dt;
+        command.torque_feed_forward = target.net_inertia * accel + target.effort;
+        command.kp = target.kp;
+        command.kd = target.kd;
+
+        // ROS_INFO_STREAM("dist, velocity, accel");
+        // ROS_INFO_STREAM(dist << " " << current_velocity << " " << accel);
+    }
     // void packBeforeSetTargetCmd(int id, ControlStruct &cmd){
     //     cmd.id = id;
     //     cmd.p_des = 0;

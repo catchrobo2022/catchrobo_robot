@@ -1,6 +1,7 @@
 #pragma once
 
 #include "catchrobo_sim/position_control.h"
+#include "catchrobo_sim/position_control_with_CBF.h"
 #include "catchrobo_sim/direct_control.h"
 #include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
@@ -30,6 +31,10 @@ public:
 
         double cbf_params = 1;
         safe_control_.setCBFparams(cbf_params);
+
+        estimate_state_.position = 0;
+        estimate_state_.velocity = 0;
+        estimate_state_.torque = 0;
     };
 
     //低Hz (1 Hzとか)で呼ばれる
@@ -66,13 +71,17 @@ public:
     };
 
     // dt間隔で呼ばれる. servo classではoverrideされる。
-    void getCmd(ControlStruct &command, ControlResult::ControlResult &result)
+    void getCmd(ControlStruct &offset_command, ControlResult::ControlResult &result)
     {
+        ControlStruct command;
+        ros::Time t_start = ros::Time::now();
+
         switch (ros_cmd_.mode)
         {
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
 
-            position_control_.getCmd(t_, current_state_, old_command_, command, result);
+            position_control_.getCmd(t_, estimate_state_, old_command_, command, result);
+            // position_control_.getCmd(t_, current_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
             // case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
@@ -99,11 +108,17 @@ public:
             //            ROS_ERROR("error : No mode in MyRosCmd");
             break;
         }
+        // ros::Time now = ros::Time::now();
+        // ros::Duration ros_dt = now - t_start;
+        // double dt = ros_dt.toSec();
+        // if (command.id == 0)
+        //     ROS_INFO_STREAM(dt);
+        setEstimateState(current_state_, command, estimate_state_);
         //// 基本はros座標系で行う
         old_command_ = command;
-
-        // 最後の最後にmotor座標系に変換
-        command.p_des += offset_;
+        // 最後の最後にモタドラ座標系に変換
+        offset_command = command;
+        offset_command.p_des += offset_;
     };
 
     //高Hz (500Hz)で呼ばれる
@@ -113,6 +128,9 @@ public:
         current_state_ = no_offset_state_;
         current_state_.position -= offset_;
         current_state_.velocity = (no_offset_state_.position - old_state_.position) / dt_;
+
+        if (current_state_.velocity > 200)
+            ROS_INFO_STREAM("dt: " << dt_ << " p: " << no_offset_state_.position << " old_p: " << old_state_.position << " v: " << current_state_.velocity);
         old_state_ = no_offset_state_;
     }
 
@@ -131,6 +149,7 @@ public:
         dt_ = dt;
         t_ += dt;
         velocity_control_.setDt(dt);
+        position_control_.setDt(dt);
     };
     bool IsPegInHoleMode()
     {
@@ -160,6 +179,7 @@ private:
     StateStruct current_state_;
     StateStruct no_offset_state_;
     StateStruct old_state_;
+    StateStruct estimate_state_;
 
     ControlStruct old_command_;
 
@@ -168,12 +188,34 @@ private:
     //// motorの値 - offset_ = ros内での値
     float offset_;
     float t_;
-    float velocity_;
     float dt_;
+    float target_velocity_;
 
     PositionControl position_control_;
+    // PositionControlWithCBF position_control_;
     DirectControl direct_control_;
     VelocityControl velocity_control_;
     SafeControl safe_control_;
     GoOriginControl go_origin_control_;
+
+    void setEstimateState(const StateStruct observed_state, const ControlStruct &command, StateStruct &estimate_state)
+    {
+        if (command.kd > 0)
+        {
+            estimate_state.velocity = command.v_des;
+        }
+        else
+        {
+            estimate_state.velocity = observed_state.velocity;
+        }
+
+        if (command.kp > 0)
+        {
+            estimate_state.position = command.p_des;
+        }
+        else
+        {
+            estimate_state.position = observed_state.position;
+        }
+    }
 };

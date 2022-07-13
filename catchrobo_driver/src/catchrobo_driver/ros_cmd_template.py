@@ -17,7 +17,7 @@ class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
         self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 0.1
+        self._accerelation_limit_scale = 1
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()

@@ -141,7 +141,6 @@ int main(int argc, char **argv)
     motor_driver_bridge.setNodeHandlePtr(&nh);
     ros_bridge.setNodeHandlePtr(&nh);
 #endif
-
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
 
     int motor_directions[] = {-1, -1, -1, 1};
