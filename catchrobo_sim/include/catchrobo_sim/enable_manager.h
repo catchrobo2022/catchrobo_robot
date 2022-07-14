@@ -109,7 +109,7 @@ public:
             if (!check_velocity[i].check(state.velocity[i]))
             {
                 error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
-                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
+                //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
                 return;
             }
             if (!check_torque[i].check(state.effort[i]))

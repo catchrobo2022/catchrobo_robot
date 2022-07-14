@@ -1,4 +1,6 @@
-//  #define USE_MBED
+//   #define USE_MBED
+void wait(float t){}; // simlatorで存在しないため
+
 #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
@@ -14,16 +16,10 @@
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
-#ifdef USB_MBED
-const float MBED2ROS_DT = 1; // 10Hz
-#else
 const float MBED2ROS_DT = 0.01; // 10Hz
-
-void wait(float t){}; // simlatorで存在しないため
-#endif
 const float MBED2GRIPPER_DT = 0.1;
-const float MBED2MOTOR_DT = 0.002; // 500Hz
-const int SERIAL_BAUD_RATE = 115200;
+const float MBED2MOTOR_DT = 0.01; // 500Hz
+const int SERIAL_BAUD_RATE = 9600;
 
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
