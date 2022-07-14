@@ -55,6 +55,10 @@ public:
     {
         ros::spin();
     };
+    void spinOnce()
+    {
+        ros::spinOnce();
+    }
 
 private:
     ros::NodeHandle *nh_;

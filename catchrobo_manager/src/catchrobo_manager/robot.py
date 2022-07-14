@@ -85,14 +85,18 @@ class Robot:
         self._main_run_ok = True
 
     ## robot座標系
-    def go_robot_m(self, robot_position, wait=True):
-        for i, val in enumerate(robot_position):
-            self._motors[i].go(val, self._has_work)
+    def go_robot_m(self, x=None, y=None, z=None, wait=True):
+        ### stop flagが立ったら指示しない
+        if not self._main_run_ok:
+            return
 
+        positions = [x, y, z]
+        for id, position in enumerate(positions):
+            if position is not None:
+                # robot_m = self._world_robot_transform.world2robot_each(id, position)
+                self.run_motor(id, position)
         if wait:
-            ### 全モーターの収束を待つ
-            for i in range(len(self._motors)):
-                self.wait_arrive(i)
+            self.wait_all()
 
     def run_motor(self, id, robot_position_m):
         self._motors[id].go(robot_position_m, self._has_work)

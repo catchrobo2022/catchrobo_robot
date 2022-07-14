@@ -16,14 +16,14 @@ import math
 class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
-        self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 0.6
-        self._jerk_limit = 20
+        self._velocity_limit_scale = 0.2
+        self._accerelation_limit_scale = 0.2
+        self._jerk_limit = 1000
 
         ## キレイに動いたときのパラメーター 07/14
-        # self._velocity_limit_scale = 1
-        # self._accerelation_limit_scale = 0.4
-        # self._jerk_limit = 20
+        # self._velocity_limit_scale = 0.2
+        # self._accerelation_limit_scale = 0.2
+        # self._jerk_limit = 1000
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
@@ -109,7 +109,7 @@ class RosCmdTemplate:
         command.net_inertia = inertia + mass * r
 
         if id == 2:
-            command.effort = mass * constants.G * r
+            command.effort = mass * 9.8 * r
 
         return command
 

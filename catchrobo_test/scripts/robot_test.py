@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from traceback import print_tb
 from catchrobo_manager.robot import Robot
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
@@ -12,19 +13,27 @@ import numpy as np
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
-    robot = Robot()
+    robot = Robot("blue")
     rospy.sleep(1)  # rosが起動するのを待つ
     robot.enable()
-    rospy.sleep(2)
+    # rospy.sleep(2)
     robot.start()
+    rospy.sleep(1)
+    # robot.go(z=0.18, wait=True)
+    robot.go(x=1.081, y=-0.495, wait=True)
 
-    target_mm = [113.3, 0, 93.5]
-    target_m = []
-    for mm in target_mm:
-        target_m.append(mm * 0.001)
+    # target_mm = [113.3, 0, 93.5]
+    # target_m = []
+    # for mm in target_mm:
+    #     target_m.append(mm * 0.001)
 
-    robot.go(*target_m)
-    robot.go_robot_m([0, 0, 0], True)
+    # robot.go(*target_m)
+    # robot.go(x=1.2333, y=0, wait=True)
+    # robot.go(z=0.108, wait=True)
+
+    print("finish")
+    # robot.go(x=0.3, wait=True)
+    # robot.disable()
 
     # robot.stop()
     # rospy.loginfo("stop")
@@ -35,8 +44,8 @@ if __name__ == "__main__":
     # # robot.peg_in_hole()
     # rospy.sleep(1)
 
-    robot.shoot()
-    robot.pick()
+    # robot.shoot()
+    # robot.pick()
 
     # pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     # pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
