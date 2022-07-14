@@ -101,3 +101,7 @@ pause機能の実装
 xbox用のコントローラーで作るようにした。
 gripperのpubを修正
 xyzのpubのタイミング修正
+
+0714
+pubの周期を調整完了
+pauseのバグ完了
