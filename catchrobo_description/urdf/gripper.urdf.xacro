@@ -78,7 +78,7 @@
     <joint name="${prefix}gripper/grasping_frame_joint" type="fixed">
       <parent link="${prefix}gripper/base_link"/>
       <child link="${prefix}gripper/grasping_frame"/>
-      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <origin xyz="0.2511 0 -0.1" rpy="0 0 0"/>
     </joint>
     <link name="${prefix}gripper/grasping_frame"/>
 
