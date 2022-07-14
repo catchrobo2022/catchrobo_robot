@@ -334,16 +334,12 @@ class Manual:
         # 待機　pause
         # 入力を受け付けない感じ#positionに現在位置を入れ続ける。
         # 一回目押したとき、pauseを維持
-        if joy_b[b_num.A] == 1 and (
-            self.button_count[b_num.A] == 0 or self.button_count[b_num.A] == 1
-        ):
+        if joy_b[b_num.A] == 1 and (self.button_count[b_num.A] == 0 or self.button_count[b_num.A] == 1):
             # 　本来はここにはいらないけど、安全のために一応入れとく
             self.pauseProcess()
             self.button_count[b_num.A] = 1
             # print("pause start")
-        elif joy_b[b_num.A] == 0 and (
-            self.button_count[b_num.A] == 1 or self.button_count[b_num.A] == 2
-        ):
+        elif joy_b[b_num.A] == 0 and (self.button_count[b_num.A] == 1 or self.button_count[b_num.A] == 2):
             self.pauseProcess()
             self.button_count[b_num.A] = 2
             print("pause")
@@ -354,6 +350,7 @@ class Manual:
             # print("restart start")
         elif joy_b[b_num.A] == 0 and self.button_count[b_num.A] == 3:
             self.button_count[b_num.A] = 0
+            self.is_pause = False
             print("restart")
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
