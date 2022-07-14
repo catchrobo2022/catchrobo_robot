@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from re import X
 import numpy as np
 from rospy.core import rospyinfo
 import rospy
@@ -75,14 +76,21 @@ class Manual():
         self.ButtonEnum = Button
         self.joint_current_pos = [0.0]*4
         self.position_var_manual = [0.0]*4
-        self.button_count = [0]*14
-        self.axes_count = [0]*11
+        self.button_count = [0]*12
+        self.axes_count = [0]*6
         # num relate to ps4button_wireless class
         # there are 13+1 list, because need 1~13 not 0~12
 
         self.zero_flag = 0
         self.enable_manual = 0
         self.button_disable = False
+        self.is_pause = False
+        self.cmd_flag = [False]*3
+
+        self.old_joystick = [0.0]*3
+        self.old_button=[0.0]*3
+
+        self.pub_count=0
 
         # 一つだけの軸で指令を送りたい場合用
         self.pub_ros_cmd = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
@@ -98,17 +106,9 @@ class Manual():
     def joyCallback(self, joy_msg):
         self.joy_state = joy_msg
         self.manualControl()
-
         self.pub_manual_mode.publish(self.enable_manual)
 
-        #一つだけの軸で指令を送りたい場合用
-        self.pub_ros_cmd.publish(self.command.command_x)
-        self.pub_ros_cmd.publish(self.command.command_y)
-        self.pub_ros_cmd.publish(self.command.command_z)
-        # gripperだけ押したときにpub
-
     #　現在位置取得用
-
     def jointCallback(self, joint_state_msg):
         self.joint_state_feedback = joint_state_msg
         if(self.zero_flag == 0):
@@ -163,6 +163,7 @@ class Manual():
             self.command.command_g.kd = KD_ALL
 
     #　ここでボタンによる操作のせていをしてる
+
     def manualControl(self):
         cmd_x = self.command.command_x
         cmd_y = self.command.command_y
@@ -175,157 +176,145 @@ class Manual():
 
         # disable中は動けない
         if(self.button_disable == False):
+
             #速度制御
             # kp0だから、positionは更新しなくていい
             # 速度を一気に調整用
             VELOCITY_VAR = 0.1
             # x軸
-            if(joy_a[b_num.LX] > 0.3):
+            if(joy_a[b_num.LX] > 0.3 and self.old_joystick[0] <= 0.3):
                 self.velSet(0)
                 cmd_x.velocity = cmd_tmp.robot_m2rad(
                     cmd_x.id, VELOCITY_VAR*self.COLOR_NUM)
-                # print("left")
-            elif(joy_a[b_num.LX] < -0.3):
+                self.cmd_flag[0] = True
+                print("left")
+            elif(joy_a[b_num.LX] < -0.3 and self.old_joystick[0] >= -0.3):
                 self.velSet(0)
                 cmd_x.velocity = cmd_tmp.robot_m2rad(
                     cmd_x.id, (-1)*VELOCITY_VAR*self.COLOR_NUM)
-                # print("right")
-            else:
+                self.cmd_flag[0] = True
+                print("right")
+            elif((joy_a[b_num.LX] < 0.3 and joy_a[b_num.LX] > -0.3) and (self.old_joystick[0] <= -0.3 or self.old_joystick[0] >= 0.3)):
                 cmd_x.velocity = cmd_tmp.robot_m2rad(cmd_x.id, 0.0)
+                self.cmd_flag[0] = True
                 # print("stop1")
 
             #y軸
-            if(joy_a[b_num.LY] > 0.3):
+            if(joy_a[b_num.LY] > 0.3 and self.old_joystick[1] <= 0.3):
                 self.velSet(1)
                 cmd_y.velocity = cmd_tmp.robot_m2rad(
                     cmd_y.id, (-1)*VELOCITY_VAR*self.COLOR_NUM)
+                self.cmd_flag[1] = True
                 # print("forward")
-            elif(joy_a[b_num.LY] < -0.3):
+            elif(joy_a[b_num.LY] < -0.3 and self.old_joystick[1] >= -0.3):
                 self.velSet(1)
                 cmd_y.velocity = cmd_tmp.robot_m2rad(
                     cmd_y.id, VELOCITY_VAR*self.COLOR_NUM)
+                self.cmd_flag[1] = True
                 # print("back")
-            else:
+            elif((joy_a[b_num.LY] < 0.3 and joy_a[b_num.LY] > -0.3) and (self.old_joystick[1] <= -0.3 or self.old_joystick[1] >= 0.3)):
                 cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, 0.0)
+                self.cmd_flag[1] = True
                 # print("stop2")
 
             #z軸
             #これは位置制御がいいね。速度制御はいらいらする
-            if(joy_b[b_num.LB] == 1):
+            if(joy_b[b_num.LB] == 1 and self.old_joystick[2]<1):
                 self.velSet(2)
                 cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, VELOCITY_VAR)
+                self.old_joystick[2] = 1
+                self.cmd_flag[2] = True
                 print("up")
-            elif(joy_a[b_num.LT] == -1):
+            elif(joy_b[b_num.LT] == 1 and self.old_joystick[2] > -1):
                 self.velSet(2)
                 cmd_z.velocity = cmd_tmp.robot_m2rad(
                     cmd_z.id, (-1)*VELOCITY_VAR)
+                self.old_joystick[2] = -1
+                self.cmd_flag[2] = True
                 print("down")
-            else:
+            elif(joy_b[b_num.LB] == 0 and (self.old_joystick[2] > 0 or self.old_joystick[2] < 0)):
                 cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
-                # print("stop3")
+                self.old_joystick[2] = 0
+                self.cmd_flag[2] = True
+            elif(joy_b[b_num.LT] == 0 and (self.old_joystick[2] > 0 or self.old_joystick[2] < 0)):
+                cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
+                self.old_joystick[2] = 0
+                self.cmd_flag[2] = True
 
+            
             #　位置制御
             #　一回押すと、一回分動く仕様
             #　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
             #x軸
-            if(joy_a[b_num.RIGHT_LEFT] == 1):
+            if(joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0]<1):
                 self.posSet(0)
                 self.position_var_manual[0] += cmd_tmp.robot_m2rad(
                     cmd_x.id, 0.005*self.COLOR_NUM)
+                self.cmd_flag[0] = True
                 print("b_left")
-            elif(joy_a[b_num.RIGHT_LEFT] == -1):
+            elif(joy_a[b_num.RIGHT_LEFT] == -1 and self.old_button[0] > -1):
                 self.posSet(0)
                 self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
                     cmd_x.id, 0.005*self.COLOR_NUM)
+                self.cmd_flag[0] = True
                 print("b_right")
-            elif(joy_a[b_num.RIGHT_LEFT] == 0):
+            elif(joy_a[b_num.RIGHT_LEFT] == 0 and (self.old_button[0] > 0 or self.old_button[0] < 0)):
                 self.position_var_manual[0] = 0.0
+                self.cmd_flag[0] = True
 
             #y軸
-            if(joy_a[b_num.UP_DOWN] == 1):
+            if(joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1):
                 self.posSet(1)
                 self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
                     cmd_y.id, 0.005*self.COLOR_NUM)
+                self.cmd_flag[1] = True
                 print("b_forward")
-            elif(joy_a[b_num.UP_DOWN] == -1):
+            elif(joy_a[b_num.UP_DOWN] == -1 and self.old_button[1] > -1):
                 self.posSet(1)
                 self.position_var_manual[1] += cmd_tmp.robot_m2rad(
                     cmd_y.id, 0.005*self.COLOR_NUM)
+                self.cmd_flag[1] = True
                 print("b_back")
-            elif(joy_a[b_num.UP_DOWN] == 0):
+            elif(joy_a[b_num.UP_DOWN] == 0 and (self.old_button[1] > 0 or self.old_button[1] < 0)):
                 self.position_var_manual[1] = 0.0
-                
+                self.cmd_flag[1] = True
+
+
+            self.old_joystick[0] = joy_a[b_num.LX]
+            self.old_joystick[1] = joy_a[b_num.LY]
+            self.old_button[0] = joy_a[b_num.RIGHT_LEFT]
+            self.old_button[1] = joy_a[b_num.UP_DOWN]
+
+
             ### 指令値適当
             #gripper
             # grab # release
             # ここでpubしてる
             if(joy_b[b_num.B] == 1 and self.button_count[b_num.B] == 0):
                 self.posSet(3)
-                self.position_var_manual[3] = cmd_tmp.robot_m2rad(
+                cmd_g.position = cmd_tmp.robot_m2rad(
                     cmd_g.id, 1.5)
+                self.pub_ros_cmd.publish(self.command.command_g)
+                self.pubCount("g")
                 self.button_count[b_num.B] = 1
                 print("release")
             elif(joy_b[b_num.B] == 0 and self.button_count[b_num.B] == 1):
                 self.button_count[b_num.B] = 2
-                self.pub_ros_cmd.publish(self.command.command_g)
             elif(joy_b[b_num.B] == 1 and self.button_count[b_num.B] == 2):
                 self.posSet(3)
-                self.position_var_manual[3] = cmd_tmp.robot_m2rad(
+                cmd_g.position = cmd_tmp.robot_m2rad(
                     cmd_g.id, 0.0)
+                self.pub_ros_cmd.publish(self.command.command_g)
+                self.pubCount("g")
                 self.button_count[b_num.B] = 3
                 print("grab")
             elif(joy_b[b_num.B] == 0 and self.button_count[b_num.B] == 3):
                 self.button_count[b_num.B] = 0
-                self.pub_ros_cmd.publish(self.command.command_g)
-
-            # # いらない
-            # # 原点にもどす
-            # # 長押ししてね
-            # # よくわからないけど、しきい値がある　29ぐらい 0.5mぐらいの位置？ なおった？
-            # if(joy_b[b_num.X] == 1):
-            #     #原点に戻す処理
-            #     print("zero")
-            #     for i in range(4):
-            #         self.posSet(i)
-            #     cmd_x.position = cmd_tmp.robot_m2rad(cmd_x.id, 0.01)
-            #     cmd_y.position = cmd_tmp.robot_m2rad(cmd_y.id, 0.0)
-            #     cmd_z.position = cmd_tmp.robot_m2rad(cmd_z.id, 0.01)
-            #     cmd_g.position = cmd_tmp.robot_m2rad(cmd_g.id, 0.0)
-            #     self.zero_flag = 1
-            # elif(joy_b[b_num.X] == 0):
-            #     #ここが基本のところ
-            #     self.zero_flag = 0
-            #     cmd_x.position = self.position_var_manual[0] + cmd_tmp.robot_m2rad(
-            #         cmd_x.id, self.joint_current_pos[0])
-            #     cmd_y.position = self.position_var_manual[1] + cmd_tmp.robot_m2rad(
-            #         cmd_y.id, self.joint_current_pos[1])
-            #     cmd_z.position = self.position_var_manual[2] + \
-            #         cmd_tmp.robot_m2rad(cmd_z.id, self.joint_current_pos[2])
-            #     cmd_g.position = self.position_var_manual[3]
-
-            cmd_x.position = self.position_var_manual[0] + cmd_tmp.robot_m2rad(
-                cmd_x.id, self.joint_current_pos[0])
-            cmd_y.position = self.position_var_manual[1] + cmd_tmp.robot_m2rad(
-                cmd_y.id, self.joint_current_pos[1])
-            cmd_z.position = self.position_var_manual[2] + \
-                cmd_tmp.robot_m2rad(cmd_z.id, self.joint_current_pos[2])
-            cmd_g.position = self.position_var_manual[3]
-    
-
 
         # 自動→手動切り替え
-        if(joy_b[b_num.XBOX] == 1):
+        if(joy_b[b_num.BACK] == 1):
             self.enable_manual = 1
-            print("b_ps")
-
-
-        # # menu
-        # if(joy_b[b_num.TOUCH_PAD] == 1 and self.button_count[b_num.TOUCH_PAD] == 0):
-        #     self.showButtonRole()
-        #     self.button_count[b_num.TOUCH_PAD] = 1
-        # elif(joy_b[b_num.TOUCH_PAD] == 0):
-        #     self.button_count[b_num.TOUCH_PAD] = 0
-
+            print("b_manual_start")
 
         # 待機　pause
         # 入力を受け付けない感じ#positionに現在位置を入れ続ける。
@@ -348,7 +337,6 @@ class Manual():
             self.button_count[b_num.A] = 0
             print("restart")
 
-
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
         if(joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0):
             self.command.enable_command.is_enable = True
@@ -370,14 +358,16 @@ class Manual():
             self.pub_enable_cmd.publish(self.command.enable_command)
             self.button_count[b_num.START] = 0
 
-
     # pauseのときの処理
     # gripperだけ止めない
+
     def pauseProcess(self):
         cmd_x = self.command.command_x
         cmd_y = self.command.command_y
         cmd_z = self.command.command_z
         cmd_tmp = self.command.template
+
+        self.is_pause = True
 
         #位置　現在位置を保持
         cmd_x.position = cmd_tmp.robot_m2rad(
@@ -391,34 +381,68 @@ class Manual():
         cmd_y.velocity = cmd_tmp.robot_m2rad(cmd_y.id, 0.0)
         cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
 
+        self.pub_ros_cmd.publish(self.command.command_x)
+        self.pubCount("pX")
+        self.pub_ros_cmd.publish(self.command.command_y)
+        self.pubCount("pY")
+        self.pub_ros_cmd.publish(self.command.command_z)
+        self.pubCount("pZ")
 
-    def showButtonRole(self):
-        print('''
-        left joystick : vel xy
-        LB : vel z+
-        LT ; vel z-
+    # def showButtonRole(self):
+    #     print('''
+    #     left joystick : vel xy
+    #     LB : vel z+
+    #     LT ; vel z-
 
-        horizontal button : pos x
-        vertical button : pos y
+    #     horizontal button : pos x
+    #     vertical button : pos y
 
-        B : gripper grab & release
-        A : pause
-        X : zero point
+    #     B : gripper grab & release
+    #     A : pause
 
-        xbox: manual on
-        start: enable
+    #     back: manual on
+    #     start: enable
 
-        touch_pad : show button role
+    #     ''')
 
-        ''')
+    def pubXYZ(self, axes):
+        cmd_x = self.command.command_x
+        cmd_y = self.command.command_y
+        cmd_z = self.command.command_z
+        cmd_tmp = self.command.template
+        if(self.is_pause == False):
+            if(axes == "x"):
+                cmd_x.position = self.position_var_manual[0] + cmd_tmp.robot_m2rad(
+                    cmd_x.id, self.joint_current_pos[0])
+                self.pub_ros_cmd.publish(self.command.command_x)
+                self.pubCount("x")
+            elif(axes == "y"):
+                cmd_y.position = self.position_var_manual[1] + cmd_tmp.robot_m2rad(
+                    cmd_y.id, self.joint_current_pos[1])
+                self.pub_ros_cmd.publish(self.command.command_y)
+                self.pubCount("y")
+            elif(axes == "z"):
+                cmd_z.position = self.position_var_manual[2] + \
+                    cmd_tmp.robot_m2rad(cmd_z.id, self.joint_current_pos[2])
+                self.pub_ros_cmd.publish(self.command.command_z)
+                self.pubCount("z")
 
+    def pubCount(self,axes):
+        self.pub_count+=1
+        print("count",axes,self.pub_count)
 
     def main(self):
-        rate = rospy.Rate(1)
+        rate = rospy.Rate(100)
         while not rospy.is_shutdown():
-            #print(vars(self.command))
-            #print("p_var=", self.position_var_manual[0])
-            #print(self.command.getCommandX())
+            if(self.cmd_flag[0] == True):
+                self.pubXYZ("x")
+                self.cmd_flag[0]=False
+            if(self.cmd_flag[1] == True):
+                self.pubXYZ("y")
+                self.cmd_flag[1] = False
+            if(self.cmd_flag[2] == True):
+                self.pubXYZ("z")
+                self.cmd_flag[2]=False
             rate.sleep()
 
 
