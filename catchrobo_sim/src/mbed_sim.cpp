@@ -122,14 +122,14 @@ void gripperTimerCallback()
     gripper_manager.nextStep(MBED2GRIPPER_DT);
     motor_driver_bridge.publish(control);
     // ROS_INFO_STREAM("gripper");
-    if (result == ControlResult::FINISH)
-    {
-        catchrobo_msgs::ErrorCode error;
-        error.id = N_MOTORS;
-        error.error_code = catchrobo_msgs::ErrorCode::FINISH;
-        ros_bridge.publishError(error);
-        // ros_bridge.publishFinishFlag(i);
-    }
+    // if (result == ControlResult::FINISH)
+    // {
+    //     catchrobo_msgs::ErrorCode error;
+    //     error.id = N_MOTORS;
+    //     error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+    //     ros_bridge.publishError(error);
+    //     // ros_bridge.publishFinishFlag(i);
+    // }
 }
 
 int main(int argc, char **argv)

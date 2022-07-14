@@ -25,9 +25,10 @@ class Robot:
     def __init__(self, field):
         self.FIELD = field
 
-        self.OPEN_GRIPPER_RAD = math.pi
+        self.OPEN_GRIPPER_RAD = math.pi / 2
         self.CLOSE_GRIPPER_RAD = 0
         self.PEG_IN_HOLE_THRESHOLD_ROBOT = 0.01
+        self.SERVO_WAIT_s = 0.5
 
         self._has_work = 0
         self._main_run_ok = False
@@ -102,7 +103,7 @@ class Robot:
         self._motors[id].go(robot_position_m, self._has_work)
 
     def wait_all(self):
-        for i in range(len(self._motors)):
+        for i in range(3):
             self.wait_arrive(i)
 
     ### 絶対座標系
@@ -125,14 +126,16 @@ class Robot:
             return
         self._motors[3].go(self.OPEN_GRIPPER_RAD)
         if wait:
-            self.wait_arrive(3)
+            # self.wait_arrive(3)
+            rospy.sleep(self.SERVO_WAIT_s)
 
     def close_gripper(self, wait=True):
         if not self._main_run_ok:
             return
         self._motors[3].go(self.CLOSE_GRIPPER_RAD)
         if wait:
-            self.wait_arrive(3)
+            rospy.sleep(self.SERVO_WAIT_s)
+            # self.wait_arrive(3)
 
     def peg_in_hole(self):
         if not self._main_run_ok:
@@ -188,7 +191,7 @@ class Robot:
         rospy.sleep(0.3)
 
     def set_origin_each(self, id):
-        self._motors[id].set_origin(0)
+        self._motors[id].set_origin(self.FIELD)
 
     def main_run_ok(self):
         return self._main_run_ok

@@ -123,3 +123,8 @@ p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 ```
 float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
 ```
+
+
+
+### 台形加速アルゴリズムについて
+https://www.kerislab.jp/posts/2018-04-29-accel-designer4/

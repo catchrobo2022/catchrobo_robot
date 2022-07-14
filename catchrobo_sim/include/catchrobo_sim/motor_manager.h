@@ -175,6 +175,9 @@ public:
         t_ = 0;
     };
 
+protected:
+    float t_;
+
 private:
     StateStruct current_state_;
     StateStruct no_offset_state_;
@@ -187,7 +190,6 @@ private:
 
     //// motorの値 - offset_ = ros内での値
     float offset_;
-    float t_;
     float dt_;
     float target_velocity_;
 

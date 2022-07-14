@@ -104,7 +104,7 @@ private:
         float dist = target_position - start_posi; //移動距離
 
         accel_designer_.reset(cmd.jerk_limit, cmd.acceleration_limit, cmd.velocity_limit,
-                              joint_state.velocity, cmd.velocity, dist,
+                              0, cmd.velocity, dist,
                               start_posi, 0);
     }
 

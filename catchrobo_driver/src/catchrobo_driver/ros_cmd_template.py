@@ -16,8 +16,8 @@ import math
 class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
-        self._velocity_limit_scale = 0.2
-        self._accerelation_limit_scale = 0.2
+        self._velocity_limit_scale = 0.5
+        self._accerelation_limit_scale = 0.5
         self._jerk_limit = 1000
 
         ## キレイに動いたときのパラメーター 07/14
@@ -95,6 +95,7 @@ class RosCmdTemplate:
             * self._accerelation_limit_scale
         )
         command.jerk_limit = self._jerk_limit
+        command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
         command.kp = self._datas.loc["kp"][id]
         command.kd = self._datas.loc["kd"][id]
 
@@ -131,11 +132,11 @@ class RosCmdTemplate:
         command.data = True
         return command
 
-    def generate_origin_command(self, id, velocity_m):
-        command = self.generate_ros_command(
-            id, MyRosCmd.GO_ORIGIN_MODE, 0, velocity_m, 0
-        )
+    def generate_origin_command(self, id, field):
+        command = self.generate_ros_command(id, MyRosCmd.GO_ORIGIN_MODE, 0, 0, 0)
         command.position = self._datas.loc["origin_position_rad"][id]
+        if field == "blue" and id == 1:
+            command.position *= -1
         command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 

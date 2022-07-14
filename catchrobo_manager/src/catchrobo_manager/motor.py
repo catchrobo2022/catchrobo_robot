@@ -49,7 +49,7 @@ class Motor:
         )
         self._pub_ros_cmd.publish(ros_command)
 
-    def set_origin(self, velocity):
-        ros_command = self._ros_cmd_template.generate_origin_command(self._id, velocity)
+    def set_origin(self, field):
+        ros_command = self._ros_cmd_template.generate_origin_command(self._id, field)
         print(ros_command)
         self._pub_ros_cmd.publish(ros_command)
