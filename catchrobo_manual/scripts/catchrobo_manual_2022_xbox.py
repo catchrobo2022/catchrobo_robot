@@ -104,19 +104,21 @@ class Manual:
         self.cmd_flag = [False]*3
 
         self.old_joystick = [0.0]*3
-        self.old_button=[0.0]*3
+        self.old_button = [0.0]*3
 
-        self.pub_count=0
+        self.pub_count = 0
 
         # 一つだけの軸で指令を送りたい場合用
         self.pub_ros_cmd = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
-        self.pub_enable_cmd = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
+        self.pub_enable_cmd = rospy.Publisher(
+            "/enable_cmd", EnableCmd, queue_size=1)
         self.pub_manual_mode = rospy.Publisher(
             "/enable_manual_mode", Int16, queue_size=1
         )
 
         rospy.Subscriber("/joy", Joy, self.joyCallback, queue_size=1)
-        rospy.Subscriber("/joint_states", JointState, self.jointCallback, queue_size=1)
+        rospy.Subscriber("/joint_states", JointState,
+                         self.jointCallback, queue_size=1)
 
     def joyCallback(self, joy_msg):
         self.joy_state = joy_msg
@@ -234,7 +236,7 @@ class Manual:
 
             #z軸
             #これは位置制御がいいね。速度制御はいらいらする
-            if(joy_b[b_num.LB] == 1 and self.old_joystick[2]<1):
+            if(joy_b[b_num.LB] == 1 and self.old_joystick[2] < 1):
                 self.velSet(2)
                 cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, VELOCITY_VAR)
                 self.old_joystick[2] = 1
@@ -256,12 +258,11 @@ class Manual:
                 self.old_joystick[2] = 0
                 self.cmd_flag[2] = True
 
-            
             #　位置制御
             #　一回押すと、一回分動く仕様
             #　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
             #x軸
-            if(joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0]<1):
+            if(joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0] < 1):
                 self.posSet(0)
                 self.position_var_manual[0] += cmd_tmp.robot_m2rad(
                     cmd_x.id, 0.005*self.COLOR_NUM)
@@ -294,12 +295,10 @@ class Manual:
                 self.position_var_manual[1] = 0.0
                 self.cmd_flag[1] = True
 
-
             self.old_joystick[0] = joy_a[b_num.LX]
             self.old_joystick[1] = joy_a[b_num.LY]
             self.old_button[0] = joy_a[b_num.RIGHT_LEFT]
             self.old_button[1] = joy_a[b_num.UP_DOWN]
-
 
             ### 指令値適当
             # gripper
@@ -430,6 +429,8 @@ class Manual:
             if(axes == "x"):
                 cmd_x.position = self.position_var_manual[0] + cmd_tmp.robot_m2rad(
                     cmd_x.id, self.joint_current_pos[0])
+                # print("pos_var",self.position_var_manual[0])
+                # print("cmd_pos",cmd_x.position)
                 self.pub_ros_cmd.publish(self.command.command_x)
                 self.pubCount("x")
             elif(axes == "y"):
@@ -443,22 +444,22 @@ class Manual:
                 self.pub_ros_cmd.publish(self.command.command_z)
                 self.pubCount("z")
 
-    def pubCount(self,axes):
-        self.pub_count+=1
-        print("count",axes,self.pub_count)
+    def pubCount(self, axes):
+        self.pub_count += 1
+        # print("count", axes, self.pub_count)
 
     def main(self):
         rate = rospy.Rate(100)
         while not rospy.is_shutdown():
             if(self.cmd_flag[0] == True):
                 self.pubXYZ("x")
-                self.cmd_flag[0]=False
+                self.cmd_flag[0] = False
             if(self.cmd_flag[1] == True):
                 self.pubXYZ("y")
                 self.cmd_flag[1] = False
             if(self.cmd_flag[2] == True):
                 self.pubXYZ("z")
-                self.cmd_flag[2]=False
+                self.cmd_flag[2] = False
             rate.sleep()
 
 
