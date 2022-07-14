@@ -1,79 +1,72 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from geometry_msgs.msg import Point
 
 from catchrobo_manager.next_action_enum import NextAction
-from catchrobo_manager.jagarico.jagarico_database import JagaricoDatabase
+from catchrobo_manager.jagarico.database import Database
 from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
+from catchrobo_manager.jagarico.gui_bridge import GuiBridge
+
+import rospy
+
 
 class WorkManager:
     def __init__(self, field):
-        # [TODO] csv読み込み　
-        # targetをGUIに教える
+        # [TODO] targetをGUIに教える
 
-        self._database = JagaricoDatabase()
-        self._database.readCsv(field)
-        self._calculator=TargetJagaricoCalculator()
+        self._database = Database()
+        csv_name = field + "_jagarico.csv"
+        self._database.readCsv(csv_name)
+        self._calculator = TargetJagaricoCalculator()
+        self.EXIST_KEY = "exist"
+        msg_template = [1] * self._database.getIdNum()
+        self._gui = GuiBridge("obj_giro", "obj_rigo", msg_template)
 
     def get_target_id(self):
+        self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
         return target_id
-    
-    def get_target_posi(self):
-        ### [TODO] 目標ビスコ位置計算
-        target_id = self._calculator.calcTarget(self._database)
-        # geometry_msgのPoint型でpositionを渡す（去年のがそうなってた）
-        position = self._database.getPosi(target_id)
-        ### [TODO] next_action計算
 
+    def get_target_posi(self):
+        target_id = self._calculator.calcTarget(self._database)
+        position = self._database.getPosi(target_id)
+
+        # 今だけmm単位からmに変換
+        for i in range(len(position)):
+            position[i] *= 0.001
         return position
 
     def pick(self):
-        ### [TODO] じゃがりこ取得
-        pick_id=self.get_target_id()
+        pick_id = self.get_target_id()
         self._database.delete(pick_id)
-        
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
+
+        ## [TODO] 次動作計算アルゴリズム
+        ## もうシュートするなら
+        next_action = NextAction.SHOOT
+        ## 次も連続してじゃがりこを回収するなら
         next_action = NextAction.PICK
         return next_action
 
-        self._database = BiscoDatabase()
-        self._database.readCsv(color)
-
-        self._calculator = TargetBiscoCalculator()
-        self._gui = BiscoGUI(self._database)
-        self._gui.sendGUI()
-        if rviz:
-            self._rviz = BiscoRviz()
-            self._rviz.addBox2Scene(self._database)
-
-            self._gui.setObstacle(self._rviz)
-
-        self._can_go_common = False
-
-    #################################去年のプログラム
-    def pick(self, id):
-        self._rviz.attach(id)
-        self._database.delete(id)
-        self._gui.sendGUI()
-
-    def release(self, id):
-        self._rviz.release(id)
-
-    def calcTargetTwin(self):
-        self._target_ids = self._calculator.calcTargetTwin(self._database)
-        self._twin = self._calculator.isNeighbor(
-            self._database, self._target_ids[0], self._target_ids[1]
-        )
-
-        self._gui.highlight(self._target_ids)
-
-    def getTargetTwin(self):
-        return [self._database.getObj(id) for id in self._target_ids], self._twin
-
     def setCanGoCommon(self, flag):
-        self._can_go_common = flag
         self._calculator.setCanGoCommon(flag)
 
-    def isCommonExist(self):
-        return self._database.isCommonExist()
+    def update_by_gui(self):
+        msg = self._gui.getMsg()
+        for i, val in enumerate(msg.data):
+            # rospy.loginfo("i, val {}{}".format(i,val))
+            self._database.updateState(i, self.EXIST_KEY, bool(val))
+
+
+if __name__ == "__main__":
+    import rospy
+
+    rospy.init_node("test")
+    manager = WorkManager("red")
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+
+        posi = manager.get_target_id()
+        rospy.loginfo(posi)
+        manager.pick()
+        rate.sleep()

@@ -18,10 +18,10 @@ if __name__ == "__main__":
     template = RosCmdTemplate()
 
     ################################################### motor on 指示
-    # enable_command = template.generate_enable_command(True, False)
-    # # enable_command.enable_check = False
-    # pub_enable.publish(enable_command)
-    # print(enable_command)
+    enable_command = template.generate_enable_command(True, False)
+    pub_enable.publish(enable_command)
+    print(enable_command)
+    rospy.sleep(1)
 
     ################################################# joint command
     ### これで全要素それっぽい値が入ったcommandを作成できる
@@ -29,22 +29,31 @@ if __name__ == "__main__":
     command = template.generate_ros_command(
         id=2,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.063 - 0.00445,
+        robot_position=0,
         robot_end_velocity=0,
     )
     print(command)
     pub.publish(command)
-    rospy.sleep(2)
 
-    # command = template.generate_ros_command(
-    #     id=0,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=1.5,
-    #     robot_end_velocity=0,
-    # )
-    # print(command)
-    # pub.publish(command)
-    # rospy.sleep(10)
+    command = template.generate_ros_command(
+        id=1,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=-1,
+        robot_end_velocity=0,
+    )
+    print(command)
+    pub.publish(command)
+    rospy.sleep(10)
+
+    command = template.generate_ros_command(
+        id=1,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=1,
+        robot_end_velocity=0,
+    )
+    print(command)
+    pub.publish(command)
+    rospy.sleep(1)
 
     # command = template.generate_ros_command(
     #     id=0,

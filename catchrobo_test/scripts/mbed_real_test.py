@@ -17,7 +17,7 @@ if __name__ == "__main__":
     template = RosCmdTemplate()
 
     ################################################### motor on 指示
-    enable_command = template.generate_enable_command()
+    enable_command = template.generate_enable_command(True, False)
     rospy.sleep(1)  # rosが起動するのを待つ
     # pub_enable.publish(enable_command)
     # print(enable_command)
@@ -26,12 +26,13 @@ if __name__ == "__main__":
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=0,
+        id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.3,
+        robot_position=0,
         robot_end_velocity=0.0,
     )
     command.kp = 10
+    command.kd = 0.1
     # command.kd = 0.1
     print(command)
     pub.publish(command)

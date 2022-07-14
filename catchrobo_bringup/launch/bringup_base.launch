@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="field" default="red" /> 
+    <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
+        <arg name="field" value="$(arg field)"/>
+    </include>
+    <node pkg="catchrobo_gui" type="motor_debug.py" name="motor_status">
+    </node>
+</launch>

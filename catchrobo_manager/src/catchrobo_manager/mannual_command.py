@@ -4,8 +4,6 @@
 
 class ManualCommand:
     NONE = 0
-    START = 1
-    STOP = 2
-    ENABLE = 3
-    DISABLE = 4
-    SET_ORIGIN = 5
+    MANUAL_ON = 1
+    MANUAL_OFF = 2
+    GO = 3

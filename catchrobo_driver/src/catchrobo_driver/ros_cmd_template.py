@@ -17,7 +17,8 @@ class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
         self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 0.1
+        self._accerelation_limit_scale = 1
+        self._jerk_scale = 10
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
@@ -88,7 +89,7 @@ class RosCmdTemplate:
             self._datas.loc["acceleration_limit_rad"][id]
             * self._accerelation_limit_scale
         )
-        command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
+        command.jerk_limit = command.acceleration_limit * self._jerk_scale
         command.kp = self._datas.loc["kp"][id]
         command.kd = self._datas.loc["kd"][id]
 

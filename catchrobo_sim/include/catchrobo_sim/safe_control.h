@@ -17,7 +17,6 @@ public:
     void getSafeCmd(const StateStruct &state, const catchrobo_msgs::MyRosCmd &target,
                     const ControlStruct &except_command, ControlStruct &command)
     {
-
         nanCheck(except_command, command);
 
         float position_min = 0;
@@ -25,6 +24,10 @@ public:
         calcPositionLimit(target, position_min, position_max);
         ControlBarrierFunctions(position_min, position_max, state, command);
         boundIn(position_min, position_max, target.velocity_limit, command);
+        // if (target.id == 2)
+        // {
+        //     ROS_INFO_STREAM(position_min);
+        // }
     }
     void setObstacleInfo(bool enable, bool is_min, float limit)
     {

@@ -18,23 +18,86 @@ if __name__ == "__main__":
     template = RosCmdTemplate()
 
     ################################################### motor on 指示
-    # enable_command = template.generate_enable_command(True, False)
-    # # enable_command.enable_check = False
-    # pub_enable.publish(enable_command)
-    # print(enable_command)
+    enable_command = template.generate_enable_command(True, False)
+    # enable_command.enable_check = False
+    pub_enable.publish(enable_command)
+    print(enable_command)
+    rospy.sleep(2)
 
     ################################################# joint command
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=2,
+        id=0,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.063 - 0.00445,
+        robot_position=1.0,
         robot_end_velocity=0,
     )
+    jerk_limit = command.acceleration_limit * 1
+    command.jerk_limit = jerk_limit
     print(command)
     pub.publish(command)
-    rospy.sleep(2)
+    rospy.sleep(4)
+    command = template.generate_ros_command(
+        id=0,
+        mode=MyRosCmd.POSITION_CTRL_MODE,
+        robot_position=0.3,
+        robot_end_velocity=0,
+    )
+    command.jerk_limit = jerk_limit
+    print(command)
+    pub.publish(command)
+    rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.5,
+    #     robot_end_velocity=0,
+    # )
+    # command.jerk_limit = command.acceleration_limit * 10
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(2)
+
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0,
+    #     robot_end_velocity=0,
+    # )
+    # command.jerk_limit = command.acceleration_limit * 10
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(2)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=-0.5,
+    #     robot_end_velocity=0,
+    # )
+    # command.jerk_limit = command.acceleration_limit * 10
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.5,
+    #     robot_end_velocity=0,
+    # )
+    # command.jerk_limit = command.acceleration_limit * 10
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(2)
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(2)
 
     # command = template.generate_ros_command(
     #     id=0,
