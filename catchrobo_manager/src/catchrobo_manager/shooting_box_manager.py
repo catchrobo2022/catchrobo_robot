@@ -57,7 +57,9 @@ if __name__ == "__main__":
         rospy.loginfo(id)
         manager.shoot()
         rate.sleep()
-    #################################去年のプログラム
+
+
+#################################去年のプログラム
 
 
 #     def __init__(self, color):

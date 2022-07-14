@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+from tkinter.messagebox import NO
 from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.jagarico.database import Database
 from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
@@ -28,13 +29,15 @@ class WorkManager:
         return target_id
 
     def get_target_posi(self):
-        target_id = self._calculator.calcTarget(self._database)
-        position = self._database.getPosi(target_id)
 
-        # 今だけmm単位からmに変換
-        for i in range(len(position)):
-            position[i] *= 0.001
+        target_id = self._calculator.calcTarget(self._database)
+        # 全部のじゃがりこを取り終わるとNoneをcalcTarget()が返すので場合分け
+        if(target_id ==None):
+            position=None
+        else:
+            position = self._database.getPosi(target_id)
         return position
+        ###[TODO] position がNoneのときの対応 （get_target_posiの受取先）
 
     def pick(self):
         pick_id = self.get_target_id()
@@ -43,9 +46,14 @@ class WorkManager:
 
         ## [TODO] 次動作計算アルゴリズム
         ## もうシュートするなら
-        next_action = NextAction.SHOOT
+        # next_action = NextAction.SHOOT
         ## 次も連続してじゃがりこを回収するなら
-        next_action = NextAction.PICK
+        # next_action = NextAction.PICK
+        if (pick_id == 0) or (pick_id == 19) or (pick_id == 18) or (pick_id == 13) or (pick_id == 24):
+            next_action = NextAction.SHOOT
+        else:
+            next_action = NextAction.PICK
+
         return next_action
 
     def setCanGoCommon(self, flag):
@@ -63,7 +71,7 @@ if __name__ == "__main__":
 
     rospy.init_node("test")
     manager = WorkManager("red")
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(3)
     while not rospy.is_shutdown():
 
         posi = manager.get_target_id()
