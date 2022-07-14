@@ -267,50 +267,51 @@ class Manual:
                 self.old_joystick[2] = 0
                 self.cmd_flag[2] = True
 
-            # 　位置制御
-            # 　一回押すと、一回分動く仕様
-            # 　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
-            # x軸
-            if joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0] < 1:
-                self.posSet(0)
-                self.position_var_manual[0] += cmd_tmp.robot_m2rad(
-                    cmd_x.id, 0.005 * self.COLOR_NUM
-                )
-                self.cmd_flag[0] = True
-                print("b_left")
-            elif joy_a[b_num.RIGHT_LEFT] == -1 and self.old_button[0] > -1:
-                self.posSet(0)
-                self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
-                    cmd_x.id, 0.005 * self.COLOR_NUM
-                )
-                self.cmd_flag[0] = True
-                print("b_right")
-            elif joy_a[b_num.RIGHT_LEFT] == 0 and (
-                self.old_button[0] > 0 or self.old_button[0] < 0
-            ):
-                self.position_var_manual[0] = 0.0
-                self.cmd_flag[0] = True
 
-            # y軸
-            if joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1:
-                self.posSet(1)
-                self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
-                    cmd_y.id, 0.005 * self.COLOR_NUM
-                )
-                self.cmd_flag[1] = True
-                print("b_forward")
-            elif joy_a[b_num.UP_DOWN] == -1 and self.old_button[1] > -1:
-                self.posSet(1)
-                self.position_var_manual[1] += cmd_tmp.robot_m2rad(
-                    cmd_y.id, 0.005 * self.COLOR_NUM
-                )
-                self.cmd_flag[1] = True
-                print("b_back")
-            elif joy_a[b_num.UP_DOWN] == 0 and (
-                self.old_button[1] > 0 or self.old_button[1] < 0
-            ):
-                self.position_var_manual[1] = 0.0
-                self.cmd_flag[1] = True
+            # # 　位置制御
+            # # 　一回押すと、一回分動く仕様
+            # # 　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
+            # # x軸
+            # if joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0] < 1:
+            #     self.posSet(0)
+            #     self.position_var_manual[0] += cmd_tmp.robot_m2rad(
+            #         cmd_x.id, 0.005 * self.COLOR_NUM
+            #     )
+            #     self.cmd_flag[0] = True
+            #     print("b_left")
+            # elif joy_a[b_num.RIGHT_LEFT] == -1 and self.old_button[0] > -1:
+            #     self.posSet(0)
+            #     self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
+            #         cmd_x.id, 0.005 * self.COLOR_NUM
+            #     )
+            #     self.cmd_flag[0] = True
+            #     print("b_right")
+            # elif joy_a[b_num.RIGHT_LEFT] == 0 and (
+            #     self.old_button[0] > 0 or self.old_button[0] < 0
+            # ):
+            #     self.position_var_manual[0] = 0.0
+            #     self.cmd_flag[0] = True
+
+            # # y軸
+            # if joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1:
+            #     self.posSet(1)
+            #     self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
+            #         cmd_y.id, 0.005 * self.COLOR_NUM
+            #     )
+            #     self.cmd_flag[1] = True
+            #     print("b_forward")
+            # elif joy_a[b_num.UP_DOWN] == -1 and self.old_button[1] > -1:
+            #     self.posSet(1)
+            #     self.position_var_manual[1] += cmd_tmp.robot_m2rad(
+            #         cmd_y.id, 0.005 * self.COLOR_NUM
+            #     )
+            #     self.cmd_flag[1] = True
+            #     print("b_back")
+            # elif joy_a[b_num.UP_DOWN] == 0 and (
+            #     self.old_button[1] > 0 or self.old_button[1] < 0
+            # ):
+            #     self.position_var_manual[1] = 0.0
+            #     self.cmd_flag[1] = True
 
             self.old_joystick[0] = joy_a[b_num.LX]
             self.old_joystick[1] = joy_a[b_num.LY]
