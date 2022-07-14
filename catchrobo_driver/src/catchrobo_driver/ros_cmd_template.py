@@ -142,7 +142,7 @@ class RosCmdTemplate:
 
     def generate_velocity_command(self, id, velocity_m, has_work_num=0):
         command = self.generate_ros_command(
-            id, MyRosCmd.DIRECT_CTRL_MODE, 0, velocity_m, has_work_num
+            id, MyRosCmd.VELOCITY_CTRL_MODE, 0, velocity_m, has_work_num
         )
         command.kp = self._datas.loc["velocity_ctrl_kp"][id]
         command.kd = self._datas.loc["velocity_ctrl_kd"][id]
