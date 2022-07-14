@@ -76,7 +76,7 @@ rosrun catchrobo_test mbed_sim_test.py
 roslaunch catchrobo_bringup bringup_base.launch 
 
 sudo chmod a+rw /dev/ttyUSB0 
-rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=115200
+rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=9600
 rosrun catchrobo_test mbed_sim_test.py
 ```
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "catchrobo_sim/position_control.h"
-#include "catchrobo_sim/position_control_with_CBF.h"
+// #include "catchrobo_sim/position_control_with_CBF.h"
 #include "catchrobo_sim/direct_control.h"
 #include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
@@ -74,14 +74,14 @@ public:
     void getCmd(ControlStruct &offset_command, ControlResult::ControlResult &result)
     {
         ControlStruct command;
-        ros::Time t_start = ros::Time::now();
+        // ros::Time t_start = ros::Time::now();
 
         switch (ros_cmd_.mode)
         {
         case catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE:
 
-            position_control_.getCmd(t_, estimate_state_, old_command_, command, result);
-            // position_control_.getCmd(t_, current_state_, old_command_, command, result);
+            // position_control_.getCmd(t_, estimate_state_, old_command_, command, result);
+            position_control_.getCmd(t_, current_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
             // case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
@@ -129,8 +129,8 @@ public:
         current_state_.position -= offset_;
         current_state_.velocity = (no_offset_state_.position - old_state_.position) / dt_;
 
-        if (current_state_.velocity > 200)
-            ROS_INFO_STREAM("dt: " << dt_ << " p: " << no_offset_state_.position << " old_p: " << old_state_.position << " v: " << current_state_.velocity);
+        // if (current_state_.velocity > 200)
+        // ROS_INFO_STREAM("dt: " << dt_ << " p: " << no_offset_state_.position << " old_p: " << old_state_.position << " v: " << current_state_.velocity);
         old_state_ = no_offset_state_;
     }
 

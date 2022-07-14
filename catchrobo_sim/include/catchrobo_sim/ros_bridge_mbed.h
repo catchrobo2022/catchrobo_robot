@@ -64,7 +64,7 @@ public:
         {
             nh_.spinOnce();
             led_ = !led_;
-            wait_ms(20);
+            wait_ms(1000);
         }
     };
     void publishError(const catchrobo_msgs::ErrorCode &msg)
