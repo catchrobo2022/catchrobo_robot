@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 
 class XBoxButton:
+    # Dスイッチのとき
+    # Modeは光らない状態
     # Axes
     LX = 0
     LY = 1
-    LT = 2
-    RX = 3
-    RY = 4
-    RT = 5
-    RIGHT_LEFT = 6
-    UP_DOWN = 7
+    RX = 2
+    RY = 3
+    RIGHT_LEFT = 4
+    UP_DOWN = 5
     # Buttons
-    A = 0
-    B = 1
-    X = 2
-    Y = 3
+    X=0
+    A=1
+    B=2
+    Y=3
     LB = 4
     RB = 5
-    START = 7
-    BACK = 6
-    XBOX = 8
-    LSTICK = 9
-    RSTICK = 10
+    LT=6
+    RT=7
+    BACK = 8
+    START = 9
+    LSTICK = 10
+    RSTICK = 11

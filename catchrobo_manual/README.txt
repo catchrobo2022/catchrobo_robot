@@ -33,6 +33,8 @@ https://qiita.com/Yuya-Shimizu/items/4bed435e65cefc6d2df1
 
 roslaunch catchrobo_manual manual_xbox.launch
 
+roslaunch catchrobo_manual manual_ps4.launch
+
 
 メインプログラム
 # roslaunch catchrobo_test test.launch
@@ -94,3 +96,8 @@ pause機能の実装
 
 0702
 仕様変更で指令のtopicをros_cmdで送るようになった。
+
+0709
+xbox用のコントローラーで作るようにした。
+gripperのpubを修正
+xyzのpubのタイミング修正
