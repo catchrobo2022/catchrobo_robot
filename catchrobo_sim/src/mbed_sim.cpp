@@ -16,7 +16,7 @@ void wait(float t){}; // simlatorで存在しないため
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
-const float MBED2ROS_DT = 1; // 10Hz
+const float MBED2ROS_DT = 0.01; // 10Hz
 const float MBED2GRIPPER_DT = 0.1;
 const float MBED2MOTOR_DT = 0.01; // 500Hz
 const int SERIAL_BAUD_RATE = 9600;
