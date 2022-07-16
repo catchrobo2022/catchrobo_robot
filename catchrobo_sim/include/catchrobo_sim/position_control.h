@@ -12,7 +12,8 @@
 class PositionControl
 {
 public:
-    PositionControl() : no_target_flag_(true), finish_already_notified_(false), temp_target_flag_(false), final_target_position_(0){};
+    PositionControl() : no_target_flag_(true), finish_already_notified_(false),
+                        temp_target_flag_(false), final_target_position_(0), threshold_(0.1){};
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
         target_ = cmd;
@@ -41,7 +42,7 @@ public:
             return;
         }
 
-        if (t < accel_designer_.t_end())
+        if (fabs(target_.position - state.position) > threshold_)
         {
             //収束していないとき
             packResult2Cmd(t, accel_designer_, target_, command);
@@ -87,6 +88,7 @@ private:
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
     float final_target_position_;
+    float threshold_; //収束判定しきい値
 
     void setAccelDesigner(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {

@@ -33,8 +33,8 @@ class GameManager:
         self.FIELD = "red"
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
         self.INIT_Y_m = 1.7 * self.FIELD_SIGN
-        self.INIT_Z_m = 0.23
-        self.SAFE_Z_m = 0.23
+        self.INIT_Z_m = 0.22
+        self.SAFE_Z_m = 0.22
         self.WORK_HEIGHT = 0.087
 
         # self._use_main_thread = False
@@ -156,6 +156,15 @@ class GameManager:
                 self._robot.start()
 
             self._gui_msg = GuiMenu.NONE
+
+            if self._manual_msg == ManualCommand.MANUAL_ON:
+                self._robot.mannual_on()
+            elif self._manual_msg == ManualCommand.MANUAL_OFF:
+                self._robot.start()
+            elif self._manual_msg == ManualCommand.GO:
+                self._robot.set_go_flag()
+
+            self._manual_msg = ManualCommand.NONE
 
             if self._robot.main_run_ok():
                 self.main_actions()
