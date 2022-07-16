@@ -33,8 +33,8 @@ class GameManager:
         self.FIELD = "red"
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
         self.INIT_Y_m = 1.7 * self.FIELD_SIGN
-        self.INIT_Z_m = 0.22
-        self.SAFE_Z_m = 0.22
+        self.INIT_Z_m = 0.205
+        self.SAFE_Z_m = self.INIT_Z_m
         self.WORK_HEIGHT = 0.087
 
         # self._use_main_thread = False
@@ -46,6 +46,7 @@ class GameManager:
         posi = self._work_manager.get_target_posi()
 
         self.INIT_X_m = posi[0]
+
         self._rate = rospy.Rate(10)
         self._gui_msg = GuiMenu.NONE
         self._manual_msg = ManualCommand.NONE

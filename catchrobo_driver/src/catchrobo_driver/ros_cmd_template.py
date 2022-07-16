@@ -16,8 +16,8 @@ import math
 class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
-        self._velocity_limit_scale = 0.5
-        self._accerelation_limit_scale = 0.5
+        self._velocity_limit_scale = 1
+        self._accerelation_limit_scale = 1
         self._jerk_limit = 1000
 
         ## キレイに動いたときのパラメーター 07/14
