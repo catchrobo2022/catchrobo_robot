@@ -13,7 +13,7 @@
 class MotorManager
 {
 public:
-    MotorManager() : offset_(0), t_(0), dt_(0)
+    MotorManager() : offset_(0), t_(0), dt_(0), error_limit_(0.5)
     {
         old_command_.p_des = 0;
         old_command_.v_des = 0;
@@ -94,7 +94,7 @@ public:
             //     break;
 
         case catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE:
-            velocity_control_.getCmd(current_state_, old_command_, command, result);
+            velocity_control_.getCmd(estimate_state_, old_command_, command, result);
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
 
@@ -201,6 +201,7 @@ private:
     float offset_;
     float dt_;
     float target_velocity_;
+    float error_limit_; //追従誤差の上限
 
     PositionControl position_control_;
     // PositionControlWithCBF position_control_;
@@ -220,13 +221,16 @@ private:
             estimate_state.velocity = observed_state.velocity;
         }
 
-        if (command.kp > 0)
+        float observed_position = observed_state.position;
+        float command_position = command.p_des;
+
+        if (command.kp > 0 && fabs(observed_position - command_position) < error_limit_)
         {
-            estimate_state.position = command.p_des;
+            estimate_state.position = command_position;
         }
         else
         {
-            estimate_state.position = observed_state.position;
+            estimate_state.position = observed_position;
         }
     }
 };
