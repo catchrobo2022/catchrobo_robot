@@ -82,16 +82,22 @@ void MotorDriverSim::sampleCallback(const catchrobo_msgs::ControlStruct::ConstPt
 void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
 {
     double vel = 0;
-    // double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.torque_feed_forward;
-    if (is_enable_)
+    double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.torque_feed_forward;
+    if (is_enable_ && cmd_.kp > 0)
     {
-        vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
+        // vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
+        vel = (cmd_.p_des - state_.position) / dt_;
+    }
+    else
+    {
+        vel = 0;
     }
     state_.velocity = vel;
     state_.position += state_.velocity * dt_;
     // state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;
     // state_.velocity = (state_.position - old_state_.position) / dt_;
-    state_.torque = cmd_.torque_feed_forward;
+    state_.torque = torque_ref;
+    // state_.torque = cmd_.torque_feed_forward;
 
     publisher_.publish(state_);
     old_state_ = state_;

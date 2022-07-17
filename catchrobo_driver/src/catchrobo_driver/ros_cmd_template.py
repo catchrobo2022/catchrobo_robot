@@ -17,7 +17,11 @@ class RosCmdTemplate:
     def __init__(self):
         self._work_mass = 0.06
         self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 1
+        self._accerelation_limit_scale = 0.1
+        self.KT_OUT = 0.08
+        self.I_MAX = 8
+        self.SERVO_ACCEL_LIMIT = 100000
+        self.GRAVITY = 9.80665
 
         ## キレイに動いたときのパラメーター 07/14
         # self._velocity_limit_scale = 0.2
@@ -89,10 +93,6 @@ class RosCmdTemplate:
         command.velocity_limit = (
             self._datas.loc["velocity_limit_rad"][id] * self._velocity_limit_scale
         )
-        command.acceleration_limit = (
-            self._datas.loc["acceleration_limit_rad"][id]
-            * self._accerelation_limit_scale
-        )
         # command.jerk_limit = self._jerk_limit
         command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
         command.kp = self._datas.loc["position_ctrl_kp"][id]
@@ -103,14 +103,24 @@ class RosCmdTemplate:
         # 目標位置での終端速度
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
-        mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
-        r = rad_transform.get_pulley_radius(id)
-        inertia = self._datas.loc["inertia"][id]
-        command.net_inertia = inertia + mass * r
+        ### 加速度limitの算出
+        if id == 3:
+            acceleration_limit = self.SERVO_ACCEL_LIMIT
+        else:
+            mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
+            r = rad_transform.get_pulley_radius(id)
+            inertia = self._datas.loc["inertia"][id]
+            command.net_inertia = inertia + r * r * mass
 
-        if id == 2:
-            command.effort = mass * 9.8 * r
+            if id == 2:
+                command.effort = r * mass * self.GRAVITY
+            else:
+                command.effort = 0
 
+            acceleration_limit = (
+                self.KT_OUT * self.I_MAX - command.effort
+            ) / command.net_inertia
+        command.acceleration_limit = acceleration_limit * self._accerelation_limit_scale
         return command
 
     def robot_m2rad(self, motor_id, position):

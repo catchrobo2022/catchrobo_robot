@@ -49,6 +49,7 @@ class Radius2Meter:
         self._meter_msg.position = positions
         self._meter_msg.velocity = velocities
         self._meter_msg.effort = effort
+        self._meter_msg.header.stamp = rospy.Time.now()
         # meter_msg.velocity = velocities
         # print(meter_msg)
 
