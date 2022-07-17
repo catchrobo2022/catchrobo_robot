@@ -36,7 +36,6 @@ class GameManager:
         self.INIT_Z_m = 0.205
         self.SAFE_Z_m = self.INIT_Z_m
         self.WORK_HEIGHT = 0.087
-        self.BEFORE_COMMON_AREA_Y_m = 0.3
 
         # self._use_main_thread = False
         next_target = NextAction.PICK
@@ -44,9 +43,10 @@ class GameManager:
         self._box_manager = ShootingBoxManager(self.FIELD)
         self._robot = Robot(self.FIELD)
 
-        posi, _ = self._work_manager.get_target_info()
+        posi, _, _ = self._work_manager.get_target_info()
 
         self.INIT_X_m = posi[0]
+        self.BEFORE_COMMON_AREA_Y_m = posi[1]
 
         self._rate = rospy.Rate(10)
         self._gui_msg = GuiMenu.NONE
@@ -81,25 +81,28 @@ class GameManager:
         self._manual_msg = ManualCommand.NONE
 
     def main_actions(self, next_target):
-
+        rospy.loginfo("having work: {}".format(self._robot.has_work()))
         ### stop flagがたった瞬間に途中でも高速でループが終わる
         ### じゃがりこ掴む
         if next_target == NextAction.PICK:
             rospy.loginfo("Go to work")
             #### [WARN] zは安全域スタートの想定
             ### 目標じゃがりこ計算
-            work_position, is_my_area = self._work_manager.get_target_info()
-            print(is_my_area)
-            if is_my_area is False and self._old_my_area is True:
-                ### 新たに共通エリアに入る場合
-                rospy.loginfo("go to common area")
-                self._robot.go(
-                    x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.SAFE_Z_m
-                )
-                self._old_my_area = is_my_area
-                # next_target = NextAction.WAIT_GO_SIGN
-                self._robot.mannual_on()
-                return NextAction.PICK
+            work_position, is_my_area, target_id = self._work_manager.get_target_info()
+            rospy.loginfo("target work : {}".format(target_id))
+            # print(is_my_area)
+            ## pandasを使っているためか、is 演算子が使えない。==を使う
+            # if is_my_area == False and self._old_my_area == True:
+            #     # if is_my_area is False and self._old_my_area is True:
+            #     self._old_my_area = is_my_area
+            #     ### 新たに共通エリアに入る場合
+            #     rospy.loginfo("go to common area")
+            #     self._robot.go(
+            #         x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.SAFE_Z_m
+            #     )
+            #     # next_target = NextAction.WAIT_GO_SIGN
+            #     self._robot.mannual_on()
+            #     return NextAction.PICK
             self._old_my_area = is_my_area
             ### じゃがりこへxy移動
             self._robot.go(x=work_position[0], y=work_position[1], z=self.SAFE_Z_m)
@@ -113,7 +116,7 @@ class GameManager:
             ### つかむ
             rospy.loginfo("pick")
             self._robot.pick()
-            next_target = self._work_manager.pick()
+            next_target = self._work_manager.pick(target_id)
             ### 上空へ上がる
             self._robot.go(z=self.SAFE_Z_m)
             having_work = self._robot.has_work()
@@ -123,13 +126,13 @@ class GameManager:
             ):
                 ### これ以上つかめなければshoot
                 next_target = NextAction.SHOOT
-
+            rospy.loginfo("pick finish")
         # シュート
         elif next_target == NextAction.SHOOT:
+            rospy.loginfo("Go to shooting box")
             if self._box_manager.get_open_num() == 0:
                 ### もうシュート場所がなければ終了
                 return NextAction.END
-            rospy.loginfo("Go to shooting box")
             ### 目標シューティング位置計算
             box_position = self._box_manager.get_target_info()
             ### 穴上へxy移動
@@ -158,6 +161,7 @@ class GameManager:
 
         # 全部取り終わった
         elif next_target == NextAction.END:
+            rospy.loginfo("no open shooting box")
             self._robot.go(z=self.SAFE_Z_m)
             # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
             self._robot.mannual_on()

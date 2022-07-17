@@ -219,6 +219,14 @@ public:
         }
     }
 
+    void init(float arrive_threshold, float estimate_error_limit)
+    {
+        for (size_t i = 0; i < motor_num_; i++)
+        {
+            motor_manager_[i].init(arrive_threshold, estimate_error_limit);
+        }
+    }
+
 private:
     MotorManager motor_manager_[N_MOTORS];
     sensor_msgs::JointState joint_state_;   // JointState型

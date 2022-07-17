@@ -13,7 +13,11 @@ class PositionControl
 {
 public:
     PositionControl() : no_target_flag_(true), finish_already_notified_(false),
-                        temp_target_flag_(false), final_target_position_(0), threshold_(0.1){};
+                        temp_target_flag_(false), final_target_position_(0), threshold_(0){};
+
+    void init(float threshold){
+        threshold_ = threshold;
+    }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
         target_ = cmd;
@@ -124,7 +128,7 @@ private:
     {
         cmd.id = target.id;
         cmd.p_des = target.position;
-        cmd.v_des = target.velocity;
+        cmd.v_des = 0; // target.velocity;
         cmd.torque_feed_forward = target.net_inertia * 0 + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;

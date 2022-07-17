@@ -22,6 +22,8 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 const float MBED2GRIPPER_DT = 0.1;
 const float MBED2MOTOR_DT = 0.01; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
+const float ARRIVE_THRESHOLD_RAD = 0.1;
+const float ESTIMATE_ERROR_LIMIT_RAD = 0.5;
 
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
@@ -122,14 +124,14 @@ void gripperTimerCallback()
     gripper_manager.nextStep(MBED2GRIPPER_DT);
     motor_driver_bridge.publish(control);
     // ROS_INFO_STREAM("gripper");
-    // if (result == ControlResult::FINISH)
-    // {
-    //     catchrobo_msgs::ErrorCode error;
-    //     error.id = N_MOTORS;
-    //     error.error_code = catchrobo_msgs::ErrorCode::FINISH;
-    //     ros_bridge.publishError(error);
-    //     // ros_bridge.publishFinishFlag(i);
-    // }
+    if (result == ControlResult::FINISH)
+    {
+        catchrobo_msgs::ErrorCode error;
+        error.id = N_MOTORS;
+        error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+        ros_bridge.publishError(error);
+        // ros_bridge.publishFinishFlag(i);
+    }
 }
 
 int main(int argc, char **argv)
@@ -140,6 +142,9 @@ int main(int argc, char **argv)
     motor_driver_bridge.setNodeHandlePtr(&nh);
     ros_bridge.setNodeHandlePtr(&nh);
 #endif
+    robot_manager.init(ARRIVE_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
+    gripper_manager.init(ARRIVE_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
+
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
 
     int motor_directions[] = {-1, -1, -1, 1};

@@ -59,7 +59,7 @@ public:
         float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
         float position_min_rad[] = {0, -25.67088441, 0 - epsilon};
         float velocity_limit_rad[] = {180, 180, 180};
-        float torque_limit_rad[] = {136.2719005, 156.7212355, 278.8550066};
+        float torque_limit_rad[] = {0.56, 0.56, 0.56};
         for (size_t i = 0; i < motor_num_; i++)
         {
             // float pos_min = m2rad(i, position_min_m[i]);
@@ -112,11 +112,11 @@ public:
             //     //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
             //     return;
             // }
-            if (!check_torque[i].check(state.effort[i]))
-            {
-                error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
-                return;
-            }
+            // if (!check_torque[i].check(state.effort[i]))
+            // {
+            //     error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
+            //     return;
+            // }
         }
 
         // checkCollision(state, cmd_, error);

@@ -38,15 +38,16 @@ class WorkManager:
             position = self._database.getPosi(target_id)
             is_my_area = self._database.getState(target_id, "my_area")
 
-        return position, is_my_area
-        ###[TODO] position がNoneのときの対応 （get_target_posiの受取先）
+        # print(target_id)
+        # print(is_my_area)
+        return position, is_my_area, target_id
 
-    def pick(self):
-        pick_id = self.get_target_id()
+    def pick(self, pick_id):
+        # pick_id = self.get_target_id()
         self._database.delete(pick_id)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
-        ## [TODO] 次動作計算アルゴリズム
+        ## 次動作計算アルゴリズム
         ## もうシュートするなら
         # next_action = NextAction.SHOOT
         ## 次も連続してじゃがりこを回収するなら

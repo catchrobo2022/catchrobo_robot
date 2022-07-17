@@ -18,7 +18,6 @@ class RosCmdTemplate:
         self._work_mass = 0.06
         self._velocity_limit_scale = 1
         self._accerelation_limit_scale = 1
-        self._jerk_limit = 1000
 
         ## キレイに動いたときのパラメーター 07/14
         # self._velocity_limit_scale = 0.2
@@ -94,17 +93,17 @@ class RosCmdTemplate:
             self._datas.loc["acceleration_limit_rad"][id]
             * self._accerelation_limit_scale
         )
-        command.jerk_limit = self._jerk_limit
+        # command.jerk_limit = self._jerk_limit
         command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
-        command.kp = self._datas.loc["kp"][id]
-        command.kd = self._datas.loc["kd"][id]
+        command.kp = self._datas.loc["position_ctrl_kp"][id]
+        command.kd = self._datas.loc["position_ctrl_kd"][id]
 
         command.mode = mode
         command.position = rad_transform.robot_m2rad(command.id, robot_position)
         # 目標位置での終端速度
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
-        mass = sum(self._datas.loc["mass"][id:]) + self._work_mass * has_work_num
+        mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
         r = rad_transform.get_pulley_radius(id)
         inertia = self._datas.loc["inertia"][id]
         command.net_inertia = inertia + mass * r

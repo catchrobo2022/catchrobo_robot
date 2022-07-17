@@ -184,6 +184,12 @@ public:
         t_ = 0;
     };
 
+    void init(float arrive_threshold, float estimate_error_limit)
+    {
+        position_control_.init(arrive_threshold);
+        error_limit_ = estimate_error_limit;
+    }
+
 protected:
     float t_;
 
