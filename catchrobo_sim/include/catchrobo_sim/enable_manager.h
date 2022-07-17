@@ -114,11 +114,11 @@ public:
             //     //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
             //     return;
             // }
-            // if (!check_torque[i].check(state.effort[i]))
-            // {
-            //     error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
-            //     return;
-            // }
+            if (!check_torque[i].check(state.effort[i]))
+            {
+                error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
+                return;
+            }
         }
 
         // checkCollision(state, cmd_, error);
