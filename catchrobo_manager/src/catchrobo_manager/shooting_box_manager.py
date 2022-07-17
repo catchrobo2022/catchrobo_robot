@@ -22,7 +22,7 @@ class ShootingBoxManager:
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
-    def get_target_posi(self):
+    def get_target_info(self):
         target_id = self._calculator.calcTarget(self._database)
         position = self._database.getPosi(target_id)
         return position

@@ -33,7 +33,6 @@ class Robot:
         self._has_work = 0
         self._main_run_ok = False
         self._recovery_mode = False
-        self._intrude_common_area = False
         self._error = ErrorCode()
         self.N_MOTOR = 4
         self._rate = rospy.Rate(100)
@@ -204,6 +203,3 @@ class Robot:
         else:
             self.mannual_on()
             self._error = msg
-
-    def set_go_flag(self):
-        self._intrude_common_area = True

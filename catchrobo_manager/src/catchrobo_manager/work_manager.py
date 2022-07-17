@@ -27,15 +27,18 @@ class WorkManager:
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
-    def get_target_posi(self):
+    def get_target_info(self):
 
         target_id = self._calculator.calcTarget(self._database)
         # 全部のじゃがりこを取り終わるとNoneをcalcTarget()が返すので場合分け
         if target_id == None:
             position = None
+            is_my_area = None
         else:
             position = self._database.getPosi(target_id)
-        return position
+            is_my_area = self._database.getState(target_id, "my_area")
+
+        return position, is_my_area
         ###[TODO] position がNoneのときの対応 （get_target_posiの受取先）
 
     def pick(self):
