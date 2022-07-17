@@ -98,7 +98,7 @@ void Blue::onInitialize()
   connect(findChild<QPushButton*>(QString("start")), SIGNAL(clicked()), this, SLOT(menu_panel()));
 
   connect(&mytimer, SIGNAL(timeout()), this, SLOT(countdown()));
-  mytimer.start();
+  //mytimer.start();
 }
 
 void Blue::set_icon()
@@ -312,6 +312,7 @@ void Blue::menu_panel(){
     mytimer.stop();
     ti = 180.0;
     stop_ti = 0;
+    ui->Time->setStyleSheet("color: rgb(0,0,0)");
     mytimer.start();
     ui->start->setChecked(0);
     //ui->start->setEnabled(0);
@@ -355,11 +356,9 @@ void Blue::count_score(){
 }
 
 void Blue::timer(){
-  /*
   if(ti<0){
-    ti = 0.0;
+    ui->Time->setStyleSheet("color: rgb(255,0,0)");
   }
-  */
   char buffer[7];
   sprintf(buffer, "%.0f", ti);
   ui->Time->display(buffer);
