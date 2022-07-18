@@ -6,11 +6,12 @@ import rospy
 import diagnostic_updater
 import diagnostic_msgs
 from catchrobo_msgs.msg import ErrorCode
-import std_msgs
+from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32
 from enum import IntEnum
 import time
 
-DERAY = 3
+DERAY = 2
 
 class Status(IntEnum):
     NONE=0
@@ -24,6 +25,7 @@ class Status(IntEnum):
 motor_error = [Status.NONE,Status.NONE,Status.NONE,Status.NONE]
 start_time = time.time()
 motor_time = [0,0,0,0]
+motor_current = [0,0,0]
 
 def callback(msg):
     motor_error[msg.id] = msg.error_code
@@ -66,10 +68,20 @@ def check_motor3(stat):
         stat.summary(diagnostic_msgs.msg.DiagnosticStatus.ERROR, Status(motor_error[3]))
     return stat
 
+def callback2(msg):
+    motor_current[0] = msg.data[4]
+    motor_current[1] = msg.data[5]
+    motor_current[2] = msg.data[6]
+
 if __name__=='__main__':
     rospy.init_node('motor_status')
 
+    pub0 = rospy.Publisher("/motor0_current", Float32, queue_size=10)
+    pub1 = rospy.Publisher("/motor1_current", Float32, queue_size=10)
+    pub2 = rospy.Publisher("/motor2_current", Float32, queue_size=10)
+
     sub = rospy.Subscriber('error', ErrorCode, callback)
+    sub_ = rospy.Subscriber('joint_rad', Float32MultiArray, callback2)
     updater = diagnostic_updater.Updater()
 
     updater.setHardwareID("Motor")
@@ -79,6 +91,9 @@ if __name__=='__main__':
     updater.add("gripper",check_motor3)
 
     while not rospy.is_shutdown():
+        pub0.publish(motor_current[0])
+        pub1.publish(motor_current[1])
+        pub2.publish(motor_current[2])
         updater.update()
         rospy.sleep(0.1)
         for i in range(4):
