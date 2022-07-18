@@ -44,8 +44,9 @@ class Robot:
         self._rate = rospy.Rate(finish_wait_Hz)
 
         self._current_state_robot = JointState()
+        self._ros_cmd_template = RosCmdTemplate()
 
-        self._motors = [Motor(i) for i in range(self.N_MOTOR)]
+        self._motors = [Motor(i, self._ros_cmd_template) for i in range(self.N_MOTOR)]
         rospy.Subscriber("error", ErrorCode, self.error_callback)
         rospy.Subscriber("finished_flag_topic", Int8, self.finished_flag_callback)
         rospy.Subscriber("my_joint_state", JointState, self.joint_state_callback)
@@ -57,7 +58,6 @@ class Robot:
             "peg_in_hole_cmd", Bool, queue_size=1
         )
 
-        self._ros_cmd_template = RosCmdTemplate()
         self._enable_command = self._ros_cmd_template.generate_enable_command()
         #  絶対座標→ロボット座標系変換
         self._world_robot_transform = WorldRobotTransform(self.FIELD, robot_origin_m)

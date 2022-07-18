@@ -7,20 +7,12 @@ from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.work_manager import WorkManager
 from catchrobo_manager.shooting_box_manager import ShootingBoxManager
 from catchrobo_manager.robot import Robot
+from catchrobo_manager.gui_menu_enum import GuiMenu
+from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 
 
 from std_msgs.msg import Int8
 
-
-class GuiMenu:
-    NONE = 0
-    ORIGIN = 1
-    CALIBLATION = 2
-    POINT1 = 3
-    POINT2 = 4
-    POINT3 = 5
-    INIT = 6
-    START = 7
 
 
 class GameManager:
@@ -29,15 +21,18 @@ class GameManager:
 
         ######### [TODO] ros paramで受け取る
         self.MAX_HAS_WORK = rospy.get_param(name_space + "max_has_work")
-        init_y_m = 1.7
+        init_y_m_red = 1.7
         self.INIT_Z_m = 0.205
         self.WORK_HEIGHT_m = 0.087
+        shooting_box_center_red = [0, 0, 0]
         ########
 
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
-        self.INIT_Y_m = init_y_m * self.FIELD_SIGN
+        self.INIT_Y_m = init_y_m_red * self.FIELD_SIGN
+        shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
 
+        self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
         rospy.Subscriber("menu", Int8, self.gui_callback)
 
@@ -137,7 +132,10 @@ class GameManager:
                 ### もうシュート場所がなければ終了
                 return NextAction.END
             ### 目標シューティング位置計算
-            box_position = self._box_manager.get_target_info()
+            box_position_raw = self._box_manager.get_target_info()
+            box_position = self._shooting_box_transform.get_calibrated_position(
+                box_position_raw
+            )
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
             ### 下ろす

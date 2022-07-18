@@ -124,6 +124,14 @@ p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
 ```
 
+### rosbag
+自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
+```
+roslaunch catchrobo_test rosbag_play.launch 
+rosservice call /rosbag_play/pause_playback "data: false" 
+```
+取っておきたければrosbagを別名で保存しておき、
+
 
 
 ### 台形加速アルゴリズムについて

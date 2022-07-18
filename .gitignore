@@ -1,3 +1,4 @@
 .vscode
 *.pyc
 *.zip
+catchrobo_test/rosbag/*.bag

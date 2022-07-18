@@ -37,6 +37,9 @@ class RosCmdTemplate:
         # print(self._datas)
         # print(self._datas.loc["position_min"][0])
 
+    def set_accerelation_limit_scale(self, accerelation_limit_scale):
+        self._accerelation_limit_scale = accerelation_limit_scale
+
     def readCsv(self):
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path("catchrobo_driver")
