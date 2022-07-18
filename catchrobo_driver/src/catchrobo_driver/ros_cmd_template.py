@@ -4,10 +4,8 @@
 from std_msgs.msg import Bool
 from catchrobo_driver.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
-from scipy import constants
-
-
 import rospkg
+import rospy
 
 import pandas as pd
 import math
@@ -15,12 +13,17 @@ import math
 
 class RosCmdTemplate:
     def __init__(self):
-        self._accerelation_limit_scale = 1
-        self.I_MAX = 8
-        self.SERVO_ACCEL_LIMIT = 100000
+        name_space = "ros_cmd/"
+        self._accerelation_limit_scale = rospy.get_param(
+            name_space + "acceleration_limit_scale"
+        )
+        self.I_MAX = rospy.get_param(name_space + "current_max_A")
+        self.SERVO_ACCEL_LIMIT = rospy.get_param(name_space + "servo_accel_limit")
 
-        self._velocity_limit_scale = 1
-        self.KT_OUT = 0.08
+        self._velocity_limit_scale = rospy.get_param(
+            name_space + "velocity_limit_scale"
+        )
+        self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
         self._work_mass = 0.06
         self.GRAVITY = 9.80665
 

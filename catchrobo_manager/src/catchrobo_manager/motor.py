@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
-from catchrobo_manager.robot_transform import WorldRobotTransform
 
 import rospy
 from std_msgs.msg import Int8
