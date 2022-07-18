@@ -15,12 +15,13 @@ import math
 
 class RosCmdTemplate:
     def __init__(self):
-        self._work_mass = 0.06
-        self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 0.1
-        self.KT_OUT = 0.08
+        self._accerelation_limit_scale = 1
         self.I_MAX = 8
         self.SERVO_ACCEL_LIMIT = 100000
+
+        self._velocity_limit_scale = 1
+        self.KT_OUT = 0.08
+        self._work_mass = 0.06
         self.GRAVITY = 9.80665
 
         ## キレイに動いたときのパラメーター 07/14

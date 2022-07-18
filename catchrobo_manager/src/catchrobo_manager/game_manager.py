@@ -37,6 +37,10 @@ class GameManager:
         self.SAFE_Z_m = self.INIT_Z_m
         self.WORK_HEIGHT = 0.087
 
+        rospy.Subscriber("manual_command", Int8, self.manual_callback)
+        rospy.Subscriber("menu", Int8, self.gui_callback)
+
+    def init(self):
         # self._use_main_thread = False
         next_target = NextAction.PICK
         self._work_manager = WorkManager(self.FIELD)
@@ -55,8 +59,6 @@ class GameManager:
         self._go_flag = False
         self._old_my_area = True
         self._init_mode = True
-        rospy.Subscriber("manual_command", Int8, self.manual_callback)
-        rospy.Subscriber("menu", Int8, self.gui_callback)
 
     def gui_callback(self, msg):
         self._gui_msg = msg.data
@@ -194,11 +196,19 @@ class GameManager:
         while not rospy.is_shutdown():
             if self._robot.main_run_ok() and self._init_mode is False:
                 next_target = self.main_actions(next_target)
+                if next_target == NextAction.END:
+                    break
             else:
                 self._rate.sleep()
+
+        rospy.loginfo("game_manager spin end")
 
 
 if __name__ == "__main__":
     rospy.init_node("GameManager")
     game_manager = GameManager()
+    # while not rospy.is_shutdown():
+    ### 初期化
+    game_manager.init()
+    ### main動作
     game_manager.spin()
