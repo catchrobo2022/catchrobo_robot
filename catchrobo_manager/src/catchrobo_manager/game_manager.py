@@ -21,10 +21,11 @@ class GameManager:
 
         ######### [TODO] ros paramで受け取る
         self.MAX_HAS_WORK = rospy.get_param(name_space + "max_has_work")
-        init_y_m_red = 1.7
-        self.INIT_Z_m = 0.205
-        self.WORK_HEIGHT_m = 0.087
-        shooting_box_center_red = [0, 0, 0]
+        init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
+        self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
+        self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
+        shooting_box_center_red = rospy.get_param(
+             "calibration/shooting_box_center_red")
         ########
 
         self.FIELD = rospy.get_param("field")
@@ -132,10 +133,12 @@ class GameManager:
                 ### もうシュート場所がなければ終了
                 return NextAction.END
             ### 目標シューティング位置計算
+            ###[TODO]
             box_position_raw = self._box_manager.get_target_info()
             box_position = self._shooting_box_transform.get_calibrated_position(
                 box_position_raw
             )
+
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
             ### 下ろす

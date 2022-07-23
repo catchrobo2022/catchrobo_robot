@@ -28,9 +28,9 @@ class Robot:
         ##### [TODO] ros param化
         name_space = "robot/"
         robot_origin_m = rospy.get_param(name_space + "robot_origin_m")
-        self.OPEN_GRIPPER_RAD = math.pi / 2
-        self.CLOSE_GRIPPER_RAD = 0
-        finish_wait_Hz = 100
+        self.OPEN_GRIPPER_RAD = rospy.get_param(name_space + "OPEN_GRIPPER_RAD")
+        self.CLOSE_GRIPPER_RAD = rospy.get_param(name_space + "CLOSE_GRIPPER_RAD")
+        finish_wait_Hz = rospy.get_param(name_space + "finish_wait_Hz")
         ############################
 
         # self.SERVO_WAIT_s = 0.5
