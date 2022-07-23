@@ -51,7 +51,7 @@ class ShootingBoxTransform:
         tf2 = self.TARGET_BOX_FRAME
         try:
             trans = self._tfBuffer.lookup_transform(
-                tf1, tf2, rospy.Time(), rospy.Duration(10.0)
+                tf1, tf2, rospy.Time.now(), rospy.Duration(10.0)
             )
         except (
             tf2_ros.LookupException,

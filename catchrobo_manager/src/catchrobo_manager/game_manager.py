@@ -14,7 +14,6 @@ from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 from std_msgs.msg import Int8
 
 
-
 class GameManager:
     def __init__(self):
         name_space = "game_manager/"
@@ -132,10 +131,10 @@ class GameManager:
                 ### もうシュート場所がなければ終了
                 return NextAction.END
             ### 目標シューティング位置計算
-            box_position_raw = self._box_manager.get_target_info()
-            box_position = self._shooting_box_transform.get_calibrated_position(
-                box_position_raw
-            )
+            box_position = self._box_manager.get_target_info()
+            # box_position = self._shooting_box_transform.get_calibrated_position(
+            #     box_position_raw
+            # )
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
             ### 下ろす

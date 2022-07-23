@@ -4,7 +4,9 @@
 <include file="$(find catchrobo_bringup)/launch/displays.launch">
     <arg name="field" value="$(arg field)"/>
 </include>
-
-<!-- <node pkg="catchrobo_manager" type="calibration.py" name="calibration" output="screen" respawn="false" respawn_delay="0" /> -->
+    <node pkg="catchrobo_gui" type="motor_debug.py" name="motor_status">
+    </node>
+    <include file="$(find catchrobo_test)/launch/rosbag_record.launch" />
+<node pkg="catchrobo_manager" type="calibration.py" name="calibration" output="screen" respawn="false" respawn_delay="0" />
 
 </launch>
