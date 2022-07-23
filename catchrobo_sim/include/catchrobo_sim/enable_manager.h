@@ -55,11 +55,13 @@ public:
 
         // const float pi = 3.141592653589;
         // pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
-        float epsilon = 0.1; // ジャストenableに引っかかることがあるので、ちょっと多めに取る
-        float position_max_rad[] = {78.68526044 + epsilon, 25.67088441 + epsilon, 8.435758051 + epsilon};
-        float position_min_rad[] = {0 - epsilon, -25.67088441 - epsilon, 0 - epsilon};
+        const float KT_OUT = 0.08;
+        const float I_MAX = 12;
+        float epsilon = 0.01; // ジャストenableに引っかかることがあるので、ちょっと多めに取る
+        float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
+        float position_min_rad[] = {0, -25.67088441, 0 - epsilon};
         float velocity_limit_rad[] = {180, 180, 180};
-        float torque_limit_rad[] = {136.2719005, 156.7212355, 278.8550066};
+        float torque_limit_rad[] = {KT_OUT * I_MAX, KT_OUT * I_MAX, KT_OUT * I_MAX};
         for (size_t i = 0; i < motor_num_; i++)
         {
             // float pos_min = m2rad(i, position_min_m[i]);
@@ -106,12 +108,12 @@ public:
                 return;
             }
 
-            if (!check_velocity[i].check(state.velocity[i]))
-            {
-                error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
-                //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
-                return;
-            }
+            // if (!check_velocity[i].check(state.velocity[i]))
+            // {
+            //     error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
+            //     //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
+            //     return;
+            // }
             if (!check_torque[i].check(state.effort[i]))
             {
                 error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;

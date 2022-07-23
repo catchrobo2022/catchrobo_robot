@@ -1,25 +1,29 @@
 //   #define USE_MBED
-void wait(float t){}; // simlatorで存在しないため
 
 #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
 #include "catchrobo_sim/ros_bridge_mbed.h"
+const float MBED2ROS_DT = 1; // 10Hz
 #else
 #include <ros/ros.h>
+#include "sim_only/mbed.h"
 #include "sim_only/motor_driver_bridge_sim.h"
 #include "sim_only/ros_bridge_sim.h"
 #include "sim_only/ticker_sim.h"
+const float MBED2ROS_DT = 0.01; // 10Hz
 #endif
+
 #include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
-const float MBED2ROS_DT = 0.01; // 10Hz
-const float MBED2GRIPPER_DT = 0.1;
+const float MBED2GRIPPER_DT = 0.01;
 const float MBED2MOTOR_DT = 0.01; // 500Hz
-const int SERIAL_BAUD_RATE = 9600;
+const int SERIAL_BAUD_RATE = 115200;
+const float ARRIVE_THRESHOLD_RAD = 0.1;
+const float ESTIMATE_ERROR_LIMIT_RAD = 0.5;
 
 MotorDriverBridge motor_driver_bridge;
 RosBridge ros_bridge;
@@ -118,7 +122,8 @@ void gripperTimerCallback()
     ControlResult::ControlResult result;
     gripper_manager.getMotorDrivesCommand(control, result);
     gripper_manager.nextStep(MBED2GRIPPER_DT);
-
+    motor_driver_bridge.publish(control);
+    // ROS_INFO_STREAM("gripper");
     if (result == ControlResult::FINISH)
     {
         catchrobo_msgs::ErrorCode error;
@@ -137,6 +142,9 @@ int main(int argc, char **argv)
     motor_driver_bridge.setNodeHandlePtr(&nh);
     ros_bridge.setNodeHandlePtr(&nh);
 #endif
+    robot_manager.init(ARRIVE_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
+    gripper_manager.init(ARRIVE_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
+
     ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
 
     int motor_directions[] = {-1, -1, -1, 1};
@@ -159,5 +167,26 @@ int main(int argc, char **argv)
 
     Ticker ticker_gripper;
     ticker_gripper.attach(&gripperTimerCallback, MBED2GRIPPER_DT);
+
+    // int ros_timer_callback_count = 0;
+    // const int PUB_ROS_COUNT = int(MBED2ROS_DT / MBED2GRIPPER_DT);
+
     ros_bridge.spin();
+
+    // #ifdef USE_MBED
+    //     while (1)
+    // #else
+    //     while (!ros::isShuttingDown())
+    // #endif
+    //     {
+    //         ros_bridge.spinOnce();
+    //         gripperTimerCallback();
+    //         // if (ros_timer_callback_count % PUB_ROS_COUNT == 0)
+    //         // {
+    //         //     mbed2RosTimerCallback();
+    //         //     ros_timer_callback_count = 0;
+    //         // }
+    //         // ros_timer_callback_count++;
+    //         wait(MBED2GRIPPER_DT);
+    //     }
 }

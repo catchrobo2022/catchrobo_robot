@@ -12,7 +12,12 @@
 class PositionControl
 {
 public:
-    PositionControl() : no_target_flag_(true), finish_already_notified_(false), temp_target_flag_(false), final_target_position_(0){};
+    PositionControl() : no_target_flag_(true), finish_already_notified_(false),
+                        temp_target_flag_(false), final_target_position_(0), threshold_(0){};
+
+    void init(float threshold){
+        threshold_ = threshold;
+    }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
         target_ = cmd;
@@ -41,7 +46,7 @@ public:
             return;
         }
 
-        if (t < accel_designer_.t_end())
+        if (fabs(target_.position - state.position) > threshold_)
         {
             //収束していないとき
             packResult2Cmd(t, accel_designer_, target_, command);
@@ -87,6 +92,7 @@ private:
     ctrl::AccelDesigner accel_designer_;
     catchrobo_msgs::MyRosCmd target_;
     float final_target_position_;
+    float threshold_; //収束判定しきい値
 
     void setAccelDesigner(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
@@ -104,7 +110,7 @@ private:
         float dist = target_position - start_posi; //移動距離
 
         accel_designer_.reset(cmd.jerk_limit, cmd.acceleration_limit, cmd.velocity_limit,
-                              joint_state.velocity, cmd.velocity, dist,
+                              0, cmd.velocity, dist,
                               start_posi, 0);
     }
 
@@ -122,7 +128,7 @@ private:
     {
         cmd.id = target.id;
         cmd.p_des = target.position;
-        cmd.v_des = target.velocity;
+        cmd.v_des = 0; // target.velocity;
         cmd.torque_feed_forward = target.net_inertia * 0 + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;

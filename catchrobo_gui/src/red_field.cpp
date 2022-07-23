@@ -78,6 +78,7 @@ Red::Red(QWidget *parent) :
       this->marker_gl(i, 0);
     }
     */
+   mytimer.setInterval(1000);
 }
 
 Red::~Red() = default;
@@ -95,10 +96,9 @@ void Red::onInitialize()
   connect(findChild<QPushButton*>(QString("calib")), SIGNAL(clicked()), this, SLOT(menu_panel()));
   connect(findChild<QPushButton*>(QString("init")), SIGNAL(clicked()), this, SLOT(menu_panel()));
   connect(findChild<QPushButton*>(QString("start")), SIGNAL(clicked()), this, SLOT(menu_panel()));
-
-  //connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
-  //connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
-  //QTimer::singleShot(sendtime, this, SLOT(hogehoge));
+  
+  connect(&mytimer, SIGNAL(timeout()), this, SLOT(countdown()));
+  //mytimer.start();
 }
 
 void Red::set_icon()
@@ -273,10 +273,11 @@ void Red::menu_panel(){
     }else{
       status = 1;
       btn->setText("origin");
-      ui->origin->setEnabled(0);
-      ui->calib->setEnabled(1);
-      ui->init->setEnabled(1);
+      //ui->origin->setEnabled(0);
+      //ui->calib->setEnabled(1);
+      //ui->init->setEnabled(1);
     }
+    ui->origin->setChecked(0);
   }else if(QString("calib") == name){
     if(QString("1st point") == btn->text()){
       status = 3;
@@ -295,22 +296,27 @@ void Red::menu_panel(){
       btn->setText("1st point");
       status = 2;
     }
+    ui->calib->setChecked(0);
     pub_arrow.publish(arrow);
   }else if(QString("init") == name){
     ui->calib->setText("2.Calib");
     status = 6;
     arrow.data = 0;
     pub_arrow.publish(arrow);
-    ui->calib->setEnabled(0);
-    ui->init->setEnabled(0);
-    ui->start->setEnabled(1);
+    ui->init->setChecked(0);
+    //ui->calib->setEnabled(0);
+    //ui->init->setEnabled(0);
+    //ui->start->setEnabled(1);
   }else if(QString("start") == name){
     status = 7;
+    mytimer.stop();
     ti = 180.0;
     stop_ti = 0;
-    QTimer::singleShot(100, this, SLOT(countdown()));
-    ui->start->setEnabled(0);
-    ui->origin->setEnabled(1);
+    ui->Time->setStyleSheet("color: rgb(0,0,0)");
+    mytimer.start();
+    ui->start->setChecked(0);
+    //ui->start->setEnabled(0);
+    //ui->origin->setEnabled(1);
   }
 
   this->send_menu_msgs(false);
@@ -319,22 +325,11 @@ void Red::menu_panel(){
 
 void Red::reset_menu(){
   ui->origin->setEnabled(1);
-  ui->calib->setEnabled(0);
-  ui->init->setEnabled(0);
-  ui->start->setEnabled(0);
+  ui->calib->setEnabled(1);
+  ui->init->setEnabled(1);
+  ui->start->setEnabled(1);
 }
-/*
-void Red::touch_rm(){
-  touch_mode = 0;
-  ui->bt_add->setChecked(1);
-  ui->bt_tar->setChecked(0);
-}
-void Red::touch_tar(){
-  touch_mode = 1;
-  ui->bt_add->setChecked(0);
-  ui->bt_tar->setChecked(1);
-}
-*/
+
 void Red::count_score(){
   int score = 0;
   int bonus = 1;
@@ -362,18 +357,17 @@ void Red::count_score(){
 
 void Red::timer(){
   if(ti<0){
-    ti = 0.0;
+    ui->Time->setStyleSheet("color: rgb(255,0,0)");
   }
   char buffer[7];
-  sprintf(buffer, "%.1f", ti);
+  sprintf(buffer, "%.0f", ti);
   ui->Time->display(buffer);
 }
 
 void Red::countdown(){
-  ti -= 0.1;
-  if(ti >= 0 && stop_ti == 0){
+  ti -= 1;
+  if(stop_ti == 0){
     this->timer();
-    QTimer::singleShot(100, this, SLOT(countdown()));
   }
 }
 

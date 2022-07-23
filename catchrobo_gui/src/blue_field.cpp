@@ -25,8 +25,6 @@
 #include <ros/package.h>
 #include <iostream>
 
-#include <jsk_rviz_plugins/Pictogram.h>
-
 namespace field
 {
 Blue::Blue(QWidget *parent) :
@@ -64,9 +62,6 @@ Blue::Blue(QWidget *parent) :
     pub_gl = nh_.advertise<std_msgs::Int32MultiArray>("gl_rigo", 1);
     sub_gl = n.subscribe("gl_giro", sendtime, &Blue::arrayback_gl, this);
 
-    //pictgram_pub = nh_.advertise<jsk_rviz_plugins::Pictogram>("jsk_rviz_plugins/Pictogram", 1);
-    float_pub = nh_.advertise<std_msgs::Float32>("abc", 10);
-
     pub_menu = nh_.advertise<std_msgs::Int8>("menu", 1);
     pub_arrow = nh_.advertise<std_msgs::Int8>("arrow_sub", 1);
 
@@ -83,6 +78,7 @@ Blue::Blue(QWidget *parent) :
       this->marker_gl(i, 0);
     }
     */
+   mytimer.setInterval(1000);
 }
 
 Blue::~Blue() = default;
@@ -101,9 +97,8 @@ void Blue::onInitialize()
   connect(findChild<QPushButton*>(QString("init")), SIGNAL(clicked()), this, SLOT(menu_panel()));
   connect(findChild<QPushButton*>(QString("start")), SIGNAL(clicked()), this, SLOT(menu_panel()));
 
-  //connect(findChild<QPushButton*>(QString("bt_add")), SIGNAL(clicked()), this, SLOT(touch_rm()));
-  //connect(findChild<QPushButton*>(QString("bt_tar")), SIGNAL(clicked()), this, SLOT(touch_tar()));
-  //QTimer::singleShot(sendtime, this, SLOT(hogehoge));
+  connect(&mytimer, SIGNAL(timeout()), this, SLOT(countdown()));
+  //mytimer.start();
 }
 
 void Blue::set_icon()
@@ -278,65 +273,63 @@ void Blue::menu_panel(){
     }else{
       status = 1;
       btn->setText("origin");
-      ui->origin->setEnabled(0);
-      ui->calib->setEnabled(1);
-      ui->init->setEnabled(1);
+      //ui->origin->setEnabled(0);
+      //ui->calib->setEnabled(1);
+      //ui->init->setEnabled(1);
     }
+    ui->origin->setChecked(0);
   }else if(QString("calib") == name){
     if(QString("1st point") == btn->text()){
       status = 3;
-      arrow.data = 5;
+      arrow.data = 2;
       btn->setText("2nd point");
     }else if(QString("2nd point") == btn->text()){
       status = 4;
-      arrow.data = 6;
+      arrow.data = 3;
       btn->setText("3rd point");
     }else if(QString("3rd point") == btn->text()){
       status = 5;
-      arrow.data = 4;
+      arrow.data = 1;
       btn->setText("1st point");
     }else{
-      arrow.data = 4;
+      arrow.data = 1;
       btn->setText("1st point");
       status = 2;
     }
+    ui->calib->setChecked(0);
     pub_arrow.publish(arrow);
   }else if(QString("init") == name){
     ui->calib->setText("2.Calib");
     status = 6;
     arrow.data = 0;
     pub_arrow.publish(arrow);
-    ui->calib->setEnabled(0);
-    ui->init->setEnabled(0);
-    ui->start->setEnabled(1);
+    ui->init->setChecked(0);
+    //ui->calib->setEnabled(0);
+    //ui->init->setEnabled(0);
+    //ui->start->setEnabled(1);
   }else if(QString("start") == name){
     status = 7;
+    mytimer.stop();
     ti = 180.0;
     stop_ti = 0;
-    QTimer::singleShot(100, this, SLOT(countdown()));
-    ui->start->setEnabled(0);
-    ui->origin->setEnabled(1);
+    ui->Time->setStyleSheet("color: rgb(0,0,0)");
+    mytimer.start();
+    ui->start->setChecked(0);
+    //ui->start->setEnabled(0);
+    //ui->origin->setEnabled(1);
   }
+
+  this->send_menu_msgs(false);
+  this->timer();
 }
 
 void Blue::reset_menu(){
   ui->origin->setEnabled(1);
-  ui->calib->setEnabled(0);
-  ui->init->setEnabled(0);
-  ui->start->setEnabled(0);
+  ui->calib->setEnabled(1);
+  ui->init->setEnabled(1);
+  ui->start->setEnabled(1);
 }
-/*
-void Blue::touch_rm(){
-  touch_mode = 0;
-  ui->bt_add->setChecked(1);
-  ui->bt_tar->setChecked(0);
-}
-void Blue::touch_tar(){
-  touch_mode = 1;
-  ui->bt_add->setChecked(0);
-  ui->bt_tar->setChecked(1);
-}
-*/
+
 void Blue::count_score(){
   int score = 0;
   int bonus = 1;
@@ -364,18 +357,17 @@ void Blue::count_score(){
 
 void Blue::timer(){
   if(ti<0){
-    ti = 0.0;
+    ui->Time->setStyleSheet("color: rgb(255,0,0)");
   }
   char buffer[7];
-  sprintf(buffer, "%.1f", ti);
+  sprintf(buffer, "%.0f", ti);
   ui->Time->display(buffer);
 }
 
 void Blue::countdown(){
-  ti -= 0.1;
-  if(ti != 0 && stop_ti == 0){
+  ti -= 1;
+  if(stop_ti == 0){
     this->timer();
-    QTimer::singleShot(100, this, SLOT(countdown()));
   }
 }
 
@@ -396,50 +388,6 @@ void Blue::marker_gl(int num, int i){
   }
   findChild<QFrame*>(QString("frm"+QString::number(num)))->setStyleSheet("color: rgb(255,170,0)");
   gl_frame[num] = i*2;
-}
-
-void Blue::jsk_show(){
-    std_msgs::Float32 float_data;
-    float_data.data = sin(0.02 * 2 * M_PI);
-    float_pub.publish(float_data);
-
-    /*
-    pictgram.header.frame_id = "base_link";
-    pictgram.header.stamp = ros::Time::now();
-    pictgram.pose.position.z = 0.3;
-    pictgram.pose.orientation.y = -0.71;
-    pictgram.pose.orientation.w = 0.71;
-    pictgram.action = jsk_rviz_plugins::Pictogram::ADD;
-    pictgram.color.r = 1.0;
-    pictgram.color.a = 1.0;
-
-    if (type_count % 4 == 0)
-    {
-      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
-      pictgram.character = "fa-angle-down";
-      pictgram.size = 0.5;
-    }
-    else if (type_count % 4 == 1)
-    {
-      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
-      pictgram.character = "tag";
-      pictgram.size = 0.5;
-    }
-    else if (type_count % 4 == 2)
-    {
-      pictgram.mode = jsk_rviz_plugins::Pictogram::PICTOGRAM_MODE;
-      pictgram.character = "down";
-      pictgram.size = 0.5;
-    }
-    else
-    {
-      pictgram.mode = jsk_rviz_plugins::Pictogram::STRING_MODE;
-      pictgram.character = "CHAR";
-      pictgram.size = 0.2;
-    }
-    pictgram_pub.publish(pictgram);
-    type_count++;
-    */
 }
 
 }

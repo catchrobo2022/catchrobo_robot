@@ -139,15 +139,15 @@ class Manual:
         KP_ALL = 5.0
         KD_ALL = 0.05
         if axe_num == 0:  # x
-            self.command.command_x.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_x.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_x.kp = KP_ALL
             self.command.command_x.kd = KD_ALL
         elif axe_num == 1:  # y
-            self.command.command_y.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_y.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_y.kp = KP_ALL
             self.command.command_y.kd = KD_ALL
         elif axe_num == 2:  # z
-            self.command.command_z.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_z.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_z.kp = KP_ALL
             self.command.command_z.kd = KD_ALL
         elif axe_num == 3:  # g
@@ -158,22 +158,22 @@ class Manual:
     # 速度制御のパラメーラ設定
 
     def velSet(self, axe_num):
-        KP_ALL = 0.0
-        KD_ALL = 0.5
+        KP_ALL = 30.0
+        KD_ALL = 0.2
         if axe_num == 0:  # x
-            self.command.command_x.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_x.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_x.kp = KP_ALL
-            self.command.command_x.kd = KD_ALL
+            self.command.command_x.kd = 0.1
         elif axe_num == 1:  # y
-            self.command.command_y.mode = MyRosCmd.DIRECT_CTRL_MODE
-            self.command.command_y.kp = KP_ALL
+            self.command.command_y.mode = MyRosCmd.VELOCITY_CTRL_MODE
+            self.command.command_y.kp = 60
             self.command.command_y.kd = KD_ALL
         elif axe_num == 2:  # z
-            self.command.command_z.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_z.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_z.kp = KP_ALL
             self.command.command_z.kd = KD_ALL
         elif axe_num == 3:  # g
-            self.command.command_g.mode = MyRosCmd.DIRECT_CTRL_MODE
+            self.command.command_g.mode = MyRosCmd.VELOCITY_CTRL_MODE
             self.command.command_g.kp = KP_ALL
             self.command.command_g.kd = KD_ALL
 
@@ -266,7 +266,6 @@ class Manual:
                 cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
                 self.old_joystick[2] = 0
                 self.cmd_flag[2] = True
-
 
             # # 　位置制御
             # # 　一回押すと、一回分動く仕様

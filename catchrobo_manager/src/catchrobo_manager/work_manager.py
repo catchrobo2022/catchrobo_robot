@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-from tkinter.messagebox import NO
 from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.jagarico.database import Database
 from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
@@ -28,28 +27,38 @@ class WorkManager:
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
-    def get_target_posi(self):
+    def get_target_info(self):
 
         target_id = self._calculator.calcTarget(self._database)
         # 全部のじゃがりこを取り終わるとNoneをcalcTarget()が返すので場合分け
-        if(target_id ==None):
-            position=None
+        if target_id == None:
+            position = None
+            is_my_area = None
         else:
             position = self._database.getPosi(target_id)
-        return position
-        ###[TODO] position がNoneのときの対応 （get_target_posiの受取先）
+            is_my_area = self._database.getState(target_id, "my_area")
 
-    def pick(self):
-        pick_id = self.get_target_id()
+        # print(target_id)
+        # print(is_my_area)
+        return position, is_my_area, target_id
+
+    def pick(self, pick_id):
+        # pick_id = self.get_target_id()
         self._database.delete(pick_id)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
-        ## [TODO] 次動作計算アルゴリズム
+        ## 次動作計算アルゴリズム
         ## もうシュートするなら
         # next_action = NextAction.SHOOT
         ## 次も連続してじゃがりこを回収するなら
         # next_action = NextAction.PICK
-        if (pick_id == 0) or (pick_id == 19) or (pick_id == 18) or (pick_id == 13) or (pick_id == 24):
+        if (
+            (pick_id == 0)
+            or (pick_id == 19)
+            or (pick_id == 18)
+            or (pick_id == 13)
+            or (pick_id == 24)
+        ):
             next_action = NextAction.SHOOT
         else:
             next_action = NextAction.PICK

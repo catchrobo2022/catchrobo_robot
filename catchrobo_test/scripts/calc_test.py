@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from traceback import print_tb
+
 from catchrobo_manager.robot import Robot
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_driver.rad_transform import RadTransform
 
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
@@ -13,14 +13,17 @@ import numpy as np
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
-    robot = Robot("blue")
-    rospy.sleep(1)  # rosが起動するのを待つ
-    robot.enable()
-    # rospy.sleep(2)
-    robot.start()
-    rospy.sleep(1)
-    # robot.go(z=0.18, wait=True)
-    robot.go(x=1.081, y=-0.495, wait=True)
+
+    template = RadTransform()
+    rospy.loginfo(template.rad2rviz_joint_state(2, 7.853981634))
+    # robot = Robot("blue")
+    # rospy.sleep(1)  # rosが起動するのを待つ
+    # robot.enable()
+    # # rospy.sleep(2)
+    # robot.start()
+    # rospy.sleep(1)
+    # # robot.go(z=0.18, wait=True)
+    # robot.go(x=1.081, y=-0.495, wait=True)
 
     # target_mm = [113.3, 0, 93.5]
     # target_m = []

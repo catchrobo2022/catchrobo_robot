@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # # command.id = 1  # 0: x軸 1:y軸 2: z軸 3:グリッパー
     # # command.mode = (
     # #     MyRosCmd.POSITION_CTRL_MODE
-    # # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
+    # # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
     # # command.position = rad_transform.robot_m2rad(command.id, 1.0)
     # # command.velocity = rad_transform.robot_m2rad(command.id, 0.0)  # 目標位置での速度
     # # command.net_inertia = 0.0  # 慣性モーメント(未対応)

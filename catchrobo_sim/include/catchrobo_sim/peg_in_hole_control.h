@@ -59,7 +59,7 @@ public:
         for (size_t i = 0; i < 3; i++)
         {
             // ros_cmd[i] = targets_[i];
-            ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+            ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE;
             result[i] = ControlResult::RUNNING;
         }
 
@@ -101,7 +101,7 @@ public:
             //穴に落ちたら終了。モーターは脱力
             for (size_t i = 0; i < 3; i++)
             {
-                ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+                ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE;
                 ros_cmd[i].kp = 0;
                 ros_cmd[i].kd = 0;
                 ros_cmd[i].effort = 0;

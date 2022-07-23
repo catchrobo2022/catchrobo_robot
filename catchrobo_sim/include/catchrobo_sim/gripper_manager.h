@@ -58,6 +58,10 @@ public:
         servo_manager_.getState(state);
         return state.position;
     };
+    void init(float arrive_threshold, float estimate_error_limit)
+    {
+        servo_manager_.init(arrive_threshold, estimate_error_limit);
+    }
 
 private:
     ServoManager servo_manager_;

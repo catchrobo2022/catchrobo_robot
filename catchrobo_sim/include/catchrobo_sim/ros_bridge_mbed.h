@@ -62,14 +62,19 @@ public:
     {
         while (1)
         {
-            nh_.spinOnce();
-            led_ = !led_;
+            spinOnce();
             wait_ms(1000);
         }
     };
     void publishError(const catchrobo_msgs::ErrorCode &msg)
     {
         pub_error_.publish(&msg);
+    }
+
+    void spinOnce()
+    {
+        nh_.spinOnce();
+        led_ = !led_;
     }
 
 private:

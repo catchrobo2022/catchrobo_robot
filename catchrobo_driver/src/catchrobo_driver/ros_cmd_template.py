@@ -4,10 +4,8 @@
 from std_msgs.msg import Bool
 from catchrobo_driver.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
-from scipy import constants
-
-
 import rospkg
+import rospy
 
 import pandas as pd
 import math
@@ -15,20 +13,32 @@ import math
 
 class RosCmdTemplate:
     def __init__(self):
+        name_space = "ros_cmd/"
+        self._accerelation_limit_scale = rospy.get_param(
+            name_space + "acceleration_limit_scale"
+        )
+        self.I_MAX = rospy.get_param(name_space + "current_max_A")
+        self.SERVO_ACCEL_LIMIT = rospy.get_param(name_space + "servo_accel_limit")
+
+        self._velocity_limit_scale = rospy.get_param(
+            name_space + "velocity_limit_scale"
+        )
+        self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
         self._work_mass = 0.06
-        self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 1
-        self._jerk_limit = 100
+        self.GRAVITY = 9.80665
 
         ## キレイに動いたときのパラメーター 07/14
-        # self._velocity_limit_scale = 1
-        # self._accerelation_limit_scale = 0.4
-        # self._jerk_limit = 20
+        # self._velocity_limit_scale = 0.2
+        # self._accerelation_limit_scale = 0.2
+        # self._jerk_limit = 1000
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
         # print(self._datas)
         # print(self._datas.loc["position_min"][0])
+
+    def set_accerelation_limit_scale(self, accerelation_limit_scale):
+        self._accerelation_limit_scale = accerelation_limit_scale
 
     def readCsv(self):
         rospack = rospkg.RosPack()
@@ -90,27 +100,34 @@ class RosCmdTemplate:
         command.velocity_limit = (
             self._datas.loc["velocity_limit_rad"][id] * self._velocity_limit_scale
         )
-        command.acceleration_limit = (
-            self._datas.loc["acceleration_limit_rad"][id]
-            * self._accerelation_limit_scale
-        )
-        command.jerk_limit = self._jerk_limit
-        command.kp = self._datas.loc["kp"][id]
-        command.kd = self._datas.loc["kd"][id]
+        # command.jerk_limit = self._jerk_limit
+        command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
+        command.kp = self._datas.loc["position_ctrl_kp"][id]
+        command.kd = self._datas.loc["position_ctrl_kd"][id]
 
         command.mode = mode
         command.position = rad_transform.robot_m2rad(command.id, robot_position)
         # 目標位置での終端速度
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
-        mass = sum(self._datas.loc["mass"][id:]) + self._work_mass * has_work_num
-        r = rad_transform.get_pulley_radius(id)
-        inertia = self._datas.loc["inertia"][id]
-        command.net_inertia = inertia + mass * r
+        ### 加速度limitの算出
+        if id == 3:
+            acceleration_limit = self.SERVO_ACCEL_LIMIT
+        else:
+            mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
+            r = rad_transform.get_pulley_radius(id)
+            inertia = self._datas.loc["inertia"][id]
+            command.net_inertia = inertia + r * r * mass
 
-        if id == 2:
-            command.effort = mass * constants.G * r
+            if id == 2:
+                command.effort = r * mass * self.GRAVITY
+            else:
+                command.effort = 0
 
+            acceleration_limit = (
+                self.KT_OUT * self.I_MAX - command.effort
+            ) / command.net_inertia
+        command.acceleration_limit = acceleration_limit * self._accerelation_limit_scale
         return command
 
     def robot_m2rad(self, motor_id, position):
@@ -131,17 +148,17 @@ class RosCmdTemplate:
         command.data = True
         return command
 
-    def generate_origin_command(self, id, velocity_m):
-        command = self.generate_ros_command(
-            id, MyRosCmd.GO_ORIGIN_MODE, 0, velocity_m, 0
-        )
+    def generate_origin_command(self, id, field):
+        command = self.generate_ros_command(id, MyRosCmd.GO_ORIGIN_MODE, 0, 0, 0)
         command.position = self._datas.loc["origin_position_rad"][id]
+        if field == "blue" and id == 1:
+            command.position *= -1
         command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 
     def generate_velocity_command(self, id, velocity_m, has_work_num=0):
         command = self.generate_ros_command(
-            id, MyRosCmd.DIRECT_CTRL_MODE, 0, velocity_m, has_work_num
+            id, MyRosCmd.VELOCITY_CTRL_MODE, 0, velocity_m, has_work_num
         )
         command.kp = self._datas.loc["velocity_ctrl_kp"][id]
         command.kd = self._datas.loc["velocity_ctrl_kd"][id]
