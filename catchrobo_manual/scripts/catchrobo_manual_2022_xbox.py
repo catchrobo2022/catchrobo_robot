@@ -105,7 +105,7 @@ class Manual:
         self.manual_msg.data=self.manual_cmd.NONE
 
         self.pause_manual=True
-        self.button_enable = False
+        self.button_enable = True
         self.cmd_flag = [False] * 3
 
         self.old_joystick = [0.0] * 3
@@ -396,21 +396,21 @@ class Manual:
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
         if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
-            self.command.enable_command.is_enable = True
+            self.command.enable_command.is_enable = False
             # print(self.command.enable_command)
             self.button_count[b_num.START] = 1
-            print("enable")
+            print("disable")
             # print(self.button_count[b_num.START])
-            self.button_enable = True
+            self.button_enable = False
         elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 1:
             self.pub_enable_cmd.publish(self.command.enable_command)
             self.button_count[b_num.START] = 2
         elif joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 2:
-            self.command.enable_command.is_enable = False
+            self.command.enable_command.is_enable = True
             # print(self.command.enable_command)
             self.button_count[b_num.START] = 3
-            print("disable")
-            self.button_enable = False
+            print("enable")
+            self.button_enable = True
         elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 3:
             self.pub_enable_cmd.publish(self.command.enable_command)
             self.button_count[b_num.START] = 0

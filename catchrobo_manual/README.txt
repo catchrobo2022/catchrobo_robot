@@ -42,7 +42,7 @@ roslaunch catchrobo_manual manual_ps4.launch
 
 roslaunch catchrobo_bringup sim_bringup.launch field:="red" 
 
-
+rosrun catchrobo_manager game_manager.py  
 
 
 開発記録
