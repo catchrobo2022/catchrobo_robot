@@ -119,6 +119,10 @@ class RosCmdTemplate:
             inertia = self._datas.loc["inertia"][id]
             command.net_inertia = inertia + r * r * mass
 
+            #### [TODO] gear を使う
+            if id == 1:
+                command.net_inertia *= 2
+
             if id == 2:
                 command.effort = r * mass * self.GRAVITY
             else:

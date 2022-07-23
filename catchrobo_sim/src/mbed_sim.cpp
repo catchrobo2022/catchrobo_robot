@@ -1,11 +1,11 @@
 //   #define USE_MBED
 
-#define USE_XBEE
+// #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
 #include "catchrobo_sim/ros_bridge_mbed.h"
-const float MBED2ROS_DT = 1; // 10Hz
+const float MBED2ROS_DT = 0.1; // 10Hz
 #else
 #include <ros/ros.h>
 #include "sim_only/mbed.h"
@@ -19,7 +19,7 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
-const float MBED2GRIPPER_DT = 0.01;
+const float MBED2GRIPPER_DT = 0.1;
 const float MBED2MOTOR_DT = 0.01; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
 const float ARRIVE_THRESHOLD_RAD = 0.1;
