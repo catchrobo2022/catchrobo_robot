@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="field" default="red" /> 
+    <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
+        <arg name="field" value="$(arg field)"/>
+    </include>
+    <node pkg="catchrobo_gui" type="motor_debug.py" name="motor_status">
+    </node>
+
+    <rosparam file="$(find catchrobo_driver)/config/ros_cmd.yaml" command="load" ns="" />
+    <rosparam file="$(find catchrobo_manager)/config/game_manager.yaml" command="load" ns="" />
+    <rosparam file="$(find catchrobo_manager)/config/robot.yaml" command="load" ns="" />
+    <rosparam file="$(find catchrobo_manager)/config/calibration.yaml" command="load" ns="" />
+
+    <include file="$(find catchrobo_test)/launch/rosbag_record.launch" />
+</launch>

@@ -1,0 +1,4 @@
+calibration:
+  base_frame: "base/base_link"
+  shooting_box_frame: "shooting_box_frame"
+  target_box_frame: "target_box_frame"
