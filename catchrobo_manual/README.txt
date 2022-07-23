@@ -105,3 +105,6 @@ xyzのpubのタイミング修正
 0714
 pubの周期を調整完了
 pauseのバグ完了
+
+0723
+pauseの機能とmanual onoffの機能統合
