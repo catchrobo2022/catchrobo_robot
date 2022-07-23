@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     ### default command生成器
     template = RosCmdTemplate()
-    template.set_accerelation_limit_scale(0.2)
+    template.set_accerelation_limit_scale(0.5)
 
     ################################################### motor on 指示
     enable_command = template.generate_enable_command(True, True)
@@ -37,35 +37,35 @@ if __name__ == "__main__":
     # pub.publish(command)
     # rospy.sleep(3)
 
-    command = template.generate_ros_command(
-        id=2,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.12,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
-    rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.12,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(5)
 
-    command = template.generate_ros_command(
-        id=1,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.6,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
-    rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.6,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(5)
 
-    command = template.generate_ros_command(
-        id=1,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=-0.6,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
-    rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=-0.6,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
 
     # command = template.generate_ros_command(
     #     id=0,

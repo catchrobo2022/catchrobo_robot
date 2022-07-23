@@ -20,7 +20,7 @@ if __name__ == "__main__":
     robot.start()
     rospy.sleep(1)
     # robot.go(z=0.18, wait=True)
-    robot.go(x=1.081, y=-0.495, wait=True)
+    # robot.go(x=1.081, y=-0.495, wait=True)
 
     # target_mm = [113.3, 0, 93.5]
     # target_m = []
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # robot.go(x=1.2333, y=0, wait=True)
     # robot.go(z=0.108, wait=True)
 
-    print("finish")
+    # print("finish")
     # robot.go(x=0.3, wait=True)
     # robot.disable()
 
@@ -44,8 +44,8 @@ if __name__ == "__main__":
     # # robot.peg_in_hole()
     # rospy.sleep(1)
 
-    # robot.shoot()
-    # robot.pick()
+    robot.shoot()
+    robot.pick()
 
     # pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     # pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
