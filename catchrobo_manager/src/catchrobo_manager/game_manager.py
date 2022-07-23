@@ -14,7 +14,6 @@ from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 from std_msgs.msg import Int8
 
 
-
 class GameManager:
     def __init__(self):
         name_space = "game_manager/"
