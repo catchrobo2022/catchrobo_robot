@@ -3,14 +3,19 @@
 
 import math
 
+import rospy
+
 
 class RadTransform:
     def __init__(self):
         ### y軸は二倍動く
+        pitch = rospy.get_param("pulley/pitch")
+        teeth = rospy.get_param("pulley/teeth")
+        radius = pitch * teeth / (2 * math.pi)
         self._pulley_radius = [
-            0.002 * 54 / (2 * math.pi),
-            0.002 * 54 / (2 * math.pi),
-            0.002 * 54 / (2 * math.pi),
+            radius,
+            radius,
+            radius,
             1,
         ]
 
