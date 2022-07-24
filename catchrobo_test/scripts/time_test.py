@@ -7,34 +7,72 @@ import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 
 
+class TimeTest:
+    def __init__(self) -> None:
+
+        self._pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
+        self._pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
+
+        self._template = RosCmdTemplate()
+
+    def send_enable_onoff(self, on: bool) -> None:
+        enable_command = self._template.generate_enable_command(on, True)
+
+        self._pub_enable.publish(enable_command)
+        print(enable_command)
+        rospy.sleep(1)
+
+    def main(self) -> None:
+        ################################################# joint command
+        ### これで全要素それっぽい値が入ったcommandを作成できる
+        ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
+
+        command = self._template.generate_ros_command(
+            id=0,
+            mode=MyRosCmd.POSITION_CTRL_MODE,
+            robot_position=1,
+            robot_end_velocity=0,
+        )
+        print(command)
+        self._pub.publish(command)
+        rospy.sleep(5)
+
+
 if __name__ == "__main__":
     rospy.init_node("test_pub")
 
-    pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
-    pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
-    rospy.sleep(2)  # rosが起動するのを待つ
+    node = TimeTest()
+    node.send_enable_onoff(True)
+    node.main()
+    node.send_enable_onoff(False)
 
-    ### default command生成器
-    template = RosCmdTemplate()
+    # pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
+    # pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
+    # rospy.sleep(1)  # rosが起動するのを待つ
 
-    ################################################### motor on 指示
-    enable_command = template.generate_enable_command(True, True)
-    # enable_command.enable_check = False
-    pub_enable.publish(enable_command)
-    print(enable_command)
-    rospy.sleep(2)
+    # ### default command生成器
+    # ################################################### motor on 指示
+    # template = RosCmdTemplate()
+    # enable_command = template.generate_enable_command(True, True)
+    # # enable_command.enable_check = False
+    # pub_enable.publish(enable_command)
+    # print(enable_command)
+    # rospy.sleep(1)
 
-    ################################################# joint command
-    ### これで全要素それっぽい値が入ったcommandを作成できる
-    ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
-    command = template.generate_ros_command(
-        id=2,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=1.0,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
+    # ################################################# joint command
+    # ### これで全要素それっぽい値が入ったcommandを作成できる
+    # ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(5)
+
     # command = template.generate_ros_command(
     #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
@@ -43,92 +81,37 @@ if __name__ == "__main__":
     # )
     # print(command)
     # pub.publish(command)
+    # rospy.sleep(5)
 
     # command = template.generate_ros_command(
-    #     id=2,
+    #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0.1,
+    #     robot_position=-0.6,
     #     robot_end_velocity=0,
     # )
     # print(command)
     # pub.publish(command)
-    rospy.sleep(12)
-    command = template.generate_ros_command(
-        id=3,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.3,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
+    # rospy.sleep(10)
+
     # command = template.generate_ros_command(
-    #     id=1,
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=0,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
     #     robot_position=0.3,
     #     robot_end_velocity=0,
     # )
     # print(command)
     # pub.publish(command)
-
-    # command = template.generate_ros_command(
-    #     id=2,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0.03,
-    #     robot_end_velocity=0,
-    # )
-    # print(command)
-    # pub.publish(command)
-    rospy.sleep(12)
-    # command = template.generate_ros_command(
-    #     id=1,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0.5,
-    #     robot_end_velocity=0,
-    # )
-    # command.jerk_limit = command.acceleration_limit * 10
-    # print(command)
-    # pub.publish(command)
-    # rospy.sleep(2)
-
-    # command = template.generate_ros_command(
-    #     id=2,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0,
-    #     robot_end_velocity=0,
-    # )
-    # command.jerk_limit = command.acceleration_limit * 10
-    # print(command)
-    # pub.publish(command)
-    # rospy.sleep(2)
-    # command = template.generate_ros_command(
-    #     id=1,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=-0.5,
-    #     robot_end_velocity=0,
-    # )
-    # command.jerk_limit = command.acceleration_limit * 10
-    # print(command)
-    # pub.publish(command)
     # rospy.sleep(10)
-    # command = template.generate_ros_command(
-    #     id=1,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0.5,
-    #     robot_end_velocity=0,
-    # )
-    # command.jerk_limit = command.acceleration_limit * 10
-    # print(command)
-    # pub.publish(command)
-    # rospy.sleep(2)
-    # command = template.generate_ros_command(
-    #     id=0,
-    #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=0,
-    #     robot_end_velocity=0,
-    # )
-    # print(command)
-    # pub.publish(command)
-    # rospy.sleep(2)
 
     # command = template.generate_ros_command(
     #     id=0,
@@ -263,7 +246,7 @@ if __name__ == "__main__":
     # print(command)
     # pub.publish(command)
 
-    enable_command.is_enable = False
-    pub_enable.publish(enable_command)
-    print(enable_command)
-    rospy.sleep(2)
+    # enable_command.is_enable = False
+    # pub_enable.publish(enable_command)
+    # print(enable_command)
+    # rospy.sleep(2)
