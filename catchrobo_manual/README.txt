@@ -42,7 +42,7 @@ roslaunch catchrobo_manual manual_ps4.launch
 
 roslaunch catchrobo_bringup sim_bringup.launch field:="red" 
 
-
+rosrun catchrobo_manager game_manager.py  
 
 
 開発記録
@@ -105,3 +105,6 @@ xyzのpubのタイミング修正
 0714
 pubの周期を調整完了
 pauseのバグ完了
+
+0723
+pauseの機能とmanual onoffの機能統合

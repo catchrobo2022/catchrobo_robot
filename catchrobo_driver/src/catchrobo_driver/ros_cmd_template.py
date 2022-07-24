@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from std_msgs.msg import Bool
@@ -14,30 +14,22 @@ import math
 class RosCmdTemplate:
     def __init__(self):
         name_space = "ros_cmd/"
-        self._accerelation_limit_scale = rospy.get_param(
-            name_space + "acceleration_limit_scale"
-        )
-        self.I_MAX = rospy.get_param(name_space + "current_max_A")
-        self.SERVO_ACCEL_LIMIT = rospy.get_param(name_space + "servo_accel_limit")
-
+        # self._accerelation_limit_scale = rospy.get_param(
+        #     name_space + "acceleration_limit_scale"
+        # )
+        # self.I_MAX = rospy.get_param(name_space + "current_max_A")
+        self._work_mass = rospy.get_param(name_space + "work_mass")
         self._velocity_limit_scale = rospy.get_param(
             name_space + "velocity_limit_scale"
         )
         self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
-        self._work_mass = 0.06
         self.GRAVITY = 9.80665
-
-        ## キレイに動いたときのパラメーター 07/14
-        # self._velocity_limit_scale = 0.2
-        # self._accerelation_limit_scale = 0.2
-        # self._jerk_limit = 1000
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
-        # print(self._datas)
-        # print(self._datas.loc["position_min"][0])
 
     def set_accerelation_limit_scale(self, accerelation_limit_scale):
+        ### [WARN] この関数は現在使えない
         self._accerelation_limit_scale = accerelation_limit_scale
 
     def readCsv(self):
@@ -110,28 +102,33 @@ class RosCmdTemplate:
         # 目標位置での終端速度
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
+        ### 動作計画で想定する最大電流
+        i_max = self._datas.loc["I_max"][id]
+
         ### 加速度limitの算出
         if id == 3:
-            acceleration_limit = self.SERVO_ACCEL_LIMIT
+            acceleration_limit = i_max
         else:
             mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
             r = rad_transform.get_pulley_radius(id)
             inertia = self._datas.loc["inertia"][id]
+
+            #### [WARN] y軸は2倍動くため、実質質量が2倍の負荷となる
+            if id == 1:
+                mass *= 2
+            ### 負荷慣性モーメント
             command.net_inertia = inertia + r * r * mass
 
-            #### [TODO] gear を使う
-            if id == 1:
-                command.net_inertia *= 2
-
+            ### 負荷トルク
             if id == 2:
                 command.effort = r * mass * self.GRAVITY
             else:
                 command.effort = 0
 
             acceleration_limit = (
-                self.KT_OUT * self.I_MAX - command.effort
+                self.KT_OUT * i_max - command.effort
             ) / command.net_inertia
-        command.acceleration_limit = acceleration_limit * self._accerelation_limit_scale
+        command.acceleration_limit = acceleration_limit
         return command
 
     def robot_m2rad(self, motor_id, position):
