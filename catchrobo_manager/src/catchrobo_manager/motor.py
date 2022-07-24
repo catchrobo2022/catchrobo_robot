@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
-from catchrobo_manager.robot_transform import WorldRobotTransform
 
 import rospy
 from std_msgs.msg import Int8
@@ -15,16 +14,12 @@ from catchrobo_msgs.msg import (
 )
 from sensor_msgs.msg import JointState
 
-
-import math
-
-
 ### input : ロボット座標系 [m]
 class Motor:
-    def __init__(self, id):
+    def __init__(self, id, ros_cmd_template):
         self._running = False
         self._id = id
-        self._ros_cmd_template = RosCmdTemplate()
+        self._ros_cmd_template = ros_cmd_template
 
         self._pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=5)
 
@@ -45,12 +40,11 @@ class Motor:
     def direct_control(self, position, velocity, has_work_num):
         self._running = True
         ros_command = self._ros_cmd_template.generate_ros_command(
-            self._id, MyRosCmd.DIRECT_CTRL_MODE, position, velocity, has_work_num
+            self._id, MyRosCmd.VELOCITY_CTRL_MODE, position, velocity, has_work_num
         )
         self._pub_ros_cmd.publish(ros_command)
 
-    def set_origin(self, velocity):
-        self._running = True
-        ros_command = self._ros_cmd_template.generate_origin_command(self._id, velocity)
+    def set_origin(self, field):
+        ros_command = self._ros_cmd_template.generate_origin_command(self._id, field)
         print(ros_command)
         self._pub_ros_cmd.publish(ros_command)

@@ -5,6 +5,8 @@
 
 class ServoManager : public MotorManager
 {
+    // float ONE_ACTION_S_;
+
 public:
     // using MotorManager::MotorManager; //C++11の機能
 
@@ -14,10 +16,19 @@ public:
     virtual void getCmd(ControlStruct &command, ControlResult::ControlResult &finished)
     {
         MotorManager::getCmd(command, finished);
+
+        // catchrobo_msgs::MyRosCmd ros_cmd;
+        // getRosCmd(ros_cmd);
+        // command.p_des = ros_cmd.position;
         StateStruct current_state;
         current_state.position = command.p_des;
         current_state.velocity = command.v_des;
         current_state.torque = command.torque_feed_forward;
         MotorManager::setCurrentState(current_state);
+        // finished = ControlResult::RUNNING;
+        // if (t_ > ONE_ACTION_S_)
+        // {
+        //     finished = ControlResult::FINISH;
+        // }
     };
 };

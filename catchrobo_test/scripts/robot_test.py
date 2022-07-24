@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from traceback import print_tb
 from catchrobo_manager.robot import Robot
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
@@ -8,18 +9,43 @@ from catchrobo_driver.ros_cmd_template import RosCmdTemplate
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 
+import numpy as np
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
-    robot = Robot()
+    robot = Robot("blue")
     rospy.sleep(1)  # rosが起動するのを待つ
     robot.enable()
-    rospy.sleep(1)
+    # rospy.sleep(2)
     robot.start()
-    robot.go(1, 0.9, 0.7)
-    # robot.peg_in_hole()
     rospy.sleep(1)
-    robot.go_robot([0, 0, 1])
+    # robot.go(z=0.18, wait=True)
+    # robot.go(x=1.081, y=-0.495, wait=True)
+
+    # target_mm = [113.3, 0, 93.5]
+    # target_m = []
+    # for mm in target_mm:
+    #     target_m.append(mm * 0.001)
+
+    # robot.go(*target_m)
+    # robot.go(x=1.2333, y=0, wait=True)
+    # robot.go(z=0.108, wait=True)
+
+    # print("finish")
+    # robot.go(x=0.3, wait=True)
+    # robot.disable()
+
+    # robot.stop()
+    # rospy.loginfo("stop")
+    # robot.go(1, 0.9, 0.7)
+    # robot.go(0, 0.9, 0.7)
+    # robot.start()
+    # rospy.loginfo("start")
+    # # robot.peg_in_hole()
+    # rospy.sleep(1)
+
+    robot.shoot()
+    robot.pick()
 
     # pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     # pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
@@ -47,7 +73,7 @@ if __name__ == "__main__":
     # # command.id = 1  # 0: x軸 1:y軸 2: z軸 3:グリッパー
     # # command.mode = (
     # #     MyRosCmd.POSITION_CTRL_MODE
-    # # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
+    # # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
     # # command.position = rad_transform.robot_m2rad(command.id, 1.0)
     # # command.velocity = rad_transform.robot_m2rad(command.id, 0.0)  # 目標位置での速度
     # # command.net_inertia = 0.0  # 慣性モーメント(未対応)

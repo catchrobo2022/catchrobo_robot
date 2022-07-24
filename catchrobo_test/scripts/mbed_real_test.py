@@ -17,20 +17,23 @@ if __name__ == "__main__":
     template = RosCmdTemplate()
 
     ################################################### motor on 指示
-    enable_command = template.generate_enable_command()
+    enable_command = template.generate_enable_command(True, False)
     rospy.sleep(1)  # rosが起動するのを待つ
-    pub_enable.publish(enable_command)
-    print(enable_command)
+    # pub_enable.publish(enable_command)
+    # print(enable_command)
 
     ################################################# joint command
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
     command = template.generate_ros_command(
-        id=0,
+        id=1,
         mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=1.0,
+        robot_position=0,
         robot_end_velocity=0.0,
     )
+    command.kp = 10
+    command.kd = 0.1
+    # command.kd = 0.1
     print(command)
     pub.publish(command)
     # command = template.generate_ros_command(
@@ -68,7 +71,7 @@ if __name__ == "__main__":
     # command.id = 1  # 0: x軸 1:y軸 2: z軸 3:グリッパー
     # command.mode = (
     #     MyRosCmd.POSITION_CTRL_MODE
-    # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
+    # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
     # command.position = rad_transform.robot_m2rad(command.id, 1.0)
     # command.velocity = rad_transform.robot_m2rad(command.id, 0.0)  # 目標位置での速度
     # command.net_inertia = 0.0  # 慣性モーメント(未対応)
@@ -88,14 +91,14 @@ if __name__ == "__main__":
     # rospy.sleep(1) # enableを待つ
     rospy.sleep(5)
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
-    command = template.generate_ros_command(
-        id=0,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.0,
-        robot_end_velocity=0.0,
-    )
-    print(command)
-    pub.publish(command)
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.0,
+    #     robot_end_velocity=0.0,
+    # )
+    # print(command)
+    # pub.publish(command)
     # command = template.generate_ros_command(
     #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,

@@ -15,3 +15,8 @@ red_jagarico.csv
 blue_shoot.csv
 red_shoot.csv
 は2021のcatchrobo_managerのconfigのファイルを変更している
+
+update file
+0702
+blue_jagarico.csv
+red_jagarico.csv

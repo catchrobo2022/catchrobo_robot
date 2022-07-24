@@ -1,6 +1,0 @@
-<launch>
-    <arg name="field" default="red"/>
-    <node name="manual_node" pkg="catchrobo_manual" type="catchrobo_manual_2022_main.py" output="screen">
-        <param name="field_color" value="$(arg field)"/>
-    </node>
-</launch>

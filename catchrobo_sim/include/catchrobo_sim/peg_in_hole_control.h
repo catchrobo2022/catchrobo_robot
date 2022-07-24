@@ -48,7 +48,7 @@ public:
     //     theta = 0;
     //     // accel_curve_.reset(cmd.jerk_limit, cmd.acceleration_limit, joint_state.velocity, cmd.velocity);
     // };
-    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[JOINT_NUM], ControlResult::ControlResult (&result)[JOINT_NUM])
+    void getCmd(const StateStruct &z_state, catchrobo_msgs::MyRosCmd (&ros_cmd)[N_MOTORS], ControlResult::ControlResult (&result)[N_MOTORS])
     {
         if (!params_.data)
         {
@@ -59,7 +59,7 @@ public:
         for (size_t i = 0; i < 3; i++)
         {
             // ros_cmd[i] = targets_[i];
-            ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+            ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE;
             result[i] = ControlResult::RUNNING;
         }
 
@@ -101,7 +101,7 @@ public:
             //穴に落ちたら終了。モーターは脱力
             for (size_t i = 0; i < 3; i++)
             {
-                ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE;
+                ros_cmd[i].mode = catchrobo_msgs::MyRosCmd::VELOCITY_CTRL_MODE;
                 ros_cmd[i].kp = 0;
                 ros_cmd[i].kd = 0;
                 ros_cmd[i].effort = 0;

@@ -27,7 +27,7 @@
 class CheckBound
 {
 public:
-    CheckBound(){};
+    CheckBound() : min_(0), max_(0){};
     void init(float min, float max)
     {
         min_ = min;
@@ -50,15 +50,18 @@ private:
 class EnableManager
 {
 public:
-    EnableManager() : current_enable_(false), motor_num_(3)
+    EnableManager() : current_enable_(false), motor_num_(N_MOTORS)
     {
 
         // const float pi = 3.141592653589;
         // pulley_radius_ = 0.002 * 54.0 / (2.0 * pi);
+        const float KT_OUT = 0.08;
+        const float current_limit = 12;
+        float epsilon = 0.01; // ジャストenableに引っかかることがあるので、ちょっと多めに取る
         float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
-        float position_min_rad[] = {0, -25.67088441, 0};
+        float position_min_rad[] = {0, -25.67088441, 0 - epsilon};
         float velocity_limit_rad[] = {180, 180, 180};
-        float torque_limit_rad[] = {136.2719005, 156.7212355, 278.8550066};
+        float torque_limit_rad[] = {KT_OUT * current_limit, KT_OUT * current_limit, KT_OUT * current_limit};
         for (size_t i = 0; i < motor_num_; i++)
         {
             // float pos_min = m2rad(i, position_min_m[i]);
@@ -105,11 +108,12 @@ public:
                 return;
             }
 
-            if (!check_velocity[i].check(state.velocity[i]))
-            {
-                error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
-                return;
-            }
+            // if (!check_velocity[i].check(state.velocity[i]))
+            // {
+            //     error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
+            //     //                ROS_INFO_STREAM("id : " << i << "vel : " << state.velocity[i]);
+            //     return;
+            // }
             if (!check_torque[i].check(state.effort[i]))
             {
                 error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
@@ -130,9 +134,9 @@ public:
 
 private:
     catchrobo_msgs::EnableCmd cmd_;
-    CheckBound check_position[3];
-    CheckBound check_velocity[3];
-    CheckBound check_torque[3];
+    CheckBound check_position[N_MOTORS];
+    CheckBound check_velocity[N_MOTORS];
+    CheckBound check_torque[N_MOTORS];
     bool current_enable_;
     // float pulley_radius_;
     const int motor_num_;
@@ -145,73 +149,5 @@ private:
     //         ret *= 0.5;
     //     }
     //     return ret;
-    // }
-
-    // void checkOverPosition(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
-    // {
-    //     for (int i = 0; i < N_MOTORS; i++)
-    //     {
-    //         if (state.position[i] < params.position_min[i] || state.position[i] > params.position_max[i])
-    //         {
-    //             error.id = i;
-    //             error.error_code = catchrobo_msgs::ErrorCode::OVER_POSITION;
-    //             return;
-    //         }
-    //     }
-    // }
-
-    // void checkOverVelocity(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
-    // {
-    //     for (int i = 0; i < N_MOTORS; i++)
-    //     {
-    //         if (fabs(state.velocity[i]) > params.velocity_limit[i])
-    //         {
-    //             error.id = i;
-    //             error.error_code = catchrobo_msgs::ErrorCode::OVER_VELOCITY;
-    //             return;
-    //         }
-    //     }
-    // }
-
-    // void checkOverTorque(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
-    // {
-    //     for (int i = 0; i < N_MOTORS; i++)
-    //     {
-    //         if (fabs(state.effort[i]) > params.torque_limit[i])
-    //         {
-    //             error.id = i;
-    //             error.error_code = catchrobo_msgs::ErrorCode::OVER_TORQUE;
-    //             return;
-    //         }
-    //     }
-    // }
-
-    // void checkTargetPosition(const sensor_msgs::JointState &state, const ControlStruct (&cmd)[JOINT_NUM], const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
-    // {
-    //     for (int i = 0; i < N_MOTORS; i++)
-    //     {
-    //         if (fabs(cmd[i].kp) > 0)
-    //         {
-    //             if (fabs(state.position[i] - cmd[i].p_des) > params.trajectory_error_limit[i])
-    //             {
-    //                 error.id = i;
-    //                 error.error_code = catchrobo_msgs::ErrorCode::FAR_TARGET_POSITION;
-    //                 return;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // void checkCollision(const sensor_msgs::JointState &state, const catchrobo_msgs::EnableCmd params, catchrobo_msgs::ErrorCode &error)
-    // {
-    //     for (int i = 0; i < N_MOTORS; i++)
-    //     {
-    //         //// 1軸でもobstacle外なら衝突はしていない
-    //         if (state.position[i] < params.obstacle_min[i] || state.position[i] > params.obstacle_max[i])
-    //         {
-    //             return;
-    //         }
-    //     }
-    //     error.error_code = catchrobo_msgs::ErrorCode::COLLISION;
     // }
 };

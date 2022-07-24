@@ -82,36 +82,117 @@ private:
 
     void noCollisionPlan(MotorManager (&motor_manager_)[N_MOTORS])
     {
+        bool temp_mode = false;
         int obstacle_num = 0;
 
         catchrobo_msgs::MyRosCmd ros_cmd[N_MOTORS];
+        StateStruct state[N_MOTORS];
+
         for (size_t i = 0; i < N_MOTORS; i++)
         {
+            motor_manager_[i].getState(state[i]);
             motor_manager_[i].getRosCmd(ros_cmd[i]);
         }
 
         float z_top = obstacles_rad[obstacle_num].edge[2][1];
-        //// 下から上に向かうときは何も変えなくて大丈夫
         if (ros_cmd[2].position > z_top)
         {
-            return;
+            //// 下から上に向かうときは何も変えなくて大丈夫
+            temp_mode = false;
         }
-        //// 下が目標値のときは壁より下がりすぎないよう注意
-
-        //// 壁をまたぐかチェック
-        if (isOverHill(ros_cmd[0].position, ros_cmd[1].position, obstacles_rad[obstacle_num]))
+        else
         {
-            motor_manager_[2].setObstacleInfo(true, true, z_top);
+            //// 下が目標値のときは壁より下がりすぎないよう注意
+            float now_x = state[0].position;
+            float now_y = state[1].position;
+            //// 壁をまたぐときは、一時的に目標値変えモード
+            temp_mode = isOverHill(ros_cmd[0].position, ros_cmd[1].position, now_x, now_y, obstacles_rad[obstacle_num]);
         }
+        ////目標値変換(トグル的な関数なので、何回呼び出しても、temp_modeが変化したタイミングでしか機能しない。
+        ////         また、temp_mode = falseなら第二変数は機能しない)
+        motor_manager_[2].changeTarget(temp_mode, z_top + 0.1); //// 壁ちょい上を目指す
     }
 
-    bool isOverHill(float target_x, float target_y, Obstacle &obstacle)
+    bool isOverHill(float target_x, float target_y, float now_x, float now_y, Obstacle &obstacle)
     {
-        ////丘をまたぐとき
-        // return true
+        int target_grid = positionGrid(obstacle, target_x, target_y);
+        int now_grid = positionGrid(obstacle, now_x, now_y);
 
-        //// でなければ
+        // ROS_INFO_STREAM("target : " << target_grid << " now: " << now_grid);
+        ////丘をまたぐときreturn true // でなければreturn false
+
+        switch (now_grid)
+        {
+        case 0:
+            if (target_grid == 11 || target_grid == 12 || target_grid == 21 || target_grid == 22)
+                return true;
+            break;
+        case 1:
+            if (10 < target_grid && target_grid < 22)
+                return true;
+            break;
+        case 2:
+            if (target_grid == 10 || target_grid == 11 || target_grid == 20 || target_grid == 21)
+                return true;
+            break;
+        case 10:
+            if (target_grid == 1 || target_grid == 2 || target_grid == 11 || target_grid == 12 || target_grid == 21 || target_grid == 22)
+                return true;
+            break;
+        case 11:
+            return true;
+            break;
+        case 12:
+            if (target_grid == 0 || target_grid == 1 || target_grid == 10 || target_grid == 11 || target_grid == 20 || target_grid == 21)
+                return true;
+            break;
+        case 20:
+            if (target_grid == 1 || target_grid == 2 || target_grid == 11 || target_grid == 12)
+                return true;
+            break;
+        case 21:
+            if (0 < target_grid && target_grid < 12)
+                return true;
+            break;
+        case 22:
+            if (target_grid == 0 || target_grid == 1 || target_grid == 10 || target_grid == 11)
+                return true;
+            break;
+        default:
+            return false;
+            break;
+        }
         return false;
+    }
+
+    //// 9マスに分解 //returnは10の位がx, 1の位がy
+    int positionGrid(const Obstacle &obstacle, float pos_x, float pos_y)
+    {
+        // [0,2]|[1,2]|[2,2]
+        // [0,1]|[1,1]|[2,1]
+        // [0,0]|[1,0]|[2,0]
+
+        float ob_x_min = obstacle.edge[0][0];
+        float ob_x_max = obstacle.edge[0][1];
+        float ob_y_min = obstacle.edge[1][0];
+        float ob_y_max = obstacle.edge[1][1];
+        int x_num = 0;
+        int y_num = 0;
+        if (pos_x < ob_x_min)
+            x_num = 0;
+        else if (ob_x_min <= pos_x && pos_x < ob_x_max)
+            x_num = 1;
+        else
+            x_num = 2;
+
+        if (pos_y < ob_y_min)
+            y_num = 0;
+        else if (ob_y_min <= pos_y && pos_y < ob_y_max)
+            y_num = 1;
+        else
+            y_num = 2;
+
+        return x_num * 10 + y_num;
     }
 
 public:

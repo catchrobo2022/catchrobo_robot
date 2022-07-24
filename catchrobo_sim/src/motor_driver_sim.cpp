@@ -83,16 +83,25 @@ void MotorDriverSim::timerCallback(const ros::TimerEvent &event)
 {
     double vel = 0;
     // double torque_ref = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * (cmd_.v_des - state_.velocity) + cmd_.torque_feed_forward;
-    if (is_enable_)
+    // if (torque_ref > 0.96)
+    // {
+    //     ROS_INFO_STREAM("torque: " << torque_ref << " p_des: " << cmd_.p_des << " p_now: " << state_.position << " v_des: " << cmd_.v_des << " v_now: " << state_.velocity << " t_ff: " << cmd_.torque_feed_forward);
+    // }
+    if (is_enable_ && cmd_.kp > 0)
     {
-        vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
+        // vel = cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des;
+        vel = (cmd_.p_des - state_.position) / dt_;
+    }
+    else
+    {
+        vel = 0;
     }
     state_.velocity = vel;
     state_.position += state_.velocity * dt_;
     // state_.position += cmd_.kp * (cmd_.p_des - state_.position) + cmd_.kd * cmd_.v_des * dt_;
     // state_.velocity = (state_.position - old_state_.position) / dt_;
+    // state_.torque = torque_ref;
     state_.torque = cmd_.torque_feed_forward;
-
     publisher_.publish(state_);
     old_state_ = state_;
 }

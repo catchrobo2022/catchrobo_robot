@@ -15,10 +15,14 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsPathItem>
+#include <QTimer>
 
 #include <rviz/message_filter_display.h>
 #include <rviz/ogre_helpers/arrow.h>
 #include <geometry_msgs/PointStamped.h>
+
+#include <iostream>
+#include <chrono>
 
 namespace Ui {
 class Red;
@@ -43,6 +47,8 @@ public:
     int touch_mode=0;
     float ti=180.0;
     int stop_ti = 0;
+
+    QTimer mytimer;
 
     std_msgs::Int32MultiArray array_obj;
     std_msgs::Int32MultiArray array_gl;

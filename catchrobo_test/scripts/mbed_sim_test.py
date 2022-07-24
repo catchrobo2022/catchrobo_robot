@@ -12,31 +12,115 @@ if __name__ == "__main__":
 
     pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
+    rospy.sleep(1)  # rosが起動するのを待つ
 
     ### default command生成器
     template = RosCmdTemplate()
+    template.set_accerelation_limit_scale(0.5)
 
     ################################################### motor on 指示
-    enable_command = template.generate_enable_command()
-    rospy.sleep(1)  # rosが起動するのを待つ
+    enable_command = template.generate_enable_command(True, True)
+    # enable_command.enable_check = False
     pub_enable.publish(enable_command)
     print(enable_command)
+    rospy.sleep(1)
 
     ################################################# joint command
     ### これで全要素それっぽい値が入ったcommandを作成できる
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
-    command = template.generate_ros_command(
-        id=3,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=1.0,
-        robot_end_velocity=0.0,
-    )
-    print(command)
-    pub.publish(command)
+
+    # command = template.generate_velocity_command(
+    #     id=2,
+    #     velocity_m=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(3)
+
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.12,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(5)
+
     # command = template.generate_ros_command(
     #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
-    #     robot_position=1.0,
+    #     robot_position=0.6,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(5)
+
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=-0.6,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.3,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1.5,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(2)
+
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.1,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
+
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.0,
     #     robot_end_velocity=0.0,
     # )
     # print(command)
@@ -68,7 +152,7 @@ if __name__ == "__main__":
     # command.id = 1  # 0: x軸 1:y軸 2: z軸 3:グリッパー
     # command.mode = (
     #     MyRosCmd.POSITION_CTRL_MODE
-    # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.DIRECT_CTRL_MODE
+    # )  # MyRosCmd.POSITION_CTRL_MODE or MyRosCmd.VELOCITY_CTRL_MODE
     # command.position = rad_transform.robot_m2rad(command.id, 1.0)
     # command.velocity = rad_transform.robot_m2rad(command.id, 0.0)  # 目標位置での速度
     # command.net_inertia = 0.0  # 慣性モーメント(未対応)
@@ -86,16 +170,24 @@ if __name__ == "__main__":
     # command.kd = 0.5
 
     # rospy.sleep(1) # enableを待つ
-    rospy.sleep(5)
     ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
-    command = template.generate_ros_command(
-        id=3,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=0.0,
-        robot_end_velocity=0.0,
-    )
-    print(command)
-    pub.publish(command)
+    # command = template.generate_ros_command(
+    #     id=2,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.13,
+    #     robot_end_velocity=0.0,
+    # )
+    # print(command)
+    # pub.publish(command)
+
+    # command = template.generate_ros_command(
+    #     id=1,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=0.0,
+    #     robot_end_velocity=0.0,
+    # )
+    # print(command)
+    # pub.publish(command)
     # command = template.generate_ros_command(
     #     id=1,
     #     mode=MyRosCmd.POSITION_CTRL_MODE,
@@ -127,7 +219,6 @@ if __name__ == "__main__":
     # command.position = 0
     # print(command)
     # pub.publish(command)
-    rospy.sleep(10)  # このプログラムは3秒後に自動終了する. このsleepが無いとpublish前に終了してしまう
 
     enable_command.is_enable = False
     pub_enable.publish(enable_command)

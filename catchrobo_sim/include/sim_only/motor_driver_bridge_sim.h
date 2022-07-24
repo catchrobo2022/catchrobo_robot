@@ -16,8 +16,12 @@ public:
         nh_ = nh;
     }
 
-    void init(void (*callback_function)(const StateStruct &input))
+    void init(void (*callback_function)(const StateStruct &input), const int (&direction)[4])
     {
+        for (size_t i = 0; i < 4; i++)
+        {
+            direction_[i] = direction[i];
+        }
         pub_ = nh_->advertise<catchrobo_msgs::ControlStruct>("motor_driver_cmd", 5);
         pub_enable_ = nh_->advertise<std_msgs::Int8>("motor_driver_enable", 5);
         pub_disable_ = nh_->advertise<std_msgs::Int8>("motor_driver_disable", 5);
@@ -29,13 +33,14 @@ public:
     {
         catchrobo_msgs::ControlStruct data;
         data.id = control.id;
-        data.p_des = control.p_des;
-        data.v_des = control.v_des;
-        data.torque_feed_forward = control.torque_feed_forward;
+        int direction = direction_[data.id];
+
+        data.p_des = control.p_des * direction;
+        data.v_des = control.v_des * direction;
+        data.torque_feed_forward = control.torque_feed_forward * direction;
         data.kp = control.kp;
         data.kd = control.kd;
         pub_.publish(data);
-
     }
 
     void enableMotor(int id, bool is_enable)
@@ -69,13 +74,17 @@ private:
     ros::Subscriber sub_;
     void (*callback_function_)(const StateStruct &input);
 
+    int direction_[4]; // motorの動く向き. 配列数が直打ちなのが微妙すぎる。
+
     void callback(const catchrobo_msgs::StateStruct::ConstPtr &input)
     {
         StateStruct data;
         data.id = input->id;
-        data.position = input->position;
-        data.velocity = input->velocity;
-        data.torque = input->torque;
+
+        int direction = direction_[data.id];
+        data.position = input->position * direction;
+        data.velocity = input->velocity * direction;
+        data.torque = input->torque * direction;
         (*callback_function_)(data);
     }
 };

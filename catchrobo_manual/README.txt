@@ -29,8 +29,11 @@ https://qiita.com/Yuya-Shimizu/items/4bed435e65cefc6d2df1
 手動プログラム
 # rosrun catchrobo_manual catchrobo_manual_2022.py
 # rosrun catchrobo_manual catchrobo_manual_2022_main.py
+# roslaunch catchrobo_manual manual.launch field:="red"
 
-roslaunch catchrobo_manual manual.launch field:="red"
+roslaunch catchrobo_manual manual_xbox.launch
+
+roslaunch catchrobo_manual manual_ps4.launch
 
 
 メインプログラム
@@ -90,3 +93,15 @@ pause機能の実装
 0625
 自動切り替え用のtopicを作った
 フィールドを対応をした
+
+0702
+仕様変更で指令のtopicをros_cmdで送るようになった。
+
+0709
+xbox用のコントローラーで作るようにした。
+gripperのpubを修正
+xyzのpubのタイミング修正
+
+0714
+pubの周期を調整完了
+pauseのバグ完了
