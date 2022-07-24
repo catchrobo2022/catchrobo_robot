@@ -1,11 +1,11 @@
 # Catchrobo 2021 ROS Package
 
 ## Environment
-- ubuntu 18
-- ros melodic
+- ubuntu 20
+- ros noetic
 
 ## Requirement
-- sudo apt install ros-melodic-rosserial-mbed
+- sudo apt install ros-noetic-rosserial-mbed
 - jsk-plugin(入れ方忘れました)
 - joy con系
 

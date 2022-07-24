@@ -1,5 +1,5 @@
 ros_cmd:
-  acceleration_limit_scale: 0.2
+  acceleration_limit_scale: 1
   current_max_A: 8
   servo_accel_limit: 100000
   velocity_limit_scale: 1
