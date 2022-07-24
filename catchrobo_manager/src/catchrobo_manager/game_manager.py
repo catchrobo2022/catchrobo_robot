@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import rospy
@@ -20,10 +20,11 @@ class GameManager:
 
         ######### [TODO] ros paramで受け取る
         self.MAX_HAS_WORK = rospy.get_param(name_space + "max_has_work")
-        init_y_m_red = 1.7
-        self.INIT_Z_m = 0.205
-        self.WORK_HEIGHT_m = 0.087
-        shooting_box_center_red = [0, 0, 0]
+        init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
+        self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
+        self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
+        shooting_box_center_red = rospy.get_param(
+             "calibration/shooting_box_center_red")
         ########
 
         self.FIELD = rospy.get_param("field")

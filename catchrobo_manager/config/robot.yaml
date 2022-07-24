@@ -1,2 +1,5 @@
 robot:
   robot_origin_m: [0.09045, 0.845, 0.0705, 0]
+  OPEN_GRIPPER_RAD: 1.57079632679
+  CLOSE_GRIPPER_RAD: 0
+  finish_wait_Hz: 100

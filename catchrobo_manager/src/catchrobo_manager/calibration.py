@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from catchrobo_manager.gui_menu_enum import CalibrationMenu
@@ -19,8 +19,10 @@ class Calibration:
         name_space = "calibration/"
         self.BASE_FRAME = rospy.get_param(name_space + "base_frame")
         self.SHOOTING_BOX_FRAME = rospy.get_param(name_space + "shooting_box_frame")
+        shooting_box_center_red = rospy.get_param(
+            name_space + "shooting_box_center_red")
         self._br = tf2_ros.StaticTransformBroadcaster()
-        self.update_tf(0, 0, 0)
+        self.update_tf(shooting_box_center_red[0], shooting_box_center_red[1],0)
         self._gui_msg = CalibrationMenu.NONE
 
         self._edges = [None] * 4

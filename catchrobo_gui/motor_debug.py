@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import roslib
 roslib.load_manifest('diagnostic_updater')
@@ -69,13 +69,13 @@ def check_motor3(stat):
     return stat
 
 def callback2(msg):
-    motor_current[0] = msg.data[4]
-    motor_current[1] = msg.data[5]
-    motor_current[2] = msg.data[6]
+    motor_current[0] = msg.data[4] / KT_OUT
+    motor_current[1] = msg.data[5] / KT_OUT
+    motor_current[2] = msg.data[6] / KT_OUT
 
 if __name__=='__main__':
     rospy.init_node('motor_status')
-
+    KT_OUT = rospy.get_param("ros_cmd/KT_OUT")
     pub0 = rospy.Publisher("/motor0_current", Float32, queue_size=10)
     pub1 = rospy.Publisher("/motor1_current", Float32, queue_size=10)
     pub2 = rospy.Publisher("/motor2_current", Float32, queue_size=10)
