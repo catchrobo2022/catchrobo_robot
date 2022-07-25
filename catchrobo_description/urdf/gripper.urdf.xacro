@@ -19,7 +19,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/gripper/DAE/base.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
@@ -42,7 +41,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/gripper/DAE/left_finger.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="orange"/>
       </visual>
       <collision>
         <geometry>
@@ -66,7 +64,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/gripper/DAE/right_finger.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="orange"/>
       </visual>
       <collision>
         <geometry>

@@ -19,7 +19,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/arm/DAE/link0.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
@@ -41,7 +40,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/arm/DAE/link1.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
@@ -63,7 +61,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/arm/DAE/link2_1.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
@@ -86,7 +83,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/arm/DAE/link2_2.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
@@ -108,7 +104,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/arm/DAE/link3.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
