@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.ros_cmd_template import RosCmdTemplate
 
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd

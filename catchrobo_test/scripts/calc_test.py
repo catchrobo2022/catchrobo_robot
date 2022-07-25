@@ -4,7 +4,7 @@
 
 from catchrobo_manager.robot import Robot
 
-from catchrobo_driver.rad_transform import RadTransform
+from catchrobo_manager.rad_transform import RadTransform
 
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd

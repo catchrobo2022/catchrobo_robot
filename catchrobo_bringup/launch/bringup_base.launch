@@ -11,4 +11,9 @@
     <group if="$(arg rosbag)">
         <include file="$(find catchrobo_test)/launch/rosbag_record.launch" />
     </group>
+
+
+    <node pkg="catchrobo_manager" type="show_for_rviz.py" name="show_for_rviz" output="screen" respawn="false" respawn_delay="0" />
+
+
 </launch>

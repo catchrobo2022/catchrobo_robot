@@ -9,7 +9,7 @@ from sensor_msgs.msg import Joy
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Int16
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.ros_cmd_template import RosCmdTemplate
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 
 # importing original class #the last PS~is a class not a module

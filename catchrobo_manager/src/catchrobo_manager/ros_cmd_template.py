@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from std_msgs.msg import Bool
-from catchrobo_driver.rad_transform import RadTransform
+from catchrobo_manager.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
 import rospkg
 import rospy
@@ -34,7 +34,7 @@ class RosCmdTemplate:
 
     def readCsv(self):
         rospack = rospkg.RosPack()
-        pkg_path = rospack.get_path("catchrobo_driver")
+        pkg_path = rospack.get_path("catchrobo_manager")
         config_path = pkg_path + "/config/"
         csv = config_path + "default_limit.csv"
         datas = pd.read_csv(csv, index_col=0)
