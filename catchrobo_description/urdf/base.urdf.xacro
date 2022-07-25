@@ -24,7 +24,6 @@
           <geometry>
             <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_blue.dae" scale="${visual_mesh_scale}"/>
           </geometry>
-          <material name="white"/>
         </visual>
         <collision>
           <geometry>
@@ -37,7 +36,6 @@
           <geometry>
             <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_red.dae" scale="${visual_mesh_scale}"/>
           </geometry>
-          <material name="white"/>
         </visual>
         <collision>
           <geometry>
@@ -74,7 +72,6 @@
         <geometry>
           <mesh filename="package://catchrobo_description/mesh/base/DAE/box.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
