@@ -4,7 +4,7 @@
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
 
 import rospy
-from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
+from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd, ErrorCode
 
 
 class TimeTest:
@@ -12,8 +12,17 @@ class TimeTest:
 
         self._pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
         self._pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
-
+        rospy.Subscriber("error", ErrorCode, self.error_callback)
         self._template = RosCmdTemplate()
+
+    def error_callback(self, msg: ErrorCode):
+        rospy.loginfo(msg)
+        if msg.error_code == ErrorCode.FINISH:
+            id = msg.id
+            if id == self._target_id:
+                t = rospy.Time.now()
+                dt = t - self._t
+                rospy.loginfo(dt.to_sec())
 
     def send_enable_onoff(self, on: bool) -> None:
         enable_command = self._template.generate_enable_command(on, True)
@@ -26,22 +35,24 @@ class TimeTest:
         ################################################# joint command
         ### これで全要素それっぽい値が入ったcommandを作成できる
         ### robot_position : 目標位置[m], robot_end_velocity : 終端速度[v/s]
-
+        self._target_id = 0
         command = self._template.generate_ros_command(
-            id=0,
+            id=self._target_id,
             mode=MyRosCmd.POSITION_CTRL_MODE,
             robot_position=1,
             robot_end_velocity=0,
         )
         print(command)
+        self._t = rospy.Time.now()
         self._pub.publish(command)
-        rospy.sleep(5)
+
+        rospy.sleep(10)
 
 
 if __name__ == "__main__":
     rospy.init_node("test_pub")
-
     node = TimeTest()
+    rospy.sleep(1)
     node.send_enable_onoff(True)
     node.main()
     node.send_enable_onoff(False)
