@@ -114,13 +114,24 @@ class Manual:
         self.pub_count = 0
 
         # Publisher
-        self.pub_ros_cmd = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
-        self.pub_enable_cmd = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
-        self.pub_manual_command = rospy.Publisher("/manual_command", Int8, queue_size=1)
+        self.pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=1)
+        self.pub_enable_cmd = rospy.Publisher("enable_cmd", EnableCmd, queue_size=1)
+
+        manual_command_topic = "manual_command"
+        self.pub_manual_command = rospy.Publisher(
+            manual_command_topic, Int8, queue_size=1
+        )
 
         # Subscriber
         rospy.Subscriber("/joy", Joy, self.joyCallback, queue_size=1)
-        rospy.Subscriber("/joint_states", JointState, self.jointCallback, queue_size=1)
+        rospy.Subscriber("joint_states", JointState, self.jointCallback, queue_size=1)
+
+        from_auto_topic = "auto2manual_command"
+        rospy.Subscriber(from_auto_topic, Int8, self.ask_manual_callback, queue_size=1)
+
+    def ask_manual_callback(self, msg: Int8):
+        ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う publishはしない
+        pass
 
     def joyCallback(self, joy_msg):
         self.joy_state = joy_msg

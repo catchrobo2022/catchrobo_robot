@@ -18,14 +18,11 @@ class GameManager:
     def __init__(self):
         name_space = "game_manager/"
 
-        ######### [TODO] ros paramで受け取る
         self.MAX_HAS_WORK = rospy.get_param(name_space + "max_has_work")
         init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
         self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
-        shooting_box_center_red = rospy.get_param(
-             "calibration/shooting_box_center_red")
-        ########
+        shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
@@ -33,6 +30,8 @@ class GameManager:
         shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
 
         self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
+
+        ######### [TODO] ros paramで受け取る
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
         rospy.Subscriber("menu", Int8, self.gui_callback)
 
@@ -54,7 +53,8 @@ class GameManager:
 
         self._go_flag = False
         self._old_my_area = True
-        self._init_mode = True
+        self._is_init_mode = True
+        self._game_start = False
 
     def gui_callback(self, msg):
         self._gui_msg = msg.data
@@ -63,19 +63,20 @@ class GameManager:
         elif self._gui_msg == GuiMenu.INIT:
             self.init_actions()
         elif self._gui_msg == GuiMenu.START:
-            self._robot.start()
+            self.auto_mode()
+            self._game_start = True
 
         self._gui_msg = GuiMenu.NONE
 
     def manual_callback(self, msg):
         self._manual_msg = msg.data
         if self._manual_msg == ManualCommand.MANUAL_ON:
-            self._robot.mannual_on()
+            self.manunal_mode()
         elif self._manual_msg == ManualCommand.MANUAL_OFF:
-            self._robot.start()
+            self.auto_mode()
         # elif self._manual_msg == ManualCommand.GO:
         #     # self._go_flag = True
-        #     self._robot.start()
+        #     self._robot.auto_mode()
         self._manual_msg = ManualCommand.NONE
 
     def main_actions(self, next_target):
@@ -99,7 +100,7 @@ class GameManager:
             #         x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.INIT_Z_m
             #     )
             #     # next_target = NextAction.WAIT_GO_SIGN
-            #     self._robot.mannual_on()
+            #     self._robot.mannual_mode()
             #     return NextAction.PICK
             self._old_my_area = is_my_area
             ### じゃがりこへxy移動
@@ -158,31 +159,40 @@ class GameManager:
             ### 上空へ上がる
             self._robot.go(z=self.INIT_Z_m)
             ### グリグリ(手動)
-            # self._robot.mannual_on()
+            # self._robot.mannual_mode()
 
         # 全部取り終わった
         elif next_target == NextAction.END:
             rospy.loginfo("no open shooting box")
             self._robot.go(z=self.INIT_Z_m)
             # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
-            self._robot.mannual_on()
+            self._robot.mannual_mode()
 
         return next_target
 
     def init_actions(self):
         rospy.loginfo("init action start")
-        self._init_mode = True
+        self._is_init_mode = True
         # [TODO] 厳密な値
-        self._robot.start()
+        # self._robot.control_permission(True)
+        self.auto_mode()
         self._robot.enable()
         self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
-        self._robot.mannual_on()
-        self._init_mode = False
+        # self._robot.control_permission(False)
+        self._is_init_mode = False
 
         rospy.loginfo("init action finish")
+
+    def auto_mode(self):
+        self._robot.control_permission(True)
+        rospy.loginfo("auto mode")
+
+    def manunal_mode(self):
+        self._robot.control_permission(False)
+        rospy.loginfo("manual mode")
 
     def spin(self):
         # ### callback呼び出しのため、別スレッドで重複呼び出しの可能性がある。
@@ -191,14 +201,26 @@ class GameManager:
         #     return
         # self._use_main_thread = True
         rospy.loginfo("game manager spin start")
+
         next_target = NextAction.PICK
         while not rospy.is_shutdown():
-            if self._robot.main_run_ok() and self._init_mode is False:
-                next_target = self.main_actions(next_target)
-                if next_target == NextAction.END:
-                    break
-            else:
+            if (
+                self._is_init_mode
+                or not self._game_start
+                or not self._robot.check_permission()
+            ):
+                ### init中 またはmanual モード中
+                print(
+                    self._is_init_mode,
+                    not self._game_start,
+                    not self._robot.check_permission(),
+                )
                 self._rate.sleep()
+                continue
+
+            next_target = self.main_actions(next_target)
+            if next_target == NextAction.END:
+                break
 
         rospy.loginfo("game_manager spin end")
 

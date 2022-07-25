@@ -154,7 +154,7 @@ class RosCmdTemplate:
         command.position = self._datas.loc["origin_position_rad"][id]
         if field == "blue" and id == 1:
             command.position *= -1
-        command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
+        # command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 
     def generate_velocity_command(self, id, velocity_m, has_work_num=0):
