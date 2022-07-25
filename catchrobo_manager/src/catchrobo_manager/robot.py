@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
@@ -25,20 +25,28 @@ class Robot:
     def __init__(self, field):
         self.FIELD = field
 
-        self.OPEN_GRIPPER_RAD = math.pi / 2
-        self.CLOSE_GRIPPER_RAD = 0
-        self.PEG_IN_HOLE_THRESHOLD_ROBOT = 0.01
-        self.SERVO_WAIT_s = 0.5
+        ##### [TODO] ros param化
+        name_space = "robot/"
+        robot_origin_m = rospy.get_param(name_space + "robot_origin_m")
+        self.OPEN_GRIPPER_RAD = rospy.get_param(name_space + "OPEN_GRIPPER_RAD")
+        self.CLOSE_GRIPPER_RAD = rospy.get_param(name_space + "CLOSE_GRIPPER_RAD")
+        finish_wait_Hz = rospy.get_param(name_space + "finish_wait_Hz")
+        ############################
+
+        # self.SERVO_WAIT_s = 0.5
 
         self._has_work = 0
         self._main_run_ok = False
         self._recovery_mode = False
         self._error = ErrorCode()
+        ### [WARN] 4想定でプログラム作成しており、可変にはできていません
         self.N_MOTOR = 4
-        self._rate = rospy.Rate(100)
-        self._current_state_robot = JointState()
+        self._rate = rospy.Rate(finish_wait_Hz)
 
-        self._motors = [Motor(i) for i in range(self.N_MOTOR)]
+        self._current_state_robot = JointState()
+        self._ros_cmd_template = RosCmdTemplate()
+
+        self._motors = [Motor(i, self._ros_cmd_template) for i in range(self.N_MOTOR)]
         rospy.Subscriber("error", ErrorCode, self.error_callback)
         rospy.Subscriber("finished_flag_topic", Int8, self.finished_flag_callback)
         rospy.Subscriber("my_joint_state", JointState, self.joint_state_callback)
@@ -50,10 +58,9 @@ class Robot:
             "peg_in_hole_cmd", Bool, queue_size=1
         )
 
-        self._ros_cmd_template = RosCmdTemplate()
         self._enable_command = self._ros_cmd_template.generate_enable_command()
         #  絶対座標→ロボット座標系変換
-        self._world_robot_transform = WorldRobotTransform(self.FIELD)
+        self._world_robot_transform = WorldRobotTransform(self.FIELD, robot_origin_m)
 
     def world2robot_transform(self, id, position):
         return position

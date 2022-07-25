@@ -1,11 +1,11 @@
 //   #define USE_MBED
 
-#define USE_XBEE
+// #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
 #include "catchrobo_sim/ros_bridge_mbed.h"
-const float MBED2ROS_DT = 1; // 10Hz
+const float MBED2ROS_DT = 0.1; // 10Hz
 #else
 #include <ros/ros.h>
 #include "sim_only/mbed.h"

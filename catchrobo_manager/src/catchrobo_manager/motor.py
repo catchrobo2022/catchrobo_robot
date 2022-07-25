@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from catchrobo_driver.ros_cmd_template import RosCmdTemplate
-from catchrobo_manager.robot_transform import WorldRobotTransform
 
 import rospy
 from std_msgs.msg import Int8
@@ -15,16 +14,12 @@ from catchrobo_msgs.msg import (
 )
 from sensor_msgs.msg import JointState
 
-
-import math
-
-
 ### input : ロボット座標系 [m]
 class Motor:
-    def __init__(self, id):
+    def __init__(self, id, ros_cmd_template):
         self._running = False
         self._id = id
-        self._ros_cmd_template = RosCmdTemplate()
+        self._ros_cmd_template = ros_cmd_template
 
         self._pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=5)
 

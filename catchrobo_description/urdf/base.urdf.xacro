@@ -19,17 +19,32 @@
     </joint>
 
     <link name="base/base_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full.dae" scale="${visual_mesh_scale}"/>
-        </geometry>
-        <material name="white"/>
-      </visual>
-      <collision>
-        <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/base_full.stl" scale="${collision_mesh_scale}"/>
-        </geometry>
-      </collision>
+      <xacro:if value="${field=='blue'}">
+        <visual>
+          <geometry>
+            <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_blue.dae" scale="${visual_mesh_scale}"/>
+          </geometry>
+          <material name="white"/>
+        </visual>
+        <collision>
+          <geometry>
+            <mesh filename="package://catchrobo_description/mesh/base/STL/base_full_without_box_blue.stl" scale="${collision_mesh_scale}"/>
+          </geometry>
+        </collision>
+      </xacro:if>
+      <xacro:if value="${field=='red'}">
+        <visual>
+          <geometry>
+            <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_red.dae" scale="${visual_mesh_scale}"/>
+          </geometry>
+          <material name="white"/>
+        </visual>
+        <collision>
+          <geometry>
+            <mesh filename="package://catchrobo_description/mesh/base/STL/base_full_without_box_red.stl" scale="${collision_mesh_scale}"/>
+          </geometry>
+        </collision>
+      </xacro:if>
     </link>
 
     <joint name="base/link_tip" type="fixed">
@@ -43,6 +58,30 @@
       </xacro:if>
     </joint>
     <link name="base/link_tip"/>
+
+    <joint name="base/shooter_tip" type="planar">
+      <parent link="base/base_link"/>
+      <child link="base/shooter"/>
+      <xacro:if value="${field=='blue'}">
+        <origin xyz="1.325 -1.125 0" rpy="0 0 0"/>
+      </xacro:if>
+      <xacro:if value="${field=='red'}">
+        <origin xyz="1.325 1.125 0" rpy="0 0 0"/>
+      </xacro:if>
+    </joint>
+    <link name="base/shooter">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/box.dae" scale="${visual_mesh_scale}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/box.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
 
   </xacro:macro>
 </robot>

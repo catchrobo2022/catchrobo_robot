@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import rospy
@@ -7,36 +7,36 @@ from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.work_manager import WorkManager
 from catchrobo_manager.shooting_box_manager import ShootingBoxManager
 from catchrobo_manager.robot import Robot
+from catchrobo_manager.gui_menu_enum import GuiMenu
+from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 
 
 from std_msgs.msg import Int8
 
 
-class GuiMenu:
-    NONE = 0
-    ORIGIN = 1
-    CALIBLATION = 2
-    POINT1 = 3
-    POINT2 = 4
-    POINT3 = 5
-    INIT = 6
-    START = 7
-
-
 class GameManager:
     def __init__(self):
-        # [TODO] ros paramで受け取る
+        name_space = "game_manager/"
 
-        self.Z_ABOVE_ZYAGARIKO = 0.14
-        self.DIFF_Z_ZYAGARIKO_PUT = 0.3
-        self.MAX_HAS_WORK = 5
-        self.FIELD = "red"
+        ######### [TODO] ros paramで受け取る
+        self.MAX_HAS_WORK = rospy.get_param(name_space + "max_has_work")
+        init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
+        self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
+        self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
+        shooting_box_center_red = rospy.get_param(
+             "calibration/shooting_box_center_red")
+        ########
+
+        self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
-        self.INIT_Y_m = 1.7 * self.FIELD_SIGN
-        self.INIT_Z_m = 0.205
-        self.SAFE_Z_m = self.INIT_Z_m
-        self.WORK_HEIGHT = 0.087
+        self.INIT_Y_m = init_y_m_red * self.FIELD_SIGN
+        shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
 
+        self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
+        rospy.Subscriber("manual_command", Int8, self.manual_callback)
+        rospy.Subscriber("menu", Int8, self.gui_callback)
+
+    def init(self):
         # self._use_main_thread = False
         next_target = NextAction.PICK
         self._work_manager = WorkManager(self.FIELD)
@@ -55,8 +55,6 @@ class GameManager:
         self._go_flag = False
         self._old_my_area = True
         self._init_mode = True
-        rospy.Subscriber("manual_command", Int8, self.manual_callback)
-        rospy.Subscriber("menu", Int8, self.gui_callback)
 
     def gui_callback(self, msg):
         self._gui_msg = msg.data
@@ -98,17 +96,17 @@ class GameManager:
             #     ### 新たに共通エリアに入る場合
             #     rospy.loginfo("go to common area")
             #     self._robot.go(
-            #         x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.SAFE_Z_m
+            #         x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.INIT_Z_m
             #     )
             #     # next_target = NextAction.WAIT_GO_SIGN
             #     self._robot.mannual_on()
             #     return NextAction.PICK
             self._old_my_area = is_my_area
             ### じゃがりこへxy移動
-            self._robot.go(x=work_position[0], y=work_position[1], z=self.SAFE_Z_m)
+            self._robot.go(x=work_position[0], y=work_position[1], z=self.INIT_Z_m)
             if self._robot.has_work():
                 ### じゃがりこ重ねる
-                self._robot.go(z=work_position[2] + self.WORK_HEIGHT)
+                self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
             ### グリッパー開く
             self._robot.open_gripper()
             ### じゃがりこをつかめる位置へ行く
@@ -118,7 +116,7 @@ class GameManager:
             self._robot.pick()
             next_target = self._work_manager.pick(target_id)
             ### 上空へ上がる
-            self._robot.go(z=self.SAFE_Z_m)
+            self._robot.go(z=self.INIT_Z_m)
             having_work = self._robot.has_work()
             if (
                 having_work > self.MAX_HAS_WORK
@@ -135,8 +133,11 @@ class GameManager:
                 return NextAction.END
             ### 目標シューティング位置計算
             box_position = self._box_manager.get_target_info()
+            # box_position = self._shooting_box_transform.get_calibrated_position(
+            #     box_position_raw
+            # )
             ### 穴上へxy移動
-            self._robot.go(x=box_position[0], y=box_position[1], z=self.SAFE_Z_m)
+            self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
             ### 下ろす
             self._robot.go(z=box_position[2])
             ### ぐりぐり
@@ -151,18 +152,18 @@ class GameManager:
                 next_target = NextAction.PICK
             else:
                 ### 残ったじゃがりこを掴む
-                self._robot.go(z=box_position[2] + self.WORK_HEIGHT)
+                self._robot.go(z=box_position[2] + self.WORK_HEIGHT_m)
                 self._robot.close_gripper()
 
             ### 上空へ上がる
-            self._robot.go(z=self.SAFE_Z_m)
+            self._robot.go(z=self.INIT_Z_m)
             ### グリグリ(手動)
             # self._robot.mannual_on()
 
         # 全部取り終わった
         elif next_target == NextAction.END:
             rospy.loginfo("no open shooting box")
-            self._robot.go(z=self.SAFE_Z_m)
+            self._robot.go(z=self.INIT_Z_m)
             # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
             self._robot.mannual_on()
 
@@ -194,11 +195,19 @@ class GameManager:
         while not rospy.is_shutdown():
             if self._robot.main_run_ok() and self._init_mode is False:
                 next_target = self.main_actions(next_target)
+                if next_target == NextAction.END:
+                    break
             else:
                 self._rate.sleep()
+
+        rospy.loginfo("game_manager spin end")
 
 
 if __name__ == "__main__":
     rospy.init_node("GameManager")
     game_manager = GameManager()
+    # while not rospy.is_shutdown():
+    ### 初期化
+    game_manager.init()
+    ### main動作
     game_manager.spin()

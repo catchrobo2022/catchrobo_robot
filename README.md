@@ -1,11 +1,11 @@
 # Catchrobo 2021 ROS Package
 
 ## Environment
-- ubuntu 18
-- ros melodic
+- ubuntu 20
+- ros noetic
 
 ## Requirement
-- sudo apt install ros-melodic-rosserial-mbed
+- sudo apt install ros-noetic-rosserial-mbed
 - jsk-plugin(入れ方忘れました)
 - joy con系
 
@@ -123,6 +123,14 @@ p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 ```
 float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
 ```
+
+### rosbag
+自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
+```
+roslaunch catchrobo_test rosbag_play.launch 
+rosservice call /rosbag_play/pause_playback "data: false" 
+```
+取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
 
 
 

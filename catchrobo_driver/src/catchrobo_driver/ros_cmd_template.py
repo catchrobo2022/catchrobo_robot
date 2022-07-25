@@ -1,13 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from std_msgs.msg import Bool
 from catchrobo_driver.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
-from scipy import constants
-
-
 import rospkg
+import rospy
 
 import pandas as pd
 import math
@@ -15,19 +13,24 @@ import math
 
 class RosCmdTemplate:
     def __init__(self):
-        self._work_mass = 0.06
-        self._velocity_limit_scale = 1
-        self._accerelation_limit_scale = 1
-
-        ## キレイに動いたときのパラメーター 07/14
-        # self._velocity_limit_scale = 0.2
-        # self._accerelation_limit_scale = 0.2
-        # self._jerk_limit = 1000
+        name_space = "ros_cmd/"
+        # self._accerelation_limit_scale = rospy.get_param(
+        #     name_space + "acceleration_limit_scale"
+        # )
+        # self.I_MAX = rospy.get_param(name_space + "current_max_A")
+        self._work_mass = rospy.get_param(name_space + "work_mass")
+        self._velocity_limit_scale = rospy.get_param(
+            name_space + "velocity_limit_scale"
+        )
+        self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
+        self.GRAVITY = 9.80665
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
-        # print(self._datas)
-        # print(self._datas.loc["position_min"][0])
+
+    def set_accerelation_limit_scale(self, accerelation_limit_scale):
+        ### [WARN] この関数は現在使えない
+        self._accerelation_limit_scale = accerelation_limit_scale
 
     def readCsv(self):
         rospack = rospkg.RosPack()
@@ -89,10 +92,6 @@ class RosCmdTemplate:
         command.velocity_limit = (
             self._datas.loc["velocity_limit_rad"][id] * self._velocity_limit_scale
         )
-        command.acceleration_limit = (
-            self._datas.loc["acceleration_limit_rad"][id]
-            * self._accerelation_limit_scale
-        )
         # command.jerk_limit = self._jerk_limit
         command.jerk_limit = self._datas.loc["jerk_limit_rad"][id]
         command.kp = self._datas.loc["position_ctrl_kp"][id]
@@ -103,14 +102,33 @@ class RosCmdTemplate:
         # 目標位置での終端速度
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
-        mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
-        r = rad_transform.get_pulley_radius(id)
-        inertia = self._datas.loc["inertia"][id]
-        command.net_inertia = inertia + mass * r
+        ### 動作計画で想定する最大電流
+        i_max = self._datas.loc["I_max"][id]
 
-        if id == 2:
-            command.effort = mass * 9.8 * r
+        ### 加速度limitの算出
+        if id == 3:
+            acceleration_limit = i_max
+        else:
+            mass = self._datas.loc["mass"][id] + self._work_mass * has_work_num
+            r = rad_transform.get_pulley_radius(id)
+            inertia = self._datas.loc["inertia"][id]
 
+            #### [WARN] y軸は2倍動くため、実質質量が2倍の負荷となる
+            if id == 1:
+                mass *= 2
+            ### 負荷慣性モーメント
+            command.net_inertia = inertia + r * r * mass
+
+            ### 負荷トルク
+            if id == 2:
+                command.effort = r * mass * self.GRAVITY
+            else:
+                command.effort = 0
+
+            acceleration_limit = (
+                self.KT_OUT * i_max - command.effort
+            ) / command.net_inertia
+        command.acceleration_limit = acceleration_limit
         return command
 
     def robot_m2rad(self, motor_id, position):

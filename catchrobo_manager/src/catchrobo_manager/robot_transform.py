@@ -1,14 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import math
 import numpy as np
 
+
 ### world - robot座標変換
 class WorldRobotTransform:
-    def __init__(self, field):
+    def __init__(self, field, robot_origin_m):
         # world座標でみたrobot座標原点
-        self._robot_origin = np.array([0.09045, 0.845, 0.0705, 0])
+
+        self._robot_origin = np.array(robot_origin_m)
         if field == "blue":
             self._robot_origin[1] *= -1
 
