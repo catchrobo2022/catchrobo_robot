@@ -184,12 +184,6 @@ class Robot:
             and self._motors[id].is_running()
             and self._control_permission
         ):
-            print(
-                "wait_arrive",
-                not rospy.is_shutdown(),
-                self._motors[id].is_running(),
-                self._control_permission,
-            )
             self._rate.sleep()
 
     def enable(self, enable_check=True):

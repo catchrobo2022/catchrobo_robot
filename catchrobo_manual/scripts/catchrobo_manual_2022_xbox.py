@@ -453,6 +453,9 @@ class Manual:
     #     self.pubCount("pZ")
 
     def pauseManual(self):
+        ### [TODO] bugが出たので、とりあえず消しています
+        return
+
         cmd_x = self.command.command_x
         cmd_y = self.command.command_y
         cmd_z = self.command.command_z

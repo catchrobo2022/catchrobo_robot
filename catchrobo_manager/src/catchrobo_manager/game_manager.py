@@ -210,11 +210,6 @@ class GameManager:
                 or not self._robot.check_permission()
             ):
                 ### init中 またはmanual モード中
-                print(
-                    self._is_init_mode,
-                    not self._game_start,
-                    not self._robot.check_permission(),
-                )
                 self._rate.sleep()
                 continue
 
