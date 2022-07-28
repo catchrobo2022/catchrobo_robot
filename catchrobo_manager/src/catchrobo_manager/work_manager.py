@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from catchrobo_manager.next_action_enum import NextAction
+from catchrobo_manager.next_action_enum import NextTarget
 from catchrobo_manager.jagarico.database import Database
-from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
+from catchrobo_manager.jagarico.target_jagarico_calculator import (
+    TargetJagaricoCalculator,
+)
 from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 import rospy
@@ -49,9 +51,9 @@ class WorkManager:
 
         ## 次動作計算アルゴリズム
         ## もうシュートするなら
-        # next_action = NextAction.SHOOT
+        # next_action = NextTarget.SHOOT
         ## 次も連続してじゃがりこを回収するなら
-        # next_action = NextAction.PICK
+        # next_action = NextTarget.PICK
         if (
             (pick_id == 0)
             or (pick_id == 19)
@@ -59,9 +61,9 @@ class WorkManager:
             or (pick_id == 13)
             or (pick_id == 24)
         ):
-            next_action = NextAction.SHOOT
+            next_action = NextTarget.SHOOT
         else:
-            next_action = NextAction.PICK
+            next_action = NextTarget.PICK
 
         return next_action
 

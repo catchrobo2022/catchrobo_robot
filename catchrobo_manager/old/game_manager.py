@@ -3,12 +3,7 @@
 
 import rospy
 from catchrobo_manual.manual_command import ManualCommand
-from catchrobo_manager.next_action_enum import (
-    NextTarget,
-    Action,
-    PickAction,
-    ShootAction,
-)
+from catchrobo_manager.next_action_enum import NextAction
 from catchrobo_manager.work_manager import WorkManager
 from catchrobo_manager.shooting_box_manager import ShootingBoxManager
 from catchrobo_manager.robot import Robot
@@ -42,7 +37,7 @@ class GameManager:
 
     def init(self):
         # self._use_main_thread = False
-        next_target = NextTarget.PICK
+        next_target = NextAction.PICK
         self._work_manager = WorkManager(self.FIELD)
         self._box_manager = ShootingBoxManager(self.FIELD)
         self._robot = Robot(self.FIELD)
@@ -84,126 +79,109 @@ class GameManager:
         #     self._robot.auto_mode()
         self._manual_msg = ManualCommand.NONE
 
-    def pick_actions(self, next_action: PickAction):
-        pass_action = False  # 中断されようと、次に進むような動作
-        next_target = NextTarget.PICK
-        work_position, is_my_area, target_id = self._work_manager.get_target_info()
-        if next_action == PickAction.START:
-            pass
-        elif next_action == PickAction.STOP_BEFORE_COMMON:
-            if is_my_area == False and self._old_my_area == True:
-                # if is_my_area is False and self._old_my_area is True:
-                self._old_my_area = is_my_area
-                ### 新たに共通エリアに入る場合
-                self._robot.go(
-                    x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.INIT_Z_m
-                )
-                # next_target = NextTarget.WAIT_GO_SIGN
-                # self.manunal_mode()
-                pass_action = True
-                # next_action += 1  ## manualに切り替わるが、次は一つ先の動作を行う
-        elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
+    def main_actions(self, next_target):
+        rospy.loginfo("having work: {}".format(self._robot.has_work()))
+        ### stop flagがたった瞬間に途中でも高速でループが終わる
+        if next_target == NextAction.PICK:
+            ### じゃがりこ掴む
+            rospy.loginfo("Go to work")
+            #### [WARN] zは安全域スタートの想定
+            ### 目標じゃがりこ計算
+            work_position, is_my_area, target_id = self._work_manager.get_target_info()
+            rospy.loginfo("target work : {}".format(target_id))
+            # print(is_my_area)
+            ## pandasを使っているためか、is 演算子が使えない。==を使う
+            # if is_my_area == False and self._old_my_area == True:
+            #     # if is_my_area is False and self._old_my_area is True:
+            #     self._old_my_area = is_my_area
+            #     ### 新たに共通エリアに入る場合
+            #     rospy.loginfo("go to common area")
+            #     self._robot.go(
+            #         x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.INIT_Z_m
+            #     )
+            #     # next_target = NextAction.WAIT_GO_SIGN
+            #     self._robot.mannual_mode()
+            #     return NextAction.PICK
+            self._old_my_area = is_my_area
+            ### じゃがりこへxy移動
             self._robot.go(x=work_position[0], y=work_position[1], z=self.INIT_Z_m)
-        elif next_action == PickAction.MOVE_Z_ON_WORK:
             if self._robot.has_work():
                 ### じゃがりこ重ねる
                 self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
-        elif next_action == PickAction.OPEN_GRIPPER:
+            ### グリッパー開く
             self._robot.open_gripper()
-        elif next_action == PickAction.MOVE_Z_TO_PICK:
+            ### じゃがりこをつかめる位置へ行く
             self._robot.go(z=work_position[2])
-        elif next_action == PickAction.PICK:
+            ### つかむ
+            rospy.loginfo("pick")
             self._robot.pick()
-            pass_action = True
-        elif next_action == PickAction.MOVE_Z_SAFE:
-            self._robot.go(z=self.INIT_Z_m)
-        elif next_action == PickAction.END:
             next_target = self._work_manager.pick(target_id)
+            ### 上空へ上がる
+            self._robot.go(z=self.INIT_Z_m)
             having_work = self._robot.has_work()
             if (
                 having_work > self.MAX_HAS_WORK
                 or having_work >= self._box_manager.get_open_num()
             ):
                 ### これ以上つかめなければshoot
-                next_target = NextTarget.SHOOT
-            self._old_my_area = is_my_area
-            next_action = 0  # 次はSTARTから始まる
-
-        if self._robot.check_permission() or pass_action:
-            ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
-            next_action += 1
-
-        return next_target, next_action
-
-    def shoot_actions(self, next_action: ShootAction):
-        pass_action = False
-        next_target = NextTarget.SHOOT
-        ### 目標シューティング位置計算
-        box_position = self._box_manager.get_target_info()
-        # box_position = self._shooting_box_transform.get_calibrated_position(
-        #     box_position_raw
-        # )
-        if next_action == ShootAction.START:
-            pass
-        elif next_action == ShootAction.MOVE_XY_ABOVE_BOX:
+                next_target = NextAction.SHOOT
+            rospy.loginfo("pick finish")
+        # シュート
+        elif next_target == NextAction.SHOOT:
+            rospy.loginfo("Go to shooting box")
+            if self._box_manager.get_open_num() == 0:
+                ### もうシュート場所がなければ終了
+                return NextAction.END
+            ### 目標シューティング位置計算
+            box_position = self._box_manager.get_target_info()
+            # box_position = self._shooting_box_transform.get_calibrated_position(
+            #     box_position_raw
+            # )
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
-        elif next_action == ShootAction.MOVE_Z_TO_SHOOT:
             ### 下ろす
             self._robot.go(z=box_position[2])
-        elif next_action == ShootAction.PEG_IN_HOLE:
-            ## グリグリ(手動)
-            # self.manunal_mode()
-            pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
             # shoot
-        elif next_action == ShootAction.SHOOT:
+            rospy.loginfo("shoot")
             self._robot.shoot()
-            pass_action = True
-        elif next_action == ShootAction.PICK_WORK_ON_WORK:
-            if self._robot.has_work() > 0:
+            self._box_manager.shoot()
+
+            if self._robot.has_work() == 0:
+                ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
+                next_target = NextAction.PICK
+            else:
                 ### 残ったじゃがりこを掴む
                 self._robot.go(z=box_position[2] + self.WORK_HEIGHT_m)
                 self._robot.close_gripper()
-        elif next_action == ShootAction.MOVE_Z_SAFE:
+
             ### 上空へ上がる
             self._robot.go(z=self.INIT_Z_m)
-        elif next_action == ShootAction.END:
-            self._box_manager.shoot()
-            if self._robot.has_work() == 0:
-                ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
-                next_target = NextTarget.PICK
-            next_action = 0  # 次はSTARTから始まる
+            ### グリグリ(手動)
+            # self._robot.mannual_mode()
 
-        if self._robot.check_permission() or pass_action:
-            ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
-            next_action += 1
+        # 全部取り終わった
+        elif next_target == NextAction.END:
+            rospy.loginfo("no open shooting box")
+            self._robot.go(z=self.INIT_Z_m)
+            # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
+            self._robot.mannual_mode()
 
-        return next_target, next_action
-
-    def main_actions(self, next_target: NextTarget, next_action: Action):
-        # rospy.loginfo("having work: {}".format(self._robot.has_work()))
-        ### stop flagがたった瞬間に途中でも高速でループが終わる
-        if next_target == NextTarget.PICK:
-            next_target, next_action = self.pick_actions(next_action)
-        elif next_target == NextTarget.SHOOT:
-            if self._box_manager.get_open_num() == 0:
-                ### もうシュート場所がなければ終了
-                return NextTarget.END
-            next_target, next_action = self.shoot_actions(next_action)
-
-        return next_target, next_action
+        return next_target
 
     def init_actions(self):
         rospy.loginfo("init action start")
         self._is_init_mode = True
+        # [TODO] 厳密な値
+        # self._robot.control_permission(True)
         self.auto_mode()
         self._robot.enable()
         self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
+        # self._robot.control_permission(False)
         self._is_init_mode = False
 
         rospy.loginfo("init action finish")
@@ -216,20 +194,15 @@ class GameManager:
         self._robot.control_permission(False)
         rospy.loginfo("manual mode")
 
-    def end_actions(self):
-        # 全部取り終わった
-        rospy.loginfo("no open shooting box")
-        self._robot.go(z=self.INIT_Z_m)
-        # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
-        self.manunal_mode()
-
-        rospy.loginfo("game_manager spin end")
-
     def spin(self):
+        # ### callback呼び出しのため、別スレッドで重複呼び出しの可能性がある。
+        # if self._use_main_thread:
+        #     ### 重複していたら新規は作らない
+        #     return
+        # self._use_main_thread = True
         rospy.loginfo("game manager spin start")
 
-        next_target = NextTarget.PICK
-        next_action = PickAction.START
+        next_target = NextAction.PICK
         while not rospy.is_shutdown():
             if (
                 self._is_init_mode
@@ -240,10 +213,11 @@ class GameManager:
                 self._rate.sleep()
                 continue
 
-            next_target, next_action = self.main_actions(next_target, next_action)
-            if next_target == NextTarget.END:
+            next_target = self.main_actions(next_target)
+            if next_target == NextAction.END:
                 break
-        self.end_actions()
+
+        rospy.loginfo("game_manager spin end")
 
 
 if __name__ == "__main__":

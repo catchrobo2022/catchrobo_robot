@@ -1,8 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from enum import IntEnum, auto
 
 
-class NextAction:
+class NextTarget:
     PICK = 0
     SHOOT = 1
     END = 2
+
+
+class Action(IntEnum):
+    pass
+
+
+class PickAction(Action):
+    START = 1
+    STOP_BEFORE_COMMON = auto()  # 共通エリア前で一時停止
+    MOVE_XY_ABOVE_WORK = auto()  # ワーク上空へ移動
+    MOVE_Z_ON_WORK = auto()  # ワークを重ねる
+    OPEN_GRIPPER = auto()  # グリッパー開く
+    MOVE_Z_TO_PICK = auto()  # ワークをつかめる位置へ向かう
+    PICK = auto()  # じゃがりこを掴む
+    MOVE_Z_SAFE = auto()  # 上空へ上がる
+    END = auto()  # 次は何をするかを計算
+
+
+class ShootAction(Action):
+    START = 1
+    MOVE_XY_ABOVE_BOX = auto()  # 穴上へxy移動
+    MOVE_Z_TO_SHOOT = auto()  # 下ろす
+    PEG_IN_HOLE = auto()  # ぐりぐり
+    SHOOT = auto()
+    PICK_WORK_ON_WORK = auto()
+    MOVE_Z_SAFE = auto()  # 上空へ上がる
+    END = auto()  # 次は何をするかを計算

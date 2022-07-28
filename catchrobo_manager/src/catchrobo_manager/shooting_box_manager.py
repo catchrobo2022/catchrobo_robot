@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from catchrobo_manager.jagarico.database import Database
-from jagarico.target_shooting_box_calculator import TargetShootingBoxCalculator
+from catchrobo_manager.jagarico.target_shooting_box_calculator import (
+    TargetShootingBoxCalculator,
+)
 from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 
