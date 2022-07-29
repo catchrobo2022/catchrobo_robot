@@ -31,7 +31,7 @@ class WorkManager:
 
     def get_target_info(self):
 
-        target_id = self._calculator.calcTarget(self._database)
+        target_id = self.get_target_id()
         # 全部のじゃがりこを取り終わるとNoneをcalcTarget()が返すので場合分け
         if target_id == None:
             position = None
@@ -75,6 +75,9 @@ class WorkManager:
         for i, val in enumerate(msg.data):
             # rospy.loginfo("i, val {}{}".format(i,val))
             self._database.updateState(i, self.EXIST_KEY, bool(val))
+
+    def get_remain_num(self):
+        return self._database.count("exist", True)
 
 
 if __name__ == "__main__":

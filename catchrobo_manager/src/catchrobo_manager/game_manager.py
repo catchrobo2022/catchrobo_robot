@@ -36,7 +36,6 @@ class GameManager:
 
         self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
 
-        ######### [TODO] ros paramで受け取る
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
         rospy.Subscriber("menu", Int8, self.gui_callback)
 
@@ -47,8 +46,10 @@ class GameManager:
         self._box_manager = ShootingBoxManager(self.FIELD)
         self._robot = Robot(self.FIELD)
 
-        posi, _, _ = self._work_manager.get_target_info()
+        self._target_work_info = self._work_manager.get_target_info()
+        self._target_shoot_info = self._box_manager.get_target_info()
 
+        posi, _, _ = self._target_work_info
         self.INIT_X_m = posi[0]
         self.BEFORE_COMMON_AREA_Y_m = posi[1]
 
@@ -60,6 +61,10 @@ class GameManager:
         self._old_my_area = True
         self._is_init_mode = True
         self._game_start = False
+
+    ########################################################################
+    ### subscriber
+    ########################################################################
 
     def gui_callback(self, msg):
         self._gui_msg = msg.data
@@ -84,26 +89,35 @@ class GameManager:
         #     self._robot.auto_mode()
         self._manual_msg = ManualCommand.NONE
 
+    def auto_mode(self):
+        self._robot.control_permission(True)
+        rospy.loginfo("auto mode")
+
+    def manunal_mode(self):
+        self._robot.control_permission(False)
+        rospy.loginfo("manual mode")
+
+    ########################################################################
+    ### control
+    ########################################################################
+
     def pick_actions(self, next_action: PickAction):
         pass_action = False  # 中断されようと、次に進むような動作
         next_target = NextTarget.PICK
-        work_position, is_my_area, target_id = self._work_manager.get_target_info()
+        work_position, is_my_area, target_id = self._target_work_info
+
         if next_action == PickAction.START:
-            pass
+            self._target_work_info = self._work_manager.get_target_info()
+        elif next_action == PickAction.MOVE_Z_SAFE:
+            self._robot.go(z=self.INIT_Z_m)
         elif next_action == PickAction.STOP_BEFORE_COMMON:
             if is_my_area == False and self._old_my_area == True:
-                # if is_my_area is False and self._old_my_area is True:
-                self._old_my_area = is_my_area
                 ### 新たに共通エリアに入る場合
-                self._robot.go(
-                    x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m, z=self.INIT_Z_m
-                )
-                # next_target = NextTarget.WAIT_GO_SIGN
+                self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
                 # self.manunal_mode()
                 pass_action = True
-                # next_action += 1  ## manualに切り替わるが、次は一つ先の動作を行う
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
-            self._robot.go(x=work_position[0], y=work_position[1], z=self.INIT_Z_m)
+            self._robot.go(x=work_position[0], y=work_position[1])
         elif next_action == PickAction.MOVE_Z_ON_WORK:
             if self._robot.has_work():
                 ### じゃがりこ重ねる
@@ -115,13 +129,11 @@ class GameManager:
         elif next_action == PickAction.PICK:
             self._robot.pick()
             pass_action = True
-        elif next_action == PickAction.MOVE_Z_SAFE:
-            self._robot.go(z=self.INIT_Z_m)
         elif next_action == PickAction.END:
             next_target = self._work_manager.pick(target_id)
             having_work = self._robot.has_work()
             if (
-                having_work > self.MAX_HAS_WORK
+                having_work >= self.MAX_HAS_WORK
                 or having_work >= self._box_manager.get_open_num()
             ):
                 ### これ以上つかめなければshoot
@@ -139,12 +151,15 @@ class GameManager:
         pass_action = False
         next_target = NextTarget.SHOOT
         ### 目標シューティング位置計算
-        box_position = self._box_manager.get_target_info()
+        box_position, target_id = self._target_shoot_info
         # box_position = self._shooting_box_transform.get_calibrated_position(
         #     box_position_raw
         # )
         if next_action == ShootAction.START:
-            pass
+            self._target_shoot_info = self._box_manager.get_target_info()
+        elif next_action == ShootAction.MOVE_Z_SAFE:
+            ### 上空へ上がる
+            self._robot.go(z=self.INIT_Z_m)
         elif next_action == ShootAction.MOVE_XY_ABOVE_BOX:
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
@@ -166,9 +181,6 @@ class GameManager:
                 ### 残ったじゃがりこを掴む
                 self._robot.go(z=box_position[2] + self.WORK_HEIGHT_m)
                 self._robot.close_gripper()
-        elif next_action == ShootAction.MOVE_Z_SAFE:
-            ### 上空へ上がる
-            self._robot.go(z=self.INIT_Z_m)
         elif next_action == ShootAction.END:
             self._box_manager.shoot()
             if self._robot.has_work() == 0:
@@ -186,11 +198,13 @@ class GameManager:
         # rospy.loginfo("having work: {}".format(self._robot.has_work()))
         ### stop flagがたった瞬間に途中でも高速でループが終わる
         if next_target == NextTarget.PICK:
+            if self._work_manager.get_remain_num() == 0:
+                return NextTarget.SHOOT, ShootAction.START
             next_target, next_action = self.pick_actions(next_action)
         elif next_target == NextTarget.SHOOT:
             if self._box_manager.get_open_num() == 0:
                 ### もうシュート場所がなければ終了
-                return NextTarget.END
+                return NextTarget.END, PickAction.START
             next_target, next_action = self.shoot_actions(next_action)
 
         return next_target, next_action
@@ -207,14 +221,6 @@ class GameManager:
         self._is_init_mode = False
 
         rospy.loginfo("init action finish")
-
-    def auto_mode(self):
-        self._robot.control_permission(True)
-        rospy.loginfo("auto mode")
-
-    def manunal_mode(self):
-        self._robot.control_permission(False)
-        rospy.loginfo("manual mode")
 
     def end_actions(self):
         # 全部取り終わった

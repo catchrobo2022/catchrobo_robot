@@ -21,7 +21,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     <!-- rviz. RobotModelを表示する -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/rviz_$(arg field).rviz" required="true" />
     <param name="field" value="$(arg field)" />
 
 </launch>

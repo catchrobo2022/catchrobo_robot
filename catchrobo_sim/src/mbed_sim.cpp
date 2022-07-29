@@ -123,7 +123,8 @@ void gripperTimerCallback()
     gripper_manager.getMotorDrivesCommand(control, result);
     gripper_manager.nextStep(MBED2GRIPPER_DT);
     motor_driver_bridge.publish(control);
-    // ROS_INFO_STREAM("gripper");
+    // ROS_INFO_STREAM("gripper id " << control.id <<" p " << control.p_des);
+    // ROS_INFO_STREAM(control);
     if (result == ControlResult::FINISH)
     {
         catchrobo_msgs::ErrorCode error;

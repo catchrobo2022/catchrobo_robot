@@ -148,16 +148,16 @@ class Robot:
 
     ### gripperを開く
     def open_gripper(self, wait=True):
-        if not self._control_permission:
-            return
+        # if not self._control_permission:
+        #     return
         self._motors[3].go(self.OPEN_GRIPPER_RAD)
         if wait:
             self.wait_arrive(3)
             # rospy.sleep(self.SERVO_WAIT_s)
 
     def close_gripper(self, wait=True):
-        if not self._control_permission:
-            return
+        # if not self._control_permission:
+        #     return
         self._motors[3].go(self.CLOSE_GRIPPER_RAD)
         if wait:
             # rospy.sleep(self.SERVO_WAIT_s)
