@@ -101,10 +101,43 @@ class GameManager:
     ### control
     ########################################################################
 
+    def temp(self, next_action: PickAction):
+        work_position, is_my_area, target_id = self._work_manager.get_target_info()
+        if target_id != self._last_target_id:
+            if (
+                next_action == PickAction.MOVE_Z_ON_WORK
+                or next_action == PickAction.OPEN_GRIPPER
+            ):
+                ## MOVE_XY_ABOVE_WORK までは目標値が更新されるので問題なし
+                next_action = PickAction.START
+            elif (
+                next_action == PickAction.MOVE_Z_TO_PICK
+                or next_action == PickAction.PICK
+            ):
+                ## gripperを開けてから目標が消えたら
+                self._robot.go(z=work_position[2])
+                self._robot.close_gripper()
+                self._robot.set_work_num(self._has_work)
+                next_action = PickAction.START
+
+        self._last_target_id = target_id
+
     def pick_actions(self, next_action: PickAction):
         pass_action = False  # 中断されようと、次に進むような動作
         next_target = NextTarget.PICK
         work_position, is_my_area, target_id = self._target_work_info
+
+        if not self._work_manager.is_exist(target_id):
+            ### 目標ワークがGUIで消された場合
+            if (
+                next_action == PickAction.MOVE_Z_TO_PICK
+                or next_action == PickAction.PICK
+            ):
+                ### gripper open後なら、再度掴んでから
+                self._robot.go(z=work_position[2])
+                self._robot.close_gripper()
+            ### リスタート
+            next_action = PickAction.START
 
         if next_action == PickAction.START:
             self._target_work_info = self._work_manager.get_target_info()
@@ -116,6 +149,7 @@ class GameManager:
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
                 # self.manunal_mode()
                 pass_action = True
+            self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
             self._robot.go(x=work_position[0], y=work_position[1])
         elif next_action == PickAction.MOVE_Z_ON_WORK:
@@ -123,12 +157,16 @@ class GameManager:
                 ### じゃがりこ重ねる
                 self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
         elif next_action == PickAction.OPEN_GRIPPER:
+            # self._has_work = self._robot.has_work()
+            # self._robot.set_work_num(0)
             self._robot.open_gripper()
         elif next_action == PickAction.MOVE_Z_TO_PICK:
             self._robot.go(z=work_position[2])
         elif next_action == PickAction.PICK:
             self._robot.pick()
             pass_action = True
+            # self._robot.close_gripper()
+            # self._robot.set_work_num(self._has_work + 1)
         elif next_action == PickAction.END:
             next_target = self._work_manager.pick(target_id)
             having_work = self._robot.has_work()
@@ -138,7 +176,6 @@ class GameManager:
             ):
                 ### これ以上つかめなければshoot
                 next_target = NextTarget.SHOOT
-            self._old_my_area = is_my_area
             next_action = 0  # 次はSTARTから始まる
 
         if self._robot.check_permission() or pass_action:
@@ -155,6 +192,17 @@ class GameManager:
         # box_position = self._shooting_box_transform.get_calibrated_position(
         #     box_position_raw
         # )
+
+        if self._box_manager.is_exist(target_id):
+            ### 目標がGUIで消された場合
+            # if (
+            #     next_action == ShootAction.SHOOT
+            #     or next_action == ShootAction.PICK_WORK_ON_WORK
+            # ):
+            #     ### gripper open後なら、再度掴んでから
+            ### リスタート
+            next_action = PickAction.START
+
         if next_action == ShootAction.START:
             self._target_shoot_info = self._box_manager.get_target_info()
         elif next_action == ShootAction.MOVE_Z_SAFE:
@@ -174,6 +222,9 @@ class GameManager:
             # self._robot.peg_in_hole()
             # shoot
         elif next_action == ShootAction.SHOOT:
+            # self._has_work = self._robot.has_work() - 1
+            # self._robot.open_gripper()
+            # self._robot.set_work_num(0)
             self._robot.shoot()
             pass_action = True
         elif next_action == ShootAction.PICK_WORK_ON_WORK:
@@ -181,8 +232,9 @@ class GameManager:
                 ### 残ったじゃがりこを掴む
                 self._robot.go(z=box_position[2] + self.WORK_HEIGHT_m)
                 self._robot.close_gripper()
+                # self._robot.set_work_num(self._has_work + 1)
         elif next_action == ShootAction.END:
-            self._box_manager.shoot()
+            self._box_manager.shoot(target_id)
             if self._robot.has_work() == 0:
                 ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
                 next_target = NextTarget.PICK

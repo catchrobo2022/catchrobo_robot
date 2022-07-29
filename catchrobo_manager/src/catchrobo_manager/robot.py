@@ -204,13 +204,19 @@ class Robot:
     def has_work(self):
         return self._has_work
 
+    def add_work(self, val: int):
+        self._has_work += val
+
+    def set_work_num(self, num: int):
+        self._has_work = num
+
     def pick(self):
         self.close_gripper()
-        self._has_work += 1
+        self.add_work(1)
 
     def shoot(self):
         self.open_gripper()
-        self._has_work -= 1
+        self.add_work(-1)
 
     def set_origin(self):
         rospy.loginfo("set origin start")
