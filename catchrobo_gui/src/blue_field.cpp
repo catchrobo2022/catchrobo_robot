@@ -69,7 +69,7 @@ Blue::Blue(QWidget *parent) :
     pub_arrow.publish(arrow);
 
     array_obj.data.resize(obj_num);
-    array_gl.data.resize(obj_num);
+    array_gl.data.resize(obj_gl);
     /*
     for(int i=0; i< obj_num;++i){
       this->marker_obj(i, 0);
