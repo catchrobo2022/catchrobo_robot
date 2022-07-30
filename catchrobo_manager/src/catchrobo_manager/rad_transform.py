@@ -19,6 +19,12 @@ class RadTransform:
             1,
         ]
 
+    def rad2robot_m(self, id, position):
+        ret = position * self._pulley_radius[id]
+        if id == 1:
+            ret *= 2
+        return ret
+
     #### robot座標系での[m] -> motor回転角度[rad]に変換. gripperは入力をそのまま返す
     def robot_m2rad(self, motor_id, position):
         ret = position / self._pulley_radius[motor_id]
