@@ -17,7 +17,18 @@ if __name__ == "__main__":
     rospy.sleep(1)  # rosが起動するのを待つ
     robot.enable()
     # rospy.sleep(2)
-    robot.start()
+    robot.control_permission(True)
+
+    robot.go(z=0.12)
+
+    num = 100
+    dts = []
+    t = rospy.Time.now()
+    for i in range(num):
+        robot.go(z=0.12)
+
+    dt = rospy.Time.now() - t
+    rospy.loginfo(dt)
     rospy.sleep(1)
     # robot.go(z=0.18, wait=True)
     # robot.go(x=1.081, y=-0.495, wait=True)

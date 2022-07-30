@@ -21,6 +21,7 @@ from std_msgs.msg import Int8
 
 import datetime
 import pandas as pd
+import numpy as np
 
 
 class GameManager:
@@ -33,6 +34,8 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
+        self.SHOOT_HEIGHT_m = 0.01
+        self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
         self.INIT_Y_m = init_y_m_red * self.FIELD_SIGN
@@ -153,7 +156,7 @@ class GameManager:
             if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
-                # self.manunal_mode()
+                self.manunal_mode()
                 pass_action = True
             self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
@@ -217,12 +220,14 @@ class GameManager:
         elif next_action == ShootAction.MOVE_XY_ABOVE_BOX:
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
+        elif next_action == ShootAction.OPEN_A_BIT:
+            self._robot.gripper(self.OPEN_A_BIT_RAD)
         elif next_action == ShootAction.MOVE_Z_TO_SHOOT:
             ### 下ろす
-            self._robot.go(z=box_position[2])
+            self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
         elif next_action == ShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
-            # self.manunal_mode()
+            self.manunal_mode()
             pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
@@ -286,6 +291,7 @@ class GameManager:
         self._robot.go(z=self.INIT_Z_m)
         # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
         self.manunal_mode()
+        self.savelog("")
 
         rospy.loginfo("game_manager spin end")
 
@@ -320,7 +326,7 @@ class GameManager:
                 break
         self.end_actions()
 
-    def savelog(self, other_str):
+    def savelog(self, other_str: str):
         rospack = rospkg.RosPack()
         # get the file path for rospy_tutorials
         pkg_path = rospack.get_path("catchrobo_manager")

@@ -17,16 +17,18 @@ class Radius2Meter:
         name_space = "radius2meter/"
         self._meter_msg.name = rospy.get_param(name_space + "joint_names")
 
-        # self.WORLD_FRAME = rospy.get_param(name_space + "world_frame")
-        # robot_origin_m = rospy.get_param("robot/robot_origin_m")
-        # self._world_transform = WorldRobotTransform(robot_origin_m)
+        self.WORLD_FRAME = rospy.get_param(name_space + "world_frame")
+        robot_origin_m = rospy.get_param("robot/robot_origin_m")
 
-        # world_position_topic = rospy.get_param(name_space + "world_position_topic")
-        # self._pub_world_position = rospy.Publisher(
-        #     world_position_topic, PoseStamped, queue_size=1
-        # )
+        self.FIELD = rospy.get_param("field")
+        self._world_transform = WorldRobotTransform(self.FIELD, robot_origin_m)
 
-        my_joint_state = rospy.get_param("joint_state_publisher/source_list")
+        world_position_topic = rospy.get_param(name_space + "world_position_topic")
+        self._pub_world_position = rospy.Publisher(
+            world_position_topic, PoseStamped, queue_size=1
+        )
+
+        my_joint_state = rospy.get_param("joint_state_publisher/source_list")[0]
         self._pub = rospy.Publisher(my_joint_state, JointState, queue_size=1)
         rospy.Subscriber("joint_rad", Float32MultiArray, self.callback)
 
@@ -66,26 +68,28 @@ class Radius2Meter:
 
         self._pub.publish(self._meter_msg)
 
-    # def pub_world_position(self, msg: Float32MultiArray):
+    def pub_world_position(self, msg: Float32MultiArray):
 
-    #     robot_m = [0] * 3
-    #     for i in range(3):
-    #         theta = msg.data[i]
-    #         robot_m[i] = self._transform.robot_m2rad(i, theta)
-    #     world_m = self._world_transform.robot2world(robot_m)
+        robot_m = [0] * 3
+        for i in range(3):
+            theta = msg.data[i]
+            robot_m[i] = self._transform.robot_m2rad(i, theta)
+        world_m = self._world_transform.robot2world(robot_m)
 
-    #     pose_stamped = PoseStamped()
-    #     pose_stamped.header.frame_id = self.WORLD_FRAME
-    #     pose_stamped.header.stamp = rospy.Time.now()
-    #     pose_stamped.pose.orientation.w = 1
+        pose_stamped = PoseStamped()
+        pose_stamped.header.frame_id = self.WORLD_FRAME
+        pose_stamped.header.stamp = rospy.Time.now()
+        pose_stamped.pose.orientation.w = 1
 
-    #     pose_stamped.pose.position.x = world_m[0]
-    #     pose_stamped.pose.position.y = world_m[1]
-    #     pose_stamped.pose.position.z = world_m[2]
-    #     pose_stamped.pose.orientation.w = 1
+        pose_stamped.pose.position.x = world_m[0]
+        pose_stamped.pose.position.y = world_m[1]
+        pose_stamped.pose.position.z = world_m[2]
+        pose_stamped.pose.orientation.w = 1
+        self._pub_world_position.publish(pose_stamped)
 
     def callback(self, msg):
         self.pub2rviz(msg)
+        self.pub_world_position(msg)
 
 
 if __name__ == "__main__":

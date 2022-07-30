@@ -9,7 +9,7 @@ from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd, ErrorCode
 
 class TimeTest:
     def __init__(self) -> None:
-
+        self._dt = []
         self._pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
         self._pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
         rospy.Subscriber("error", ErrorCode, self.error_callback)
@@ -22,6 +22,7 @@ class TimeTest:
             if id == self._target_id:
                 t = rospy.Time.now()
                 dt = t - self._t
+                self._dt.append(dt)
                 rospy.loginfo(dt.to_sec())
 
     def send_enable_onoff(self, on: bool) -> None:

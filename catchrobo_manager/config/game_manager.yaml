@@ -6,7 +6,7 @@ game_manager:
 
 ros_cmd:
   velocity_limit_scale: 1
-  current_limit_scale : [0.5, 0.4, 1, 1]
+  current_limit_scale : [0.2, 0.2, 0.7, 1]
   KT_OUT: 0.08
   work_mass: 0.06
   # acceleration_limit_scale: 1
@@ -15,9 +15,7 @@ pulley:
   pitch: 0.002
   teeth: 54 
 
-show_for_rviz:
+radius2meter:
   joint_names: ["arm/joint1","arm/joint2","arm/joint3","gripper/joint1"]
-
-world_position_node:
   world_frame: "world"
   world_position_topic: "pose_stamped"

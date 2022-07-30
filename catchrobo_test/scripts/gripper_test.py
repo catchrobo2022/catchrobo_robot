@@ -14,14 +14,18 @@ from catchrobo_msgs.msg import (
     ControlStruct,
 )
 
+import numpy as np
+
 
 class TimeTest:
     def __init__(self) -> None:
         self._robot = Robot("blue")
         rospy.sleep(1)  # rosが起動するのを待つ
-        self._robot.close_gripper()
-        rospy.sleep(5)
-        self._robot.open_gripper()
+        rospy.loginfo("open")
+        # self._robot.close_()
+        # rospy.sleep(5)
+        rospy.loginfo("close")
+        self._robot.gripper(np.deg2rad(10))
         rospy.sleep(5)
 
 

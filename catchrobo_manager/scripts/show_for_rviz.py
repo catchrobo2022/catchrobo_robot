@@ -13,7 +13,7 @@ class Radius2Meter:
     def __init__(self):
         self._transform = RadTransform()
         self._meter_msg = JointState()
-        self._meter_msg.name = rospy.get_param("show_for_rviz/joint_names")
+        self._meter_msg.name = rospy.get_param("radius2meter/joint_names")
         my_joint_state = rospy.get_param("joint_state_publisher/source_list")[0]
         self._pub = rospy.Publisher(my_joint_state, JointState, queue_size=1)
         self._meter_msg.position = [0] * len(self._meter_msg.name)

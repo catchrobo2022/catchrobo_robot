@@ -170,7 +170,6 @@ class Robot:
         peg_cmd = self._ros_cmd_template.generate_peg_in_hole_command(
             current_state_robot
         )
-        rospy.loginfo(peg_cmd)
         self._pub_peg_in_hole_cmd.publish(peg_cmd)
         for i in range(3):
             self._motors[i].direct_control(current_state_robot[i], 0, self._has_work)
@@ -252,3 +251,9 @@ class Robot:
 
     def check_permission(self):
         return self._control_permission
+
+    def gripper(self, rad: float, wait=True):
+        self._motors[3].go(rad)
+        if wait:
+            # rospy.sleep(self.SERVO_WAIT_s)
+            self.wait_arrive(3)
