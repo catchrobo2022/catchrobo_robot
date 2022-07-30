@@ -5,9 +5,10 @@
 from catchrobo_manager.radius2meter import Radius2Meter
 
 import rospy
-from sensor_msgs.msg import JointState
-from std_msgs.msg import Float32MultiArray
-from geometry_msgs.msg import PoseStamped
+
+# from sensor_msgs.msg import JointState
+# from std_msgs.msg import Float32MultiArray
+# from geometry_msgs.msg import PoseStamped
 
 
 # class Radius2Meter:

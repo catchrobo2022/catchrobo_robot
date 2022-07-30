@@ -15,7 +15,7 @@ if __name__ == "__main__":
     rospy.init_node("test_pub")
 
     template = RadTransform()
-    rospy.loginfo(template.rad2rviz_joint_state(2, 7.853981634))
+    rospy.loginfo(template.rad2rviz_joint_state(0, 0.01))
     # robot = Robot("blue")
     # rospy.sleep(1)  # rosが起動するのを待つ
     # robot.enable()

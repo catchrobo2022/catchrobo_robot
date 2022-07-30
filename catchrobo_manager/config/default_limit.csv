@@ -10,4 +10,4 @@ mass,7.9,6.0,2.0,0
 I_max,8,8,8,1000000
 velocity_ctrl_kp,5,5,5,5
 velocity_ctrl_kd,0.05,0.05,0.05,0.05
-origin_position_rad,0.0, 25.55452913,0,0
+origin_position_rad,78.68526044, 25.55452913,0,0
