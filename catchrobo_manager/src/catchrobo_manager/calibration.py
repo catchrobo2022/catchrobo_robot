@@ -18,11 +18,19 @@ class Calibration:
         self.FIELD = rospy.get_param("field")
         name_space = "calibration/"
         self.BASE_FRAME = rospy.get_param(name_space + "base_frame")
-        self.SHOOTING_BOX_FRAME = rospy.get_param(name_space + "shooting_box_frame")
+        self.SHOOTING_BOX_REAL_FRAME = rospy.get_param(
+            name_space + "shooting_box_real_frame")
+        self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
+            name_space + "shooting_box_ideal_frame")
+    
         shooting_box_center_red = rospy.get_param(
             name_space + "shooting_box_center_red")
         self._br = tf2_ros.StaticTransformBroadcaster()
-        self.update_tf(shooting_box_center_red[0], shooting_box_center_red[1],0)
+        self.update_tf("shooting_box_ideal_frame",
+                       shooting_box_center_red[0], shooting_box_center_red[1], 0)
+        rospy.sleep(0.5)
+        self.update_tf(self.SHOOTING_BOX_REAL_FRAME,
+                       shooting_box_center_red[0] + 0.1, shooting_box_center_red[1] + 0.3, 0)
         self._gui_msg = CalibrationMenu.NONE
 
         self._edges = [None] * 4
@@ -53,11 +61,11 @@ class Calibration:
         ### [TODO] 四角形(矩形)抽出. 中心位置、回転を取得
         pass
 
-    def update_tf(self, x_m, y_m, theta):
+    def update_tf(self, frame_id, x_m, y_m, theta):
         t = geometry_msgs.msg.TransformStamped()
         t.header.stamp = rospy.Time.now()
         t.header.frame_id = self.BASE_FRAME
-        t.child_frame_id = self.SHOOTING_BOX_FRAME
+        t.child_frame_id = frame_id
 
         t.transform.translation.x = x_m
         t.transform.translation.y = y_m
@@ -69,7 +77,6 @@ class Calibration:
         t.transform.rotation.w = q[3]
 
         self._br.sendTransform(t)
-
 
 if __name__ == "__main__":
     rospy.init_node("calibration")
