@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import rospy
 from catchrobo_manual.manual_command import ManualCommand
 from catchrobo_manager.next_action_enum import (
     NextTarget,
@@ -15,8 +14,13 @@ from catchrobo_manager.robot import Robot
 from catchrobo_manager.gui_menu_enum import GuiMenu
 from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 
+import rospkg
+import rospy
 
 from std_msgs.msg import Int8
+
+import datetime
+import pandas as pd
 
 
 class GameManager:
@@ -316,8 +320,25 @@ class GameManager:
                 break
         self.end_actions()
 
-    def save_log(self):
-        pass
+    def savelog(self, other_str):
+        rospack = rospkg.RosPack()
+        # get the file path for rospy_tutorials
+        pkg_path = rospack.get_path("catchrobo_manager")
+
+        data_dir = pkg_path + "/log/"
+        now = datetime.datetime.now()
+        filename = data_dir + now.strftime("%Y%m%d_%H%M%S") + other_str
+        df = pd.DataFrame(
+            data=self._log,
+            columns=[
+                "time_s",
+                "dt_s",
+                "pick_or_shoot",
+                "action_number",
+            ],
+        )
+        df.to_csv(filename + ".csv", index=True)
+        rospy.loginfo("save " + filename)
 
 
 if __name__ == "__main__":
