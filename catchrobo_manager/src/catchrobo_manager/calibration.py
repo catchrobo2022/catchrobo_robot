@@ -19,21 +19,34 @@ class Calibration:
         name_space = "calibration/"
         self.BASE_FRAME = rospy.get_param(name_space + "base_frame")
         self.SHOOTING_BOX_REAL_FRAME = rospy.get_param(
-            name_space + "shooting_box_real_frame")
+            name_space + "shooting_box_real_frame"
+        )
         self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
-            name_space + "shooting_box_ideal_frame")
-    
+            name_space + "shooting_box_ideal_frame"
+        )
+
         shooting_box_center_red = rospy.get_param(
-            name_space + "shooting_box_center_red")
+            name_space + "shooting_box_center_red"
+        )
         self._br = tf2_ros.StaticTransformBroadcaster()
-        self.update_tf("shooting_box_ideal_frame",
-                       shooting_box_center_red[0], shooting_box_center_red[1], 0)
+        self.update_tf(
+            "shooting_box_ideal_frame",
+            shooting_box_center_red[0],
+            shooting_box_center_red[1],
+            0,
+        )
         rospy.sleep(0.5)
-        self.update_tf(self.SHOOTING_BOX_REAL_FRAME,
-                       shooting_box_center_red[0] + 0.1, shooting_box_center_red[1] + 0.3, 0)
+        self.update_tf(
+            self.SHOOTING_BOX_REAL_FRAME,
+            shooting_box_center_red[0] + 0.1,
+            shooting_box_center_red[1] + 0.3,
+            0,
+        )
         self._gui_msg = CalibrationMenu.NONE
 
         self._edges = [None] * 4
+
+        world_position_topic = rospy.get_param("radius2meter/world_position_topic")
 
         rospy.Subscriber("calibration_menu", Int8, self.gui_callback, queue_size=3)
 
@@ -77,6 +90,7 @@ class Calibration:
         t.transform.rotation.w = q[3]
 
         self._br.sendTransform(t)
+
 
 if __name__ == "__main__":
     rospy.init_node("calibration")
