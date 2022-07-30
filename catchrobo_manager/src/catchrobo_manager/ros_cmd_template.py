@@ -23,6 +23,7 @@ class RosCmdTemplate:
             name_space + "velocity_limit_scale"
         )
         self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
+        self._current_limit_scale = rospy.get_param(name_space + "current_limit_scale")
         self.GRAVITY = 9.80665
 
         self._rad_transform = RadTransform()
@@ -103,7 +104,7 @@ class RosCmdTemplate:
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
         ### 動作計画で想定する最大電流
-        i_max = self._datas.loc["I_max"][id]
+        i_max = self._datas.loc["I_max"][id] * self._current_limit_scale[id]
 
         ### 加速度limitの算出
         if id == 3:

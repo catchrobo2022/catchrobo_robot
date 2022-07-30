@@ -46,7 +46,7 @@ class ShootingBoxManager:
             self._database.updateState(i, self.EXIST_KEY, bool(val))
 
     def is_exist(self, id):
-        self._database.isExist(id)
+        return self._database.isExist(id)
 
 
 if __name__ == "__main__":

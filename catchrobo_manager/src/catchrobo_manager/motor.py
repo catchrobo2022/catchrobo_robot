@@ -35,7 +35,7 @@ class Motor:
             self._id, MyRosCmd.POSITION_CTRL_MODE, target_position, 0, has_work_num
         )
         self._pub_ros_cmd.publish(ros_command)
-        print(ros_command)
+        # print(ros_command)
 
     def direct_control(self, position, velocity, has_work_num):
         self._running = True

@@ -136,3 +136,7 @@ rosservice call /rosbag_play/pause_playback "data: false"
 
 ### 台形加速アルゴリズムについて
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
+
+
+### TODO
+- GUI　ボックス　配列が多い理由

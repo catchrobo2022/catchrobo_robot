@@ -7,7 +7,7 @@ position_ctrl_kp,5,20,10,5
 position_ctrl_kd,0.05,0.05,0.05,0.05
 inertia,0.00013283903,0.00013283903,0.00013283903,0
 mass,7.9,6.0,2.0,0
-I_max,4,3.2,8,1000000
+I_max,8,8,8,1000000
 velocity_ctrl_kp,5,5,5,5
 velocity_ctrl_kd,0.05,0.05,0.05,0.05
 origin_position_rad,0.0, 25.67088441,0,0

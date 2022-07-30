@@ -61,6 +61,7 @@ class GameManager:
         self._old_my_area = True
         self._is_init_mode = True
         self._game_start = False
+        self._log = []
 
     ########################################################################
     ### subscriber
@@ -75,6 +76,7 @@ class GameManager:
         elif self._gui_msg == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
+            self._game_start_t = rospy.Time.now()
 
         self._gui_msg = GuiMenu.NONE
 
@@ -192,8 +194,8 @@ class GameManager:
         # box_position = self._shooting_box_transform.get_calibrated_position(
         #     box_position_raw
         # )
-
         if self._box_manager.is_exist(target_id):
+
             ### 目標がGUIで消された場合
             # if (
             #     next_action == ShootAction.SHOOT
@@ -296,12 +298,26 @@ class GameManager:
             ):
                 ### init中 またはmanual モード中
                 self._rate.sleep()
+                old_t = rospy.Time.now()
                 continue
-
             next_target, next_action = self.main_actions(next_target, next_action)
+            t = rospy.Time.now()
+            dt = t - old_t
+            old_t = t
+            log = [
+                (t - self._game_start_t).to_sec(),
+                dt.to_sec(),
+                next_target,
+                next_action,
+            ]
+            rospy.loginfo(log)
+            self._log.append(log)
             if next_target == NextTarget.END:
                 break
         self.end_actions()
+
+    def save_log(self):
+        pass
 
 
 if __name__ == "__main__":
