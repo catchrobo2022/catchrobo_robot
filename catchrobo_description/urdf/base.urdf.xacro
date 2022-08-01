@@ -5,6 +5,10 @@
   <xacro:arg name="field" default=""/>
   <xacro:property name="field" value="$(arg field)" />
 
+  <!-- Dependencies -->
+  <xacro:include filename="$(find catchrobo_description)/urdf/common.xacro" />
+  <xacro:include filename="$(find catchrobo_description)/urdf/work.urdf.xacro" />
+
   <!-- Constants -->
   <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
   <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
@@ -19,66 +23,282 @@
     </joint>
 
     <link name="base/base_link">
-      <xacro:if value="${field=='blue'}">
-        <visual>
-          <geometry>
-            <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_blue.dae" scale="${visual_mesh_scale}"/>
-          </geometry>
-        </visual>
-        <collision>
-          <geometry>
-            <mesh filename="package://catchrobo_description/mesh/base/STL/base_full_without_box_blue.stl" scale="${collision_mesh_scale}"/>
-          </geometry>
-        </collision>
-      </xacro:if>
-      <xacro:if value="${field=='red'}">
-        <visual>
-          <geometry>
-            <mesh filename="package://catchrobo_description/mesh/base/DAE/base_full_without_box_red.dae" scale="${visual_mesh_scale}"/>
-          </geometry>
-        </visual>
-        <collision>
-          <geometry>
-            <mesh filename="package://catchrobo_description/mesh/base/STL/base_full_without_box_red.stl" scale="${collision_mesh_scale}"/>
-          </geometry>
-        </collision>
-      </xacro:if>
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/base.dae" scale="${visual_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/base.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
     </link>
 
+
+    <!-- robot tip -->
     <joint name="base/link_tip" type="fixed">
       <parent link="base/base_link"/>
       <child link="base/link_tip"/>
       <xacro:if value="${field=='blue'}">
-        <origin xyz="0.675 -0.845 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.6767 -0.845 0.00445" rpy="0 0 0"/>
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="0.675 0.845 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.6767 0.845 0.00445" rpy="0 0 0"/>
       </xacro:if>
     </joint>
     <link name="base/link_tip"/>
 
+
+    <!-- shooting box tip -->
     <joint name="base/shooter_tip" type="planar">
       <parent link="base/base_link"/>
       <child link="base/shooter"/>
       <xacro:if value="${field=='blue'}">
-        <origin xyz="1.325 -1.125 0" rpy="0 0 0"/>
+        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0"/>
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="1.325 1.125 0" rpy="0 0 0"/>
+        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0"/>
       </xacro:if>
     </joint>
     <link name="base/shooter">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/box.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}"/>
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/box.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
+
+    <!-- fixed shooting box tip -->
+    <joint name="base/fixed_shooter_tip" type="fixed">
+      <parent link="base/base_link"/>
+      <child link="base/fixed_shooter"/>
+      <xacro:if value="${field=='blue'}">
+        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0"/>
+      </xacro:if>
+      <xacro:if value="${field=='red'}">
+        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0"/>
+      </xacro:if>
+    </joint>
+    <link name="base/fixed_shooter">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+
+    <!-- work on common area -->
+    <xacro:work prefix="work0" parent="base/base_link">
+      <origin xyz="0.1166 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work1" parent="base/base_link">
+      <origin xyz="0.2566 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work2" parent="base/base_link">
+      <origin xyz="0.3966 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work3" parent="base/base_link">
+      <origin xyz="0.5366 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work4" parent="base/base_link">
+      <origin xyz="0.6766 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work5" parent="base/base_link">
+      <origin xyz="0.8166 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work6" parent="base/base_link">
+      <origin xyz="0.9566 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work7" parent="base/base_link">
+      <origin xyz="1.0966 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="work8" parent="base/base_link">
+      <origin xyz="1.2366 0 0.031" rpy="0 0 0" />
+    </xacro:work>
+
+    
+    <!-- work on blue field -->
+    <xacro:if value="${field=='blue'}">
+      <xacro:work prefix="work9" parent="base/base_link">
+        <origin xyz="0.2767 -0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work10" parent="base/base_link">
+        <origin xyz="0.4767 -0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work11" parent="base/base_link">
+        <origin xyz="0.6767 -0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work12" parent="base/base_link">
+        <origin xyz="0.8767 -0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work13" parent="base/base_link">
+        <origin xyz="1.0767 -0.297 0" rpy="0 0 0" />
+      </xacro:work>
+
+      <xacro:work prefix="work14" parent="base/base_link">
+        <origin xyz="0.1767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work15" parent="base/base_link">
+        <origin xyz="0.3767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work16" parent="base/base_link">
+        <origin xyz="0.5767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work17" parent="base/base_link">
+        <origin xyz="0.7767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work18" parent="base/base_link">
+        <origin xyz="0.9767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work19" parent="base/base_link">
+        <origin xyz="1.1767 -0.397 0" rpy="0 0 0" />
+      </xacro:work>
+
+      <xacro:work prefix="work20" parent="base/base_link">
+        <origin xyz="0.2767 -0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work21" parent="base/base_link">
+        <origin xyz="0.4767 -0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work22" parent="base/base_link">
+        <origin xyz="0.6767 -0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work23" parent="base/base_link">
+        <origin xyz="0.8767 -0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work24" parent="base/base_link">
+        <origin xyz="1.0767 -0.497 0" rpy="0 0 0" />
+      </xacro:work>
+    </xacro:if>
+
+
+    <!-- work on red field -->
+    <xacro:if value="${field=='red'}">
+      <xacro:work prefix="work9" parent="base/base_link">
+        <origin xyz="0.2767 0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work10" parent="base/base_link">
+        <origin xyz="0.4767 0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work11" parent="base/base_link">
+        <origin xyz="0.6767 0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work12" parent="base/base_link">
+        <origin xyz="0.8767 0.297 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work13" parent="base/base_link">
+        <origin xyz="1.0767 0.297 0" rpy="0 0 0" />
+      </xacro:work>
+
+      <xacro:work prefix="work14" parent="base/base_link">
+        <origin xyz="0.1767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work15" parent="base/base_link">
+        <origin xyz="0.3767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work16" parent="base/base_link">
+        <origin xyz="0.5767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work17" parent="base/base_link">
+        <origin xyz="0.7767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work18" parent="base/base_link">
+        <origin xyz="0.9767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work19" parent="base/base_link">
+        <origin xyz="1.1767 0.397 0" rpy="0 0 0" />
+      </xacro:work>
+
+      <xacro:work prefix="work20" parent="base/base_link">
+        <origin xyz="0.2767 0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work21" parent="base/base_link">
+        <origin xyz="0.4767 0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work22" parent="base/base_link">
+        <origin xyz="0.6767 0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work23" parent="base/base_link">
+        <origin xyz="0.8767 0.497 0" rpy="0 0 0" />
+      </xacro:work>
+      <xacro:work prefix="work24" parent="base/base_link">
+        <origin xyz="1.0767 0.497 0" rpy="0 0 0" />
+      </xacro:work>
+    </xacro:if>
+
+
+    <!-- work in shooting box -->
+    <xacro:work prefix="shot_work0" parent="base/shooter">
+      <origin xyz="-0.1 0.25 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work1" parent="base/shooter">
+      <origin xyz="0 0.25 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work2" parent="base/shooter">
+      <origin xyz="0.1 0.25 0" rpy="0 0 0" />
+    </xacro:work>
+
+    <xacro:work prefix="shot_work3" parent="base/shooter">
+      <origin xyz="-0.1 0.15 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work4" parent="base/shooter">
+      <origin xyz="0 0.15 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work5" parent="base/shooter">
+      <origin xyz="0.1 0.15 0" rpy="0 0 0" />
+    </xacro:work>
+
+    <xacro:work prefix="shot_work6" parent="base/shooter">
+      <origin xyz="-0.1 0.05 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work7" parent="base/shooter">
+      <origin xyz="0 0.05 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work8" parent="base/shooter">
+      <origin xyz="0.1 0.05 0" rpy="0 0 0" />
+    </xacro:work>
+
+    <xacro:work prefix="shot_work9" parent="base/shooter">
+      <origin xyz="-0.1 -0.05 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work10" parent="base/shooter">
+      <origin xyz="0 -0.05 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work11" parent="base/shooter">
+      <origin xyz="0.1 -0.05 0" rpy="0 0 0" />
+    </xacro:work>
+
+    <xacro:work prefix="shot_work12" parent="base/shooter">
+      <origin xyz="-0.1 -0.15 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work13" parent="base/shooter">
+      <origin xyz="0 -0.15 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work14" parent="base/shooter">
+      <origin xyz="0.1 -0.15 0" rpy="0 0 0" />
+    </xacro:work>
+
+    <xacro:work prefix="shot_work15" parent="base/shooter">
+      <origin xyz="-0.1 -0.25 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work16" parent="base/shooter">
+      <origin xyz="0 -0.25 0" rpy="0 0 0" />
+    </xacro:work>
+    <xacro:work prefix="shot_work17" parent="base/shooter">
+      <origin xyz="0.1 -0.25 0" rpy="0 0 0" />
+    </xacro:work>
 
   </xacro:macro>
 </robot>
