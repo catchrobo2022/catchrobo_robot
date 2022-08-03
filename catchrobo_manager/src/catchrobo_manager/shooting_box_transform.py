@@ -7,6 +7,8 @@ import tf2_ros
 import tf2_msgs
 import geometry_msgs.msg
 
+from catchrobo_manager.calc_tf_diff import CalcTfDiff
+
 class ShootingBoxTransform:
     def __init__(self, shooting_box_center_raw):
         self._shooting_box_center_raw_np = np.array(shooting_box_center_raw)
@@ -21,8 +23,10 @@ class ShootingBoxTransform:
         self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
             name_space + "shooting_box_ideal_frame")
 
-    def get_calibrated_position(self, position_raw):
-        ### position_rawとシューティングボックス中央からの相対座標を出す
+        self._calc_tf_diff=CalcTfDiff()
+
+    def get_calibrated_position(self, position_raw):    
+        ## position_rawとシューティングボックス中央からの相対座標を出す
         position_raw_np = np.array(position_raw)
         position_on_shooting_box_frame = (
             position_raw_np - self._shooting_box_center_raw_np
@@ -46,11 +50,12 @@ class ShootingBoxTransform:
         # tfm = tf2_msgs.msg.TFMessage([t])
         # self.pub_tf.publish(tfm)
 
+        ### 実際のshooting_boxの位置からpositionまでのtransform
         ### world座標にlookup transform
         tf1 = self.SHOOTING_BOX_REAL_FRAME
         tf2 = self.SHOOTING_BOX_IDEAL_FRAME
         try:
-            trans = self._tfBuffer.lookup_transform(
+            shooting_box_frame_diff = self._tfBuffer.lookup_transform(
                 tf1, tf2, rospy.Time.now(), rospy.Duration(10.0)
             )
         except (
@@ -61,11 +66,21 @@ class ShootingBoxTransform:
             ### [TODO] error処理。現状どうしようもない
             return None
 
+        
+        # shooting_box_frame = self._calc_tf_diff.transform_diff(tf2, tf1)
+        
+
+        # real shootingboxからposition
+        shooting_box_frame = [
+            shooting_box_frame_diff.translation.x, shooting_box_frame_diff.translation.y, shooting_box_frame_diff.translation.z]
+
+        trans = position_on_shooting_box_frame-shooting_box_frame
+
         ### world座標を[x,y,z]のlistにして送信
         ret = [
-            trans.transform.translation.x,
-            trans.transform.translation.y,
-            trans.transform.translation.z,
+            trans[0],
+            trans[1],
+            trans[2],
         ]
         return ret
 
