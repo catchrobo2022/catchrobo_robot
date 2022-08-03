@@ -6,6 +6,7 @@ z軸に関して、
 じゃがりこをつかむ位置(共通エリア)　93.5mm
 シュータの位置が 63.5-0.5=63mm
 フィールドはシューターより0.5mm高い
+上記のは変更、うそ
 
 
 ファイルに関して
@@ -20,3 +21,10 @@ update file
 0702
 blue_jagarico.csv
 red_jagarico.csv
+
+0802
+xy座標の修正
+blue_jagarico.csv
+red_jagarico.csv
+blue_shoot.csv
+red_shoot.csv

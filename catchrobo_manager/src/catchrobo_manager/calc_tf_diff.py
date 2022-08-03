@@ -8,9 +8,10 @@ import rospy
 import tf
 import geometry_msgs
 
-
-
 class CalcTfDiff:
+    def __init__(self):
+        pass
+
     # Transform to homogeneous matrix
     def transform2homogeneousM(self,tfobj):
         # Quat to euler sxyz とあるが， XYZWの順番で良い。ちょっとわかりにくくないか？
