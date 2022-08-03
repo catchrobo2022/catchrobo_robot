@@ -220,8 +220,8 @@ class GameManager:
         elif next_action == ShootAction.MOVE_XY_ABOVE_BOX:
             ### 穴上へxy移動
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
-        elif next_action == ShootAction.OPEN_A_BIT:
-            self._robot.gripper(self.OPEN_A_BIT_RAD)
+        # elif next_action == ShootAction.OPEN_A_BIT:
+        #     self._robot.gripper(self.OPEN_A_BIT_RAD)
         elif next_action == ShootAction.MOVE_Z_TO_SHOOT:
             ### 下ろす
             self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
@@ -291,7 +291,6 @@ class GameManager:
         self._robot.go(z=self.INIT_Z_m)
         # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
         self.manunal_mode()
-        self.savelog("")
 
         rospy.loginfo("game_manager spin end")
 
@@ -323,17 +322,26 @@ class GameManager:
             rospy.loginfo(log)
             self._log.append(log)
             if next_target == NextTarget.END:
+                self.end_actions()
                 break
-        self.end_actions()
 
-    def savelog(self, other_str: str):
+        is_sim = rospy.get_param("sim")
+        if is_sim:
+            name = "sim/"
+            if next_target != NextTarget.END:
+                return
+        else:
+            name = "real/"
+        self.savelog(name)
+
+    def savelog(self, file_name: str = ""):
         rospack = rospkg.RosPack()
         # get the file path for rospy_tutorials
         pkg_path = rospack.get_path("catchrobo_manager")
 
-        data_dir = pkg_path + "/log/"
+        data_dir = pkg_path + "/log/" + file_name
         now = datetime.datetime.now()
-        filename = data_dir + now.strftime("%Y%m%d_%H%M%S") + other_str
+        filename = data_dir + now.strftime("%Y%m%d_%H%M%S")
         df = pd.DataFrame(
             data=self._log,
             columns=[

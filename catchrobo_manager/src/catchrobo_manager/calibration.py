@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from catchrobo_manager.gui_menu_enum import CalibrationMenu
+from black import diff
+from catchrobo_manager.gui_menu_enum import CalibrationMenu, GuiMenu
+from catchrobo_manager.jagarico.database import Database
 
 import rospy
 import tf2_ros
 import tf_conversions
-import geometry_msgs.msg
+from geometry_msgs.msg import TransformStamped, PoseStamped
 from std_msgs.msg import Int8
 
 
 import math
+import numpy as np
 
 
 class Calibration:
@@ -21,61 +24,136 @@ class Calibration:
         self.SHOOTING_BOX_REAL_FRAME = rospy.get_param(
             name_space + "shooting_box_real_frame"
         )
-        self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
-            name_space + "shooting_box_ideal_frame"
-        )
+        # self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
+        #     name_space + "shooting_box_ideal_frame"
+        # )
 
-        shooting_box_center_red = rospy.get_param(
-            name_space + "shooting_box_center_red"
-        )
+        # shooting_box_center_red = rospy.get_param(
+        #     name_space + "shooting_box_center_red"
+        # )
+
+        self.BOX_IDS = [0, 2, 15, 17]
         self._br = tf2_ros.StaticTransformBroadcaster()
-        self.update_tf(
-            "shooting_box_ideal_frame",
-            shooting_box_center_red[0],
-            shooting_box_center_red[1],
-            0,
-        )
-        rospy.sleep(0.5)
-        self.update_tf(
-            self.SHOOTING_BOX_REAL_FRAME,
-            shooting_box_center_red[0] + 0.1,
-            shooting_box_center_red[1] + 0.3,
-            0,
-        )
+        # self.update_tf(
+        #     self.SHOOTING_BOX_IDEAL_FRAME,
+        #     shooting_box_center_red[0],
+        #     shooting_box_center_red[1],
+        #     0,
+        # )
+        # rospy.sleep(0.5)
+        # self.update_tf(
+        #     self.SHOOTING_BOX_REAL_FRAME,
+        #     shooting_box_center_red[0],
+        #     shooting_box_center_red[1],
+        #     0,
+        # )
         self._gui_msg = CalibrationMenu.NONE
 
-        self._edges = [None] * 4
+        self._default_points, self._default_center = self.init_default_points()
+        self._points = np.copy(self._default_points)
 
-        world_position_topic = rospy.get_param("radius2meter/world_position_topic")
+        position_topic = rospy.get_param("radius2meter/world_position_topic")
+        rospy.Subscriber(position_topic, PoseStamped, self.pose_callback, queue_size=1)
+        rospy.Subscriber("menu", Int8, self.gui_callback, queue_size=1)
 
-        rospy.Subscriber("calibration_menu", Int8, self.gui_callback, queue_size=3)
+    #############################################################
+    ### callback
+    #############################################################
+    def pose_callback(self, msg: PoseStamped):
+        self._robot_pose = msg
 
     def gui_callback(self, msg):
-        self._gui_msg = msg
+        menu = msg.data
+        # if GuiMenu.POINT1 <= menu < GuiMenu.INIT:
+        ### [TODO] 名前変えてもらったほうが良さそう. END
+        if GuiMenu.CALIBLATION <= menu < GuiMenu.INIT:
+            ### point 指示なら、pointsに順に追加していく
+            self.set_point(self._robot_pose)
+        elif menu == GuiMenu.INIT:
+            center, rotate = self.calibration()
+            rospy.loginfo("center {} theta{}".format(center, rotate))
+            self.update_tf(
+                self.SHOOTING_BOX_REAL_FRAME,
+                center[0],
+                center[1],
+                rotate,
+            )
 
-        ### [TODO] 4辺の情報が集まっていたらtfを更新
-        for val in self._edges:
-            ### 4辺の情報がどれかまだ取れていなければreturn
-            if val is None:
-                return
+    #############################################################
+    ### function
+    #############################################################
 
-        # if self._gui_msg ==
-        self.calc_rectangle()
-        self.update_tf()
+    def init_default_points(self):
+        ### default値の生成。
+        database = Database()
+        csv_name = self.FIELD + "_shoot.csv"
+        database.readCsv(csv_name)
+        shape = (len(self.BOX_IDS), 2)
+        default_points = np.zeros(shape)
+        for i, box_id in enumerate(self.BOX_IDS):
+            position = database.getPosi(box_id)
+            id = i
+            default_points[id][0] = position[0]
+            default_points[id][1] = position[1]
 
-    def robot_position_callback(self):
-        ### [TODO] 測定中なら、現在値を対象の辺に追加
+        center = self.get_center(default_points)
 
-        pass
+        ### 順番を入れ替える
+        sorted_points = np.zeros(shape)
+        for val in default_points:
+            id = self.get_quadrant(val, center)
+            sorted_points[id] = val
+        return sorted_points, center
 
-    def calc_rectangle(self):
-        ### [TODO] 取得した点から画像を作成
+    def get_center(self, points: np.ndarray):
+        return np.average(points, axis=0)
 
-        ### [TODO] 四角形(矩形)抽出. 中心位置、回転を取得
-        pass
+    def get_quadrant(self, point: np.ndarray, center: np.ndarray):
+        ### 象限で配列idを決める
+        diff = point - center
+        id = 0
+        if diff[0] >= 0 and diff[1] >= 0:
+            id = 0
+        elif diff[0] < 0 and diff[1] >= 0:
+            id = 1
+        elif diff[0] < 0 and diff[1] < 0:
+            id = 2
+        else:
+            id = 3
+        return id
+
+    def get_theta(self, point: np.ndarray, center: np.ndarray):
+        diff = point - center
+        return np.arctan2(diff[1], diff[0])
+
+    def set_point(self, msg: PoseStamped):
+        position = msg.pose.position
+        point = [position.x, position.y]
+        point = np.asarray(point)
+        id = self.get_quadrant(point, self._default_center)
+        self._points[id] = point
+
+    def calibration(self):
+        points = self._points
+        center = self.get_center(points)
+        rospy.loginfo("points {}, default {}".format(points, self._default_points))
+        ### 角度の差分も平均で計算する
+        diffs = np.zeros(len(self.BOX_IDS))
+
+        for i in range(len(self.BOX_IDS)):
+            # for i, point, default_point in enumerate(zip(points, self._default_points)):
+            point = points[i]
+            default_point = self._default_points[i]
+            default_theta = self.get_theta(default_point, self._default_center)
+            theta = self.get_theta(point, center)
+            diffs[i] = theta - default_theta
+
+        rotate = np.average(diffs)
+
+        return center, rotate
 
     def update_tf(self, frame_id, x_m, y_m, theta):
-        t = geometry_msgs.msg.TransformStamped()
+        t = TransformStamped()
         t.header.stamp = rospy.Time.now()
         t.header.frame_id = self.BASE_FRAME
         t.child_frame_id = frame_id

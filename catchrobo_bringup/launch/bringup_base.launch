@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="field" default="blue" />
+    <arg name="sim" default="false" />
+    <param name="sim" value="$(arg sim)" />
     <include file="$(find catchrobo_bringup)/launch/displays.launch">
         <arg name="field" value="$(arg field)" />
     </include>
