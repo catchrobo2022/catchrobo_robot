@@ -75,7 +75,7 @@ class Calibration:
         center, rotate = self.calc_tf()
         # center[0] += 0.1
         # center[1] += 0.2
-        # rotate += 0.1
+        # rotate = 0.01  # np.math.pi / 2
         self.pub_tf(
             self.SHOOTING_BOX_REAL_FRAME,
             center[0],
@@ -85,32 +85,30 @@ class Calibration:
 
         diff = center - self._default_center
         rospy.loginfo("diff {} rotate{}".format(diff, rotate))
-        self.update_database(diff, rotate)
+        self.update_database(center, rotate)
 
-    def update_database(self, diff: np.ndarray, rotate: float) -> None:
-        homogeneous_M = self.generate_homogeneous(diff, rotate)
+    def update_database(self, center: np.ndarray, rotate: float) -> None:
+        homogeneous_M = self.generate_homogeneous(center, rotate)
         for i in range(self._database.getIdNum()):
             default_point = self._database.getPosi(i)
+            q_box = default_point - self._default_center
             # point = self._points[i]
-            q = np.asarray([default_point[0], default_point[1], default_point[2], 1]).T
+            q = np.asarray([q_box[0], q_box[1], default_point[2], 1]).T
             transformed_q = homogeneous_M.dot(q)
 
             self._database.updateState(i, "x", transformed_q[0])
             self._database.updateState(i, "y", transformed_q[1])
-            self._database.updateState(i, "z", transformed_q[2])
+            # self._database.updateState(i, "z", transformed_q[2])
         self._database.save_csv(self.TEMP_FILE)
-
-        # rospy.loginfo("{} = {}".format(default_point, transformed_q))
 
     def init_default_points(self):
         ### default値の生成。
-        shape = (len(self.BOX_IDS), 2)
+        shape = (len(self.BOX_IDS), 3)
         default_points = np.zeros(shape)
         for i, box_id in enumerate(self.BOX_IDS):
             position = self._database.getPosi(box_id)
             id = i
-            default_points[id][0] = position[0]
-            default_points[id][1] = position[1]
+            default_points[id] = position
 
         center = self.get_center(default_points)
 
@@ -152,7 +150,6 @@ class Calibration:
     def calc_tf(self):
         points = self._points
         center = self.get_center(points)
-        rospy.loginfo("points {}, default {}".format(points, self._default_points))
         ### 角度の差分も平均で計算する
         diffs = np.zeros(len(self.BOX_IDS))
 
@@ -185,7 +182,6 @@ class Calibration:
 
         msg = TFMessage()
         msg.transforms = [t]
-        rospy.loginfo(msg)
         self._pub_tf.publish(msg)
 
     def update_tf(self, frame_id, x_m, y_m, theta) -> None:
