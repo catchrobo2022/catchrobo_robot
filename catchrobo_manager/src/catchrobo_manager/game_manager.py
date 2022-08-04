@@ -33,7 +33,7 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
-        self.SHOOT_HEIGHT_m = 0.01
+        self.SHOOT_HEIGHT_m = 0.101
         self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
