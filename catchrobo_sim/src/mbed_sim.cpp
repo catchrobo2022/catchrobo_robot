@@ -19,6 +19,7 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
+// const float SPIN_FREQUENCY_s = 0.001;
 const float MBED2GRIPPER_DT = 0.1;
 const float MBED2MOTOR_DT = 0.01; // 500Hz
 const int SERIAL_BAUD_RATE = 115200;
@@ -31,6 +32,7 @@ RosBridge ros_bridge;
 RobotManager robot_manager;
 GripperManager gripper_manager;
 EnableManager enable_manager;
+
 
 void enableAll(bool is_enable)
 {
@@ -59,6 +61,8 @@ void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 
 void mbed2MotorDriverTimerCallback()
 {
+
+    // ros::Time t = ros::Time::now();
     //// enable check
     catchrobo_msgs::ErrorCode error;
     sensor_msgs::JointState joint_state;
@@ -94,8 +98,11 @@ void mbed2MotorDriverTimerCallback()
             error.error_code = catchrobo_msgs::ErrorCode::FINISH;
             ros_bridge.publishError(error);
             // ros_bridge.publishFinishFlag(i);
+            // ros::Duration dt = ros::Time::now() - t;
+            // ROS_INFO_STREAM("dt " << dt.toSec() );
         }
     }
+
 }
 
 void mbed2RosTimerCallback()
@@ -170,25 +177,11 @@ int main(int argc, char **argv)
     Ticker ticker_gripper;
     ticker_gripper.attach(&gripperTimerCallback, MBED2GRIPPER_DT);
 
-    // int ros_timer_callback_count = 0;
-    // const int PUB_ROS_COUNT = int(MBED2ROS_DT / MBED2GRIPPER_DT);
-
+    // while (1)
+    // {
+    //     ros_bridge.spinOnce();
+    //     // wait(SPIN_FREQUENCY_s);
+    // }
     ros_bridge.spin();
 
-    // #ifdef USE_MBED
-    //     while (1)
-    // #else
-    //     while (!ros::isShuttingDown())
-    // #endif
-    //     {
-    //         ros_bridge.spinOnce();
-    //         gripperTimerCallback();
-    //         // if (ros_timer_callback_count % PUB_ROS_COUNT == 0)
-    //         // {
-    //         //     mbed2RosTimerCallback();
-    //         //     ros_timer_callback_count = 0;
-    //         // }
-    //         // ros_timer_callback_count++;
-    //         wait(MBED2GRIPPER_DT);
-    //     }
 }

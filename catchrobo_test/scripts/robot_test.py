@@ -19,16 +19,16 @@ if __name__ == "__main__":
     # rospy.sleep(2)
     robot.control_permission(True)
 
-    robot.go(z=0.12)
+    robot.go(z=0.20)
 
-    num = 100
+    num = 1
     dts = []
     t = rospy.Time.now()
-    for i in range(num):
-        robot.go(z=0.12)
-
+    # for i in range(num):
+    robot.go(z=0.20)
     dt = rospy.Time.now() - t
-    rospy.loginfo(dt)
+    # dts.append(dt.to_sec())
+    rospy.loginfo(dt.to_sec())
     rospy.sleep(1)
     # robot.go(z=0.18, wait=True)
     # robot.go(x=1.081, y=-0.495, wait=True)
@@ -55,8 +55,8 @@ if __name__ == "__main__":
     # # robot.peg_in_hole()
     # rospy.sleep(1)
 
-    robot.shoot()
-    robot.pick()
+    # robot.shoot()
+    # robot.pick()
 
     # pub = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
     # pub_enable = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
