@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from catchrobo_manager.jagarico.database import Database
-from jagarico.target_shooting_box_calculator import TargetShootingBoxCalculator
+from catchrobo_manager.jagarico.target_shooting_box_calculator import (
+    TargetShootingBoxCalculator,
+)
 from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 
@@ -15,21 +17,20 @@ class ShootingBoxManager:
 
         self.EXIST_KEY = "exist"
         msg_template = [False] * self._database.getIdNum()
-        self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template)
+        self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template, self.update_by_gui)
 
     def get_target_id(self):
-        self.update_by_gui()
+        # self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
     def get_target_info(self):
-        target_id = self._calculator.calcTarget(self._database)
+        target_id = self.get_target_id()
         position = self._database.getPosi(target_id)
-        return position
+        return position, target_id
 
-    def shoot(self):
-        pick_id = self.get_target_id()
-        self._database.updateState(pick_id, "exist", True)
+    def shoot(self, id):
+        self._database.updateState(id, "exist", True)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_open_num(self):
@@ -38,11 +39,18 @@ class ShootingBoxManager:
     def canGoCommon(self):
         return self._database.count("exist", True) >= 1
 
-    def update_by_gui(self):
-        msg = self._gui.getMsg()
+    def update_by_gui(self, msg):
+        # msg = self._gui.getMsg()
         for i, val in enumerate(msg.data):
             # rospy.loginfo("i, val {}{}".format(i,val))
             self._database.updateState(i, self.EXIST_KEY, bool(val))
+
+    def is_exist(self, id):
+        return self._database.isExist(id)
+
+    def load_temp(self):
+        csv_name = "temp/shoot.csv"
+        self._database.readCsv(csv_name)
 
 
 if __name__ == "__main__":

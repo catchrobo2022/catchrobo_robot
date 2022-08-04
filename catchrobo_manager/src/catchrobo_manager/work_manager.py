@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from catchrobo_manager.next_action_enum import NextAction
+from catchrobo_manager.next_action_enum import NextTarget
 from catchrobo_manager.jagarico.database import Database
-from jagarico.target_jagarico_calculator import TargetJagaricoCalculator
+from catchrobo_manager.jagarico.target_jagarico_calculator import (
+    TargetJagaricoCalculator,
+)
 from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 import rospy
@@ -20,16 +22,16 @@ class WorkManager:
         self._calculator = TargetJagaricoCalculator()
         self.EXIST_KEY = "exist"
         msg_template = [1] * self._database.getIdNum()
-        self._gui = GuiBridge("obj_giro", "obj_rigo", msg_template)
+        self._gui = GuiBridge("obj_giro", "obj_rigo", msg_template, self.update_by_gui)
 
     def get_target_id(self):
-        self.update_by_gui()
+        # self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
         return target_id
 
     def get_target_info(self):
 
-        target_id = self._calculator.calcTarget(self._database)
+        target_id = self.get_target_id()
         # 全部のじゃがりこを取り終わるとNoneをcalcTarget()が返すので場合分け
         if target_id == None:
             position = None
@@ -44,14 +46,15 @@ class WorkManager:
 
     def pick(self, pick_id):
         # pick_id = self.get_target_id()
+        # self.update_by_gui()
         self._database.delete(pick_id)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
         ## 次動作計算アルゴリズム
         ## もうシュートするなら
-        # next_action = NextAction.SHOOT
+        # next_action = NextTarget.SHOOT
         ## 次も連続してじゃがりこを回収するなら
-        # next_action = NextAction.PICK
+        # next_action = NextTarget.PICK
         if (
             (pick_id == 0)
             or (pick_id == 19)
@@ -59,20 +62,28 @@ class WorkManager:
             or (pick_id == 13)
             or (pick_id == 24)
         ):
-            next_action = NextAction.SHOOT
+            next_action = NextTarget.SHOOT
         else:
-            next_action = NextAction.PICK
+            next_action = NextTarget.PICK
 
         return next_action
 
     def setCanGoCommon(self, flag):
         self._calculator.setCanGoCommon(flag)
 
-    def update_by_gui(self):
-        msg = self._gui.getMsg()
+    def update_by_gui(self, msg):
+        # msg = self._gui.getMsg()
         for i, val in enumerate(msg.data):
             # rospy.loginfo("i, val {}{}".format(i,val))
             self._database.updateState(i, self.EXIST_KEY, bool(val))
+
+    def get_remain_num(self):
+        # self.update_by_gui()
+        return self._database.count("exist", True)
+
+    def is_exist(self, id: int):
+        # self.update_by_gui()
+        return self._database.isExist(id)
 
 
 if __name__ == "__main__":

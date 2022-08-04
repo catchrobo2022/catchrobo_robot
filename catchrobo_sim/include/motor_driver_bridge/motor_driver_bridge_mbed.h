@@ -90,7 +90,7 @@ public:
 private:
     CAN can_; // CAN Rx pin name, CAN Tx pin name
     DigitalOut led;
-    int direction_[4]; // motorの動く向き. 配列数が直打ちなのが微妙すぎる。
+    int direction_[4]; // motorの動く向き. [TODO] 配列数が直打ちなのが微妙すぎる。
     int is_locked_;
 
     void (*callback_function_)(const StateStruct &input);

@@ -1,30 +1,27 @@
 <launch>
-<!-- arguments -->
-<arg name="model" default="$(find catchrobo_description)/robots/catchrobo.urdf.xacro"/>
-<arg name="gui" default="true" />
-<arg name="field" default="red" /> 
-<!-- prameters -->
-<param name="robot_description" command="$(find xacro)/xacro field:=$(arg field) --inorder $(arg model)"/>
+    <!-- arguments -->
+    <arg name="model" default="$(find catchrobo_description)/robots/catchrobo.urdf.xacro" />
+    <arg name="gui" default="true" />
+    <arg name="field" default="red" />
+    <!-- prameters -->
+    <param name="robot_description" command="$(find xacro)/xacro field:=$(arg field) --inorder $(arg model)" />
 
-<!-- nodes -->
-<!-- joint_state_publisher : JointStateを/joint_statesというtopicにまとめる。 
+    <!-- nodes -->
+    <!-- joint_state_publisher : JointStateを/joint_statesというtopicにまとめる。 
         -> robot_state_publisher, move_group　などへ出力
         source_list : subscribeするtopic名。
                         JointState型ならなんでもok. name[...] に関節名(別paramで指定されている)を入れる。 -->
-<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">[my_joint_state]</rosparam>
-    <param name="use_gui" value="$(arg gui)" />
-</node>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <rosparam param="source_list">[my_joint_state]</rosparam>
+        <param name="use_gui" value="$(arg gui)" />
+    </node>
 
-<!-- robot_state_publisher : /joint_statesからtfを作成する
-        <- joint_state_publiserからの入力を受け取る --> 
-<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <!-- robot_state_publisher : /joint_statesからtfを作成する
+        <- joint_state_publiserからの入力を受け取る -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-<!-- rviz. RobotModelを表示する -->
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true"/>
-    <param name="field" value="$(arg field)"/>
-
-<node pkg="catchrobo_driver" type="radius2meter.py" name="radius2meter" output="screen" respawn="false" respawn_delay="0" />
-
+    <!-- rviz. RobotModelを表示する -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/rviz_$(arg field).rviz" required="true" />
+    <param name="field" value="$(arg field)" />
 
 </launch>

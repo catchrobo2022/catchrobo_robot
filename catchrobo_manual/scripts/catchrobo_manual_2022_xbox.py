@@ -11,7 +11,7 @@ from sensor_msgs.msg import Joy, JointState
 from std_msgs.msg import Int8
 
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.ros_cmd_template import RosCmdTemplate
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
 
 # importing original class #the last XBOX~is a class not a module
@@ -102,9 +102,9 @@ class Manual:
 
         self.manual_cmd = ManualCommand()
         self.manual_msg = Int8()
-        self.manual_msg.data=self.manual_cmd.NONE
+        self.manual_msg.data = self.manual_cmd.NONE
 
-        self.pause_manual=True
+        self.pause_manual = True
         self.button_enable = True
         self.cmd_flag = [False] * 3
 
@@ -114,18 +114,33 @@ class Manual:
         self.pub_count = 0
 
         # Publisher
-        self.pub_ros_cmd = rospy.Publisher("/ros_cmd", MyRosCmd, queue_size=1)
-        self.pub_enable_cmd = rospy.Publisher("/enable_cmd", EnableCmd, queue_size=1)
-        self.pub_manual_command = rospy.Publisher("/manual_command", Int8, queue_size=1)
+        self.pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=1)
+        self.pub_enable_cmd = rospy.Publisher("enable_cmd", EnableCmd, queue_size=1)
+
+        manual_command_topic = "manual_command"
+        self.pub_manual_command = rospy.Publisher(
+            manual_command_topic, Int8, queue_size=1
+        )
 
         # Subscriber
         rospy.Subscriber("/joy", Joy, self.joyCallback, queue_size=1)
-        rospy.Subscriber("/joint_states", JointState, self.jointCallback, queue_size=1)
+        rospy.Subscriber("joint_states", JointState, self.jointCallback, queue_size=1)
+
+        from_auto_topic = "auto2manual_command"
+        rospy.Subscriber(from_auto_topic, Int8, self.ask_manual_callback, queue_size=1)
+        rospy.Subscriber("enable_cmd", EnableCmd, self.enable_callback, queue_size=1)
+
+    def enable_callback(self, msg):
+        ### [TODO] 自動制御側からも enableの指示が来る
+        pass
+
+    def ask_manual_callback(self, msg):
+        ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う.
+        pass
 
     def joyCallback(self, joy_msg):
         self.joy_state = joy_msg
         self.manualControl()
-
 
     # 　現在位置取得用
     def jointCallback(self, joint_state_msg):
@@ -192,11 +207,11 @@ class Manual:
         joy_b = self.joy_state.buttons
         b_num = self.ButtonEnum
         cmd_tmp = self.command.template
-        m_cmd=self.manual_cmd
+        m_cmd = self.manual_cmd
 
         # disable or manual off中は動けない
         if self.button_enable == True:
-            if(self.pause_manual==False):
+            if self.pause_manual == False:
 
                 # 速度制御
                 # kp0だから、positionは更新しなくていい
@@ -272,7 +287,6 @@ class Manual:
                     cmd_z.velocity = cmd_tmp.robot_m2rad(cmd_z.id, 0.0)
                     self.old_joystick[2] = 0
                     self.cmd_flag[2] = True
-
 
                 self.old_joystick[0] = joy_a[b_num.LX]
                 self.old_joystick[1] = joy_a[b_num.LY]
@@ -392,7 +406,6 @@ class Manual:
             #     print("restart")
 
             ### enable if
-        
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
         if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
@@ -445,6 +458,9 @@ class Manual:
     #     self.pubCount("pZ")
 
     def pauseManual(self):
+        ### [TODO] bugが出たので、とりあえず消しています
+        return
+
         cmd_x = self.command.command_x
         cmd_y = self.command.command_y
         cmd_z = self.command.command_z
@@ -462,7 +478,6 @@ class Manual:
         self.pub_ros_cmd.publish(self.command.command_z)
         self.pubCount("pZ")
 
-
     # def showButtonRole(self):
     #     print('''
     #     left joystick : vel xy
@@ -479,7 +494,6 @@ class Manual:
     #     start: enable
 
     #     ''')
-
 
     def pubXYZ(self, axes):
         cmd_x = self.command.command_x

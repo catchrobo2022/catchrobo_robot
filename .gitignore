@@ -3,3 +3,4 @@
 *.zip
 catchrobo_test/rosbag/*.bag
 catchrobo_test/rosbag/*.bag.*
+catchrobo_manager/log/*.csv

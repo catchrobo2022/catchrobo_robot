@@ -219,11 +219,11 @@ public:
         }
     }
 
-    void init(float arrive_threshold, float estimate_error_limit)
+    void init(const float (&arrive_threshold)[N_MOTORS], float estimate_error_limit)
     {
         for (size_t i = 0; i < motor_num_; i++)
         {
-            motor_manager_[i].init(arrive_threshold, estimate_error_limit);
+            motor_manager_[i].init(arrive_threshold[i], estimate_error_limit);
         }
     }
 

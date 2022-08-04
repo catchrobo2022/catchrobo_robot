@@ -3,4 +3,30 @@ game_manager:
   init_y_m_red: 1.7
   INIT_Z_m: 0.205
   WORK_HEIGHT_m: 0.087
-  
+
+ros_cmd:
+  velocity_limit_scale: 1
+  current_limit_scale : [0.2, 0.2, 0.7, 1]
+  KT_OUT: 0.08
+  work_mass: 0.06
+  # acceleration_limit_scale: 1
+  # current_max_A: 8
+pulley:
+  pitch: 0.002
+  teeth: 54 
+
+radius2meter:
+  joint_names: ["arm/joint1","arm/joint2","arm/joint3","gripper/joint1"]
+  world_frame: "world"
+  world_position_topic: "pose_stamped"
+
+robot:
+  robot_origin_m: [0.09045, 0.845, 0.0705]
+  OPEN_GRIPPER_RAD: 1.57079632679
+  CLOSE_GRIPPER_RAD: 0
+  finish_wait_Hz: 100
+
+calibration:
+  base_frame: "base/base_link"
+  shooting_box_real_frame: "base/shooter"
+  temp_csv: "temp/shoot.csv"

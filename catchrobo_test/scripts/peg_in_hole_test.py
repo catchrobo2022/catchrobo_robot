@@ -3,7 +3,7 @@
 
 from catchrobo_manager.robot import Robot
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.ros_cmd_template import RosCmdTemplate
 
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from std_msgs.msg import Bool
-from catchrobo_driver.rad_transform import RadTransform
+from catchrobo_manager.rad_transform import RadTransform
 from catchrobo_msgs.msg import EnableCmd, MyRosCmd, PegInHoleCmd
 import rospkg
 import rospy
@@ -23,6 +23,7 @@ class RosCmdTemplate:
             name_space + "velocity_limit_scale"
         )
         self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
+        self._current_limit_scale = rospy.get_param(name_space + "current_limit_scale")
         self.GRAVITY = 9.80665
 
         self._rad_transform = RadTransform()
@@ -34,7 +35,7 @@ class RosCmdTemplate:
 
     def readCsv(self):
         rospack = rospkg.RosPack()
-        pkg_path = rospack.get_path("catchrobo_driver")
+        pkg_path = rospack.get_path("catchrobo_manager")
         config_path = pkg_path + "/config/"
         csv = config_path + "default_limit.csv"
         datas = pd.read_csv(csv, index_col=0)
@@ -103,7 +104,7 @@ class RosCmdTemplate:
         command.velocity = rad_transform.robot_m2rad(command.id, robot_end_velocity)
 
         ### 動作計画で想定する最大電流
-        i_max = self._datas.loc["I_max"][id]
+        i_max = self._datas.loc["I_max"][id] * self._current_limit_scale[id]
 
         ### 加速度limitの算出
         if id == 3:
@@ -154,7 +155,7 @@ class RosCmdTemplate:
         command.position = self._datas.loc["origin_position_rad"][id]
         if field == "blue" and id == 1:
             command.position *= -1
-        command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
+        # command.acceleration_limit = self._datas.loc["origin_torque_threshold_rad"][id]
         return command
 
     def generate_velocity_command(self, id, velocity_m, has_work_num=0):

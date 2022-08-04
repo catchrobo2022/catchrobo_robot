@@ -4,7 +4,7 @@
 from traceback import print_tb
 from catchrobo_manager.robot import Robot
 
-from catchrobo_driver.ros_cmd_template import RosCmdTemplate
+from catchrobo_manager.ros_cmd_template import RosCmdTemplate
 
 import rospy
 from catchrobo_msgs.msg import MyRosCmdArray, MyRosCmd, EnableCmd
@@ -17,7 +17,18 @@ if __name__ == "__main__":
     rospy.sleep(1)  # rosが起動するのを待つ
     robot.enable()
     # rospy.sleep(2)
-    robot.start()
+    robot.control_permission(True)
+
+    robot.go(z=0.12)
+
+    num = 100
+    dts = []
+    t = rospy.Time.now()
+    for i in range(num):
+        robot.go(z=0.12)
+
+    dt = rospy.Time.now() - t
+    rospy.loginfo(dt)
     rospy.sleep(1)
     # robot.go(z=0.18, wait=True)
     # robot.go(x=1.081, y=-0.495, wait=True)

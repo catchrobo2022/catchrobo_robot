@@ -68,7 +68,7 @@ roslaunch catchrobo_bringup bringup_base.launch
 
 sudo chmod a+rw /dev/ttyACM0 
 rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
-rosrun catchrobo_test mbed_sim_test.py
+roslaunch catchrobo_bringup manager.launch
 ```
 
 #### Xbeeあり
@@ -136,3 +136,7 @@ rosservice call /rosbag_play/pause_playback "data: false"
 
 ### 台形加速アルゴリズムについて
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
+
+
+### TODO
+- GUI　ボックス　配列が多い理由
