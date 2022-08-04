@@ -32,16 +32,16 @@ class GameManager:
         init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
         self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
-        shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
+        # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
         self.SHOOT_HEIGHT_m = 0.01
         self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
         self.INIT_Y_m = init_y_m_red * self.FIELD_SIGN
-        shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
+        # shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
 
-        self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
+        # self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
 
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
         rospy.Subscriber("menu", Int8, self.gui_callback)
@@ -80,6 +80,9 @@ class GameManager:
             self._robot.set_origin()
         elif self._gui_msg == GuiMenu.INIT:
             self.init_actions()
+        elif self._gui_msg == GuiMenu.CALIBLATION:
+            rospy.sleep(1)
+            self._box_manager.load_temp()
         elif self._gui_msg == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -156,7 +159,7 @@ class GameManager:
             if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
-                self.manunal_mode()
+                # self.manunal_mode()
                 pass_action = True
             self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
@@ -227,7 +230,7 @@ class GameManager:
             self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
         elif next_action == ShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
-            self.manunal_mode()
+            # self.manunal_mode()
             pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()

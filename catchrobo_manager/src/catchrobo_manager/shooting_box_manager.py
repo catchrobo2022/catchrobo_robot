@@ -48,6 +48,10 @@ class ShootingBoxManager:
     def is_exist(self, id):
         return self._database.isExist(id)
 
+    def load_temp(self):
+        csv_name = "temp/shoot.csv"
+        self._database.readCsv(csv_name)
+
 
 if __name__ == "__main__":
     import rospy

@@ -14,11 +14,19 @@ class Database:
         self._count_key = "exist"
         # self._lock = threading.Lock()
 
-    def readCsv(self, csv_name):
+    def generate_file_path(self, csv_name):
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path("catchrobo_manager")
         config_path = pkg_path + "/config/"
         csv = config_path + csv_name
+        return csv
+
+    def save_csv(self, csv_name):
+        csv = self.generate_file_path(csv_name)
+        self._objects.to_csv(csv, index=True)
+
+    def readCsv(self, csv_name):
+        csv = self.generate_file_path(csv_name)
         self._objects = pd.read_csv(csv, index_col=0)
 
     ## id:行番号 key:列名 の値をvalueに更新する

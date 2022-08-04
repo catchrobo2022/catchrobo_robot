@@ -1,5 +1,0 @@
-calibration:
-  base_frame: "base/base_link"
-  shooting_box_real_frame: "shooting_box_real_frame"
-  shooting_box_ideal_frame: "shooting_box_ideal_frame"
-  shooting_box_center_red: [1.325, 1.125, 0]

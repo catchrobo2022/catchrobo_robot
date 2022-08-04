@@ -19,3 +19,14 @@ radius2meter:
   joint_names: ["arm/joint1","arm/joint2","arm/joint3","gripper/joint1"]
   world_frame: "world"
   world_position_topic: "pose_stamped"
+
+robot:
+  robot_origin_m: [0.09045, 0.845, 0.0705]
+  OPEN_GRIPPER_RAD: 1.57079632679
+  CLOSE_GRIPPER_RAD: 0
+  finish_wait_Hz: 100
+
+calibration:
+  base_frame: "base/base_link"
+  shooting_box_real_frame: "base/shooter"
+  temp_csv: "temp/shoot.csv"

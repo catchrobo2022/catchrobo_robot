@@ -52,6 +52,8 @@ Panels:
       Expanded:
         - /TF1
         - /TF1/Frames1
+        - /TF1/Frames1/base/fixed_shooter1
+        - /TF1/Frames1/base/shooter1
       Splitter Ratio: 0.5
     Tree Height: 132
   - Class: field/Blue
@@ -125,6 +127,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        base/fixed_shooter:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         base/link_tip:
           Alpha: 1
           Show Axes: false
@@ -149,6 +156,221 @@ Visualization Manager:
           Show Trail: false
           Value: true
         gripper/right_finger:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work0/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work1/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work10/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work11/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work12/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work13/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work14/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work15/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work16/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work17/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work2/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work3/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work4/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work5/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work6/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work7/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work8/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work9/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work0/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work1/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work10/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work11/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work12/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work13/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work14/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work15/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work16/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work17/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work18/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work19/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work2/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work20/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work21/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work22/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work23/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work24/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work3/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work4/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work5/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work6/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work7/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work8/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work9/base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -171,7 +393,7 @@ Visualization Manager:
         arm/link0:
           Value: false
         arm/link1:
-          Value: true
+          Value: false
         arm/link2_1:
           Value: false
         arm/link2_2:
@@ -181,11 +403,13 @@ Visualization Manager:
         arm/link_tip:
           Value: false
         base/base_link:
-          Value: true
+          Value: false
+        base/fixed_shooter:
+          Value: false
         base/link_tip:
           Value: false
         base/shooter:
-          Value: false
+          Value: true
         gripper/base_link:
           Value: false
         gripper/grasping_frame:
@@ -194,8 +418,92 @@ Visualization Manager:
           Value: false
         gripper/right_finger:
           Value: false
-        shooting_box_real_frame:
-          Value: true
+        shot_work0/base_link:
+          Value: false
+        shot_work1/base_link:
+          Value: false
+        shot_work10/base_link:
+          Value: false
+        shot_work11/base_link:
+          Value: false
+        shot_work12/base_link:
+          Value: false
+        shot_work13/base_link:
+          Value: false
+        shot_work14/base_link:
+          Value: false
+        shot_work15/base_link:
+          Value: false
+        shot_work16/base_link:
+          Value: false
+        shot_work17/base_link:
+          Value: false
+        shot_work2/base_link:
+          Value: false
+        shot_work3/base_link:
+          Value: false
+        shot_work4/base_link:
+          Value: false
+        shot_work5/base_link:
+          Value: false
+        shot_work6/base_link:
+          Value: false
+        shot_work7/base_link:
+          Value: false
+        shot_work8/base_link:
+          Value: false
+        shot_work9/base_link:
+          Value: false
+        work0/base_link:
+          Value: false
+        work1/base_link:
+          Value: false
+        work10/base_link:
+          Value: false
+        work11/base_link:
+          Value: false
+        work12/base_link:
+          Value: false
+        work13/base_link:
+          Value: false
+        work14/base_link:
+          Value: false
+        work15/base_link:
+          Value: false
+        work16/base_link:
+          Value: false
+        work17/base_link:
+          Value: false
+        work18/base_link:
+          Value: false
+        work19/base_link:
+          Value: false
+        work2/base_link:
+          Value: false
+        work20/base_link:
+          Value: false
+        work21/base_link:
+          Value: false
+        work22/base_link:
+          Value: false
+        work23/base_link:
+          Value: false
+        work24/base_link:
+          Value: false
+        work3/base_link:
+          Value: false
+        work4/base_link:
+          Value: false
+        work5/base_link:
+          Value: false
+        work6/base_link:
+          Value: false
+        work7/base_link:
+          Value: false
+        work8/base_link:
+          Value: false
+        work9/base_link:
+          Value: false
         world:
           Value: false
       Marker Alpha: 1
@@ -207,6 +515,8 @@ Visualization Manager:
       Tree:
         world:
           base/base_link:
+            base/fixed_shooter:
+              {}
             base/link_tip:
               arm/link0:
                 arm/link1:
@@ -222,8 +532,91 @@ Visualization Manager:
                             gripper/right_finger:
                               {}
             base/shooter:
+              shot_work0/base_link:
+                {}
+              shot_work1/base_link:
+                {}
+              shot_work10/base_link:
+                {}
+              shot_work11/base_link:
+                {}
+              shot_work12/base_link:
+                {}
+              shot_work13/base_link:
+                {}
+              shot_work14/base_link:
+                {}
+              shot_work15/base_link:
+                {}
+              shot_work16/base_link:
+                {}
+              shot_work17/base_link:
+                {}
+              shot_work2/base_link:
+                {}
+              shot_work3/base_link:
+                {}
+              shot_work4/base_link:
+                {}
+              shot_work5/base_link:
+                {}
+              shot_work6/base_link:
+                {}
+              shot_work7/base_link:
+                {}
+              shot_work8/base_link:
+                {}
+              shot_work9/base_link:
+                {}
+            work0/base_link:
               {}
-            shooting_box_real_frame:
+            work1/base_link:
+              {}
+            work10/base_link:
+              {}
+            work11/base_link:
+              {}
+            work12/base_link:
+              {}
+            work13/base_link:
+              {}
+            work14/base_link:
+              {}
+            work15/base_link:
+              {}
+            work16/base_link:
+              {}
+            work17/base_link:
+              {}
+            work18/base_link:
+              {}
+            work19/base_link:
+              {}
+            work2/base_link:
+              {}
+            work20/base_link:
+              {}
+            work21/base_link:
+              {}
+            work22/base_link:
+              {}
+            work23/base_link:
+              {}
+            work24/base_link:
+              {}
+            work3/base_link:
+              {}
+            work4/base_link:
+              {}
+            work5/base_link:
+              {}
+            work6/base_link:
+              {}
+            work7/base_link:
+              {}
+            work8/base_link:
+              {}
+            work9/base_link:
               {}
       Update Interval: 0
       Value: true
@@ -434,7 +827,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.650536060333252
+      Distance: 3.6946020126342773
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -442,17 +835,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.6223454475402832
-        Y: -0.5178895592689514
-        Z: -0.08932262659072876
+        X: 0.6543530225753784
+        Y: -0.2623836398124695
+        Z: -0.721102774143219
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8997968435287476
+      Pitch: 1.0647966861724854
       Target Frame: <Fixed Frame>
-      Yaw: 4.749969005584717
+      Yaw: 4.709980487823486
     Saved: ~
 Window Geometry:
   Blue:
@@ -473,4 +866,4 @@ Window Geometry:
     collapsed: true
   Width: 1386
   X: 534
-  Y: 58
+  Y: 27

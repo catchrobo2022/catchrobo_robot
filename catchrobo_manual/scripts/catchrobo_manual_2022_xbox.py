@@ -128,9 +128,14 @@ class Manual:
 
         from_auto_topic = "auto2manual_command"
         rospy.Subscriber(from_auto_topic, Int8, self.ask_manual_callback, queue_size=1)
+        rospy.Subscriber("enable_cmd", EnableCmd, self.enable_callback, queue_size=1)
 
-    def ask_manual_callback(self, msg: Int8):
-        ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う publishはしない
+    def enable_callback(self, msg):
+        ### [TODO] 自動制御側からも enableの指示が来る
+        pass
+
+    def ask_manual_callback(self, msg):
+        ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う.
         pass
 
     def joyCallback(self, joy_msg):
