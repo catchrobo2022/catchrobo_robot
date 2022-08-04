@@ -12,7 +12,6 @@ from catchrobo_manager.work_manager import WorkManager
 from catchrobo_manager.shooting_box_manager import ShootingBoxManager
 from catchrobo_manager.robot import Robot
 from catchrobo_manager.gui_menu_enum import GuiMenu
-from catchrobo_manager.shooting_box_transform import ShootingBoxTransform
 
 import rospkg
 import rospy
@@ -80,7 +79,7 @@ class GameManager:
             self._robot.set_origin()
         elif self._gui_msg == GuiMenu.INIT:
             self.init_actions()
-        elif self._gui_msg == GuiMenu.CALIBLATION:
+            # elif self._gui_msg == GuiMenu.CALIBLATION:
             rospy.sleep(1)
             self._box_manager.load_temp()
         elif self._gui_msg == GuiMenu.START:

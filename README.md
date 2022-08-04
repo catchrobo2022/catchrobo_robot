@@ -8,6 +8,7 @@
 - sudo apt install ros-noetic-rosserial-mbed
 - jsk-plugin(入れ方忘れました)
 - joy con系
+- pip install numpy pandas
 
 ### mbedへの移行
 1. catchrobo_sim/include/catchrobo_simをzip化する
