@@ -7,9 +7,11 @@ from catchrobo_manager.next_action_enum import (
     Action,
     PickAction,
     ShootAction,
+    SecondShootAction,
 )
 from catchrobo_manager.work_manager import WorkManager
 from catchrobo_manager.shooting_box_manager import ShootingBoxManager
+from catchrobo_manager.on_box_manager import OnBoxManager
 from catchrobo_manager.robot import Robot
 from catchrobo_manager.gui_menu_enum import GuiMenu
 
@@ -35,6 +37,7 @@ class GameManager:
 
         self.SHOOT_HEIGHT_m = 0.101
         self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + 0.076
+        self.SECOND_SHOOT_m = self.PICK_WORK_ON_SHOOTING_BOX_m
         self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
@@ -51,10 +54,12 @@ class GameManager:
         next_target = NextTarget.PICK
         self._work_manager = WorkManager(self.FIELD)
         self._box_manager = ShootingBoxManager(self.FIELD)
+        self._on_box_manager = OnBoxManager(self.FIELD)
         self._robot = Robot(self.FIELD)
 
         self._target_work_info = self._work_manager.get_target_info()
         self._target_shoot_info = self._box_manager.get_target_info()
+        self._target_second_shoot_info = self._on_box_manager.get_target_info()
 
         posi, _, _ = self._target_work_info
         self.INIT_X_m = posi[0]
@@ -259,6 +264,62 @@ class GameManager:
 
         return next_target, next_action
 
+    def second_shoot_actions(self, next_action: Action):
+        pass_action = False
+        next_target = NextTarget.SECOND_SHOOT
+        ### 目標シューティング位置計算
+        box_position, target_id = self._target_second_shoot_info
+        # box_position = self._shooting_box_transform.get_calibrated_position(
+        #     box_position_raw
+        # )
+        if self._on_box_manager.is_exist(target_id):
+
+            ### 目標がGUIで消された場合
+            # if (
+            #     next_action == ShootAction.SHOOT
+            #     or next_action == ShootAction.PICK_WORK_ON_WORK
+            # ):
+            #     ### gripper open後なら、再度掴んでから
+            ### リスタート
+            next_action = SecondShootAction.START
+
+        if next_action == SecondShootAction.START:
+            self._target_second_shoot_info = self._on_box_manager.get_target_info()
+        elif next_action == SecondShootAction.MOVE_Z_SAFE:
+            ### 上空へ上がる
+            self._robot.go(z=self.INIT_Z_m)
+        elif next_action == SecondShootAction.MOVE_XY_ABOVE_BOX:
+            ### 穴上へxy移動
+            self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
+        # elif next_action == ShootAction.OPEN_A_BIT:
+        #     self._robot.gripper(self.OPEN_A_BIT_RAD)
+        elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
+            ### 下ろす
+            self._robot.go(z=self.SECOND_SHOOT_m)
+        elif next_action == SecondShootAction.PEG_IN_HOLE:
+            ## グリグリ(手動)
+            self._robot.ask_manual()
+            pass_action = True
+            ### ぐりぐり
+            # self._robot.peg_in_hole()
+            # shoot
+        elif next_action == SecondShootAction.SHOOT:
+            # self._has_work = self._robot.has_work() - 1
+            # self._robot.open_gripper()
+            # self._robot.set_work_num(0)
+            self._robot.shoot()
+            pass_action = True
+        elif next_action == SecondShootAction.END:
+            self._on_box_manager.shoot(target_id)
+            next_action = 0  # 次はSTARTから始まる
+            next_target = NextTarget.PICK
+
+        if self._robot.check_permission() or pass_action:
+            ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
+            next_action += 1
+
+        return next_target, next_action
+
     def main_actions(self, next_target: NextTarget, next_action: Action):
         # rospy.loginfo("having work: {}".format(self._robot.has_work()))
         ### stop flagがたった瞬間に途中でも高速でループが終わる
@@ -271,6 +332,10 @@ class GameManager:
                 ### もうシュート場所がなければ終了
                 return NextTarget.END, PickAction.START
             next_target, next_action = self.shoot_actions(next_action)
+        elif next_target == NextTarget.SECOND_SHOOT:
+            if self._on_box_manager.get_open_num() == 0:
+                return NextTarget.END, PickAction.START
+            next_target, next_action = self.second_shoot_actions(next_action)
 
         return next_target, next_action
 
