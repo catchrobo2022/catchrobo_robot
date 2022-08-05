@@ -1,7 +1,7 @@
 game_manager:
   max_has_work: 5
   init_y_m_red: 1.7
-  INIT_Z_m: 0.205
+  INIT_Z_m: 0.215
   WORK_HEIGHT_m: 0.087
 
 ros_cmd:

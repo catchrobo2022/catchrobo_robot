@@ -69,17 +69,17 @@ if __name__ == "__main__":
     # pub.publish(command)
     # rospy.sleep(10)
 
-    command = template.generate_ros_command(
-        id=0,
-        mode=MyRosCmd.POSITION_CTRL_MODE,
-        robot_position=1,
-        robot_end_velocity=0,
-    )
-    print(command)
-    pub.publish(command)
-    rospy.sleep(10)
+    # command = template.generate_ros_command(
+    #     id=0,
+    #     mode=MyRosCmd.POSITION_CTRL_MODE,
+    #     robot_position=1,
+    #     robot_end_velocity=0,
+    # )
+    # print(command)
+    # pub.publish(command)
+    # rospy.sleep(10)
 
-    enable_command.is_enable = False
-    pub_enable.publish(enable_command)
-    print(enable_command)
-    rospy.sleep(2)
+    # enable_command.is_enable = False
+    # pub_enable.publish(enable_command)
+    # print(enable_command)
+    # rospy.sleep(2)
