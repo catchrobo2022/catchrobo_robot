@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from black import diff
 from catchrobo_manager.gui_menu_enum import CalibrationMenu, GuiMenu
 from catchrobo_manager.jagarico.database import Database
 
@@ -14,7 +13,6 @@ from tf2_msgs.msg import TFMessage
 from std_msgs.msg import Int8
 
 
-import math
 import numpy as np
 
 

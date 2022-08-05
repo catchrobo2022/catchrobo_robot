@@ -90,23 +90,10 @@ sudo chmod a+rw /dev/ttyACM0
 cu -s 921600 -l /dev/ttyACM0
 ```
 
-### test用
-#### workアルゴリズムテスト
+### simulation
 ```
 roslaunch catchrobo_bringup sim_bringup.launch 
-rosrun catchrobo_manager work_manager.py 
-```
-
-#### shooterアルゴリズムテスト用
-```
-roslaunch catchrobo_bringup sim_bringup.launch 
-rosrun catchrobo_manager shooting_box_manager.py 
-```
-
-#### mainプログラム テスト
-```
-roslaunch catchrobo_bringup sim_bringup.launch 
-rosrun catchrobo_manager game_manager.py 
+rosrun catchrobo_manager game_manager_node.py 
 ```
 
 
