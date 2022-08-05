@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from re import X
-from signal import pause
-from tkinter import OFF
-import numpy as np
-from numpy import False_
-from rospy.core import rospyinfo
 import rospy
 
 from sensor_msgs.msg import Joy, JointState
