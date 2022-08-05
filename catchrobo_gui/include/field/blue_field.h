@@ -67,12 +67,14 @@ public:
     void send_menu_msgs(bool flag);
     void arrayback_obj(const std_msgs::Int32MultiArray& msg);
     void arrayback_gl(const std_msgs::Int32MultiArray& msg);
+    void arrayback_target_work(const std_msgs::Int8& msg);
+    void arrayback_target_box(const std_msgs::Int8& msg);
     void count_score();
     void count_obj();
     void count_gl();
     void timer();
-    void marker_obj(int num, int i);
-    void marker_gl(int num, int i);
+    void marker_obj(int num);
+    void marker_gl(int num);
     void jsk_show();
 
 private Q_SLOTS:
@@ -104,6 +106,8 @@ protected:
   ros::Publisher float_pub;
   ros::Subscriber sub_obj;
   ros::Subscriber sub_gl;
+  ros::Subscriber target_work;
+  ros::Subscriber target_box;
   ros::Timer ti_; 
   ros::NodeHandle n;
 };

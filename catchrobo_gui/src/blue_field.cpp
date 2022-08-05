@@ -62,6 +62,9 @@ Blue::Blue(QWidget *parent) :
     pub_gl = nh_.advertise<std_msgs::Int32MultiArray>("gl_rigo", 1);
     sub_gl = n.subscribe("gl_giro", sendtime, &Blue::arrayback_gl, this);
 
+    target_work = n.subscribe("target_work", sendtime, &Blue::arrayback_target_work, this);
+    target_box = n.subscribe("target_box", sendtime, &Blue::arrayback_target_box, this);
+
     pub_menu = nh_.advertise<std_msgs::Int8>("menu", 1);
     pub_arrow = nh_.advertise<std_msgs::Int8>("arrow_sub", 1);
 
@@ -144,18 +147,8 @@ void Blue::onDisable()
 void Blue::obj_Clicked()
 {
   if(touch_mode == 1){
-    int arg;
     QPushButton * btn = dynamic_cast<QPushButton*>(sender());
-    for( int i=0; i<obj_num; ++i){
-      if(QString("obj"+QString::number(i)) == btn->objectName()){
-        arg = i;
-      }
-    }
-    for(int i=0; i< obj_num;++i){
-      this->marker_obj(i, 0);
-    }
     btn->setChecked(1);
-    this->marker_obj(arg, 1);
   }
   
   this->count_obj();
@@ -171,12 +164,8 @@ void Blue::gl_Clicked()
       if(QString("gl"+QString::number(i)) == btn->objectName()){
         arg = i;
       }
-    }  
-    for(int i=0; i< gl_num;++i){
-      this->marker_gl(i, 0);
-    }
+    } 
     btn->setChecked(0);
-    this->marker_gl(arg, 1);
   }
   this->count_gl();
   this->send_gl_msgs(false);
@@ -224,10 +213,6 @@ void Blue::arrayback_obj(const std_msgs::Int32MultiArray& msg){
   }else{
     for(int i=0; i<num; i++){
         findChild<QPushButton*>(QString("obj"+QString::number(i)))->setChecked(msg.data[i]);
-        this->marker_obj(i, 0);
-        if(msg.data[i] == 2){
-          this->marker_obj(i, 1);
-        }
     }
     this->count_obj();
   }
@@ -241,24 +226,28 @@ void Blue::arrayback_gl(const std_msgs::Int32MultiArray& msg){
   }else{
     for(int i=0; i<num; i++){
         findChild<QPushButton*>(QString("gl"+QString::number(i)))->setChecked(msg.data[i]);
-        this->marker_gl(i, 0);
-        if(msg.data[i] == 2){
-          this->marker_gl(i, 1);
-        }
     }
     this->count_gl();
   }
 }
 
+void Blue::arrayback_target_work(const std_msgs::Int8& msg){
+  this->marker_obj(msg.data);
+}
+
+void Blue::arrayback_target_box(const std_msgs::Int8& msg){
+  this->marker_gl(msg.data);
+}
+
 void Blue::count_obj(){
   for(int i=0; i<obj_num; i++){
-      obj[i] = findChild<QPushButton*>(QString("obj"+QString::number(i)))->isChecked() + obj_frame[i];
+      obj[i] = findChild<QPushButton*>(QString("obj"+QString::number(i)))->isChecked();
   }
 }
 
 void Blue::count_gl(){
   for(int i=0; i<gl_num; i++){
-      gl[i] = findChild<QPushButton*>(QString("gl"+QString::number(i)))->isChecked() + gl_frame[i];
+      gl[i] = findChild<QPushButton*>(QString("gl"+QString::number(i)))->isChecked();
   }
   this->count_score();
 }
@@ -279,27 +268,26 @@ void Blue::menu_panel(){
     }
     ui->origin->setChecked(0);
   }else if(QString("calib") == name){
-    if(QString("1st point") == btn->text()){
+    if(QString("2.Calib\n2nd point") == btn->text()){
       status = 3;
-      arrow.data = 2;
-      btn->setText("2nd point");
-    }else if(QString("2nd point") == btn->text()){
+      //arrow.data = 2;
+      btn->setText("2.Calib\n3rd point");
+    }else if(QString("2.Calib\n3rd point") == btn->text()){
       status = 4;
-      arrow.data = 3;
-      btn->setText("3rd point");
-    }else if(QString("3rd point") == btn->text()){
+      //arrow.data = 3;
+      btn->setText("2.Calib\n4th point");
+    }else if(QString("2.Calib\n4th point") == btn->text()){
       status = 5;
-      arrow.data = 1;
-      btn->setText("1st point");
+      //arrow.data = 1;
+      btn->setText("2.Calib\n1st point");
     }else{
-      arrow.data = 1;
-      btn->setText("1st point");
+      //arrow.data = 1;
+      btn->setText("2.Calib\n2nd point");
       status = 2;
     }
     ui->calib->setChecked(0);
-    pub_arrow.publish(arrow);
+    //pub_arrow.publish(arrow);
   }else if(QString("init") == name){
-    ui->calib->setText("2.Calib");
     status = 6;
     arrow.data = 0;
     pub_arrow.publish(arrow);
@@ -371,7 +359,7 @@ void Blue::countdown(){
   }
 }
 
-void Blue::marker_obj(int num, int i){
+void Blue::marker_obj(int num){
   for(int i=0;i<obj_num;++i){
     if(i<9){
       findChild<QFrame*>(QString("fm"+QString::number(i)))->setStyleSheet("color: rgb(210,210,210)");
@@ -380,16 +368,13 @@ void Blue::marker_obj(int num, int i){
     }
   }
   findChild<QFrame*>(QString("fm"+QString::number(num)))->setStyleSheet("color: rgb(255,170,0)");
-  obj_frame[num] = i*2;
 }
-void Blue::marker_gl(int num, int i){
+void Blue::marker_gl(int num){
   for(int i=0;i<gl_num;++i){
     findChild<QFrame*>(QString("frm"+QString::number(i)))->setStyleSheet("color: rgb(0,255,0)");
   }
   findChild<QFrame*>(QString("frm"+QString::number(num)))->setStyleSheet("color: rgb(255,170,0)");
-  gl_frame[num] = i*2;
 }
-
 }
 
 PLUGINLIB_EXPORT_CLASS(field::Blue, rviz::Panel )
