@@ -5,10 +5,10 @@
 class GuiMenu:
     NONE = 0
     ORIGIN = 1
-    CALIBLATION = 2
-    POINT1 = 3
-    POINT2 = 4
-    POINT3 = 5
+    POINT1 = 2
+    POINT2 = 3
+    POINT3 = 4
+    POINT4 = 5
     INIT = 6
     START = 7
 

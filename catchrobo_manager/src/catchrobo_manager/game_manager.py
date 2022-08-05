@@ -81,7 +81,6 @@ class GameManager:
         elif self._gui_msg == GuiMenu.INIT:
             self.init_actions()
             # elif self._gui_msg == GuiMenu.CALIBLATION:
-            rospy.sleep(1)
             self._box_manager.load_temp()
         elif self._gui_msg == GuiMenu.START:
             self.auto_mode()

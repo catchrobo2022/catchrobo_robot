@@ -61,10 +61,10 @@ class Calibration:
         menu = msg.data
         # if GuiMenu.POINT1 <= menu < GuiMenu.INIT:
         ### [TODO] 名前変えてもらったほうが良さそう. END
-        if GuiMenu.CALIBLATION <= menu <= GuiMenu.POINT3:
+        if GuiMenu.POINT1 <= menu <= GuiMenu.POINT4:
             ### point 指示なら、pointsに順に追加していく
             self.set_point(self._robot_pose)
-        if menu == GuiMenu.POINT3:
+        if menu == GuiMenu.POINT4:
             self.calibration()
 
     #############################################################
