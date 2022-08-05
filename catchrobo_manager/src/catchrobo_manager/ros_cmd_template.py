@@ -29,6 +29,9 @@ class RosCmdTemplate:
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
 
+    def set_current_state(self, scale):
+        self._current_limit_scale = scale
+
     def set_accerelation_limit_scale(self, accerelation_limit_scale):
         ### [WARN] この関数は現在使えない
         self._accerelation_limit_scale = accerelation_limit_scale

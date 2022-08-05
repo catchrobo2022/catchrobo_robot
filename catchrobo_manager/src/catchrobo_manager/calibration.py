@@ -73,7 +73,7 @@ class Calibration:
 
     def calibration(self) -> None:
         center, rotate = self.calc_tf()
-        # center[0] += 0.1
+        center[0] += 0.002
         # center[1] += 0.2
         # rotate = 0.01  # np.math.pi / 2
         self.pub_tf(
