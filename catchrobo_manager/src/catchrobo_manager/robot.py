@@ -247,7 +247,7 @@ class Robot:
         self.control_permission(False)
         msg = Int8()
         msg.data = ManualCommand.MANUAL_ON
-        self._pub_manual_command(msg)
+        self._pub_manual_command.publish(msg)
 
     def check_permission(self):
         return self._control_permission

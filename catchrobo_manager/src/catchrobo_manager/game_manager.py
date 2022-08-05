@@ -33,7 +33,8 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
-        self.SHOOT_HEIGHT_m = 0.01
+        self.SHOOT_HEIGHT_m = 0.101
+        self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + 0.076
         self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
@@ -80,7 +81,6 @@ class GameManager:
         elif self._gui_msg == GuiMenu.INIT:
             self.init_actions()
             # elif self._gui_msg == GuiMenu.CALIBLATION:
-            rospy.sleep(1)
             self._box_manager.load_temp()
         elif self._gui_msg == GuiMenu.START:
             self.auto_mode()
@@ -158,7 +158,7 @@ class GameManager:
             if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
-                # self.manunal_mode()
+                self.manunal_mode()
                 pass_action = True
             self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
@@ -229,7 +229,7 @@ class GameManager:
             self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
         elif next_action == ShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
-            # self.manunal_mode()
+            self.manunal_mode()
             pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
@@ -243,7 +243,7 @@ class GameManager:
         elif next_action == ShootAction.PICK_WORK_ON_WORK:
             if self._robot.has_work() > 0:
                 ### 残ったじゃがりこを掴む
-                self._robot.go(z=box_position[2] + self.WORK_HEIGHT_m)
+                self._robot.go(z=self.PICK_WORK_ON_SHOOTING_BOX_m)
                 self._robot.close_gripper()
                 # self._robot.set_work_num(self._has_work + 1)
         elif next_action == ShootAction.END:

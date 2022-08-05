@@ -61,10 +61,10 @@ class Calibration:
         menu = msg.data
         # if GuiMenu.POINT1 <= menu < GuiMenu.INIT:
         ### [TODO] 名前変えてもらったほうが良さそう. END
-        if GuiMenu.CALIBLATION <= menu < GuiMenu.INIT:
+        if GuiMenu.POINT1 <= menu <= GuiMenu.POINT4:
             ### point 指示なら、pointsに順に追加していく
             self.set_point(self._robot_pose)
-        elif menu == GuiMenu.INIT:
+        if menu == GuiMenu.POINT4:
             self.calibration()
 
     #############################################################
@@ -73,7 +73,7 @@ class Calibration:
 
     def calibration(self) -> None:
         center, rotate = self.calc_tf()
-        # center[0] += 0.1
+        center[0] += 0.002
         # center[1] += 0.2
         # rotate = 0.01  # np.math.pi / 2
         self.pub_tf(
@@ -142,8 +142,9 @@ class Calibration:
 
     def set_point(self, msg: PoseStamped) -> None:
         position = msg.pose.position
-        point = [position.x, position.y]
+        point = [position.x, position.y, position.z]
         point = np.asarray(point)
+        rospy.loginfo(point)
         id = self.get_quadrant(point, self._default_center)
         self._points[id] = point
 

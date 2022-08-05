@@ -63,7 +63,7 @@ public:
         while (1)
         {
             spinOnce();
-            wait_ms(1000);
+            // wait_ms(1000);
         }
     };
     void publishError(const catchrobo_msgs::ErrorCode &msg)

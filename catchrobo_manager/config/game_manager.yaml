@@ -1,7 +1,7 @@
 game_manager:
   max_has_work: 5
   init_y_m_red: 1.7
-  INIT_Z_m: 0.205
+  INIT_Z_m: 0.215
   WORK_HEIGHT_m: 0.087
 
 ros_cmd:
@@ -24,7 +24,7 @@ robot:
   robot_origin_m: [0.09045, 0.845, 0.0705]
   OPEN_GRIPPER_RAD: 1.57079632679
   CLOSE_GRIPPER_RAD: 0
-  finish_wait_Hz: 100
+  finish_wait_Hz: 1000
 
 calibration:
   base_frame: "base/base_link"
