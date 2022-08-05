@@ -158,7 +158,7 @@ class GameManager:
             if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
-                self.manunal_mode()
+                self._robot.ask_manual()
                 pass_action = True
             self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
@@ -229,7 +229,7 @@ class GameManager:
             self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
         elif next_action == ShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
-            self.manunal_mode()
+            self._robot.ask_manual()
             pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
@@ -292,7 +292,7 @@ class GameManager:
         rospy.loginfo("no open shooting box")
         self._robot.go(z=self.INIT_Z_m)
         # self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m)
-        self.manunal_mode()
+        self._robot.ask_manual()
 
         rospy.loginfo("game_manager spin end")
 
