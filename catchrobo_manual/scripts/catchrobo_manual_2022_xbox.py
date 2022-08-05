@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from re import X
+from signal import pause
+from tkinter import OFF
 import numpy as np
 from numpy import False_
 from rospy.core import rospyinfo
@@ -104,7 +106,9 @@ class Manual:
         self.manual_msg = Int8()
         self.manual_msg.data = self.manual_cmd.NONE
 
+        #manual mode のonoff用の変数
         self.pause_manual = True
+
         self.button_enable = True
         self.cmd_flag = [False] * 3
 
@@ -132,11 +136,18 @@ class Manual:
 
     def enable_callback(self, msg):
         ### [TODO] 自動制御側からも enableの指示が来る
-        pass
+        enable_msg=msg
+        self.button_enable = enable_msg.is_enable
 
     def ask_manual_callback(self, msg):
         ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う.
-        pass
+        if(msg==0):#off
+            self.pause_manual=True
+            print("manual_off")
+        elif(msg==1):# on
+            self.pause_manual = False
+            print("manual_on")
+        
 
     def joyCallback(self, joy_msg):
         self.joy_state = joy_msg
@@ -288,10 +299,7 @@ class Manual:
                     self.old_joystick[2] = 0
                     self.cmd_flag[2] = True
 
-                self.old_joystick[0] = joy_a[b_num.LX]
-                self.old_joystick[1] = joy_a[b_num.LY]
-                self.old_button[0] = joy_a[b_num.RIGHT_LEFT]
-                self.old_button[1] = joy_a[b_num.UP_DOWN]
+                
 
                 ### 指令値適当
                 # gripper
@@ -316,68 +324,59 @@ class Manual:
                 elif joy_b[b_num.B] == 0 and self.button_count[b_num.B] == 3:
                     self.button_count[b_num.B] = 0
 
-                # # 　位置制御
-                # # 　一回押すと、一回分動く仕様
-                # # 　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
-                # # x軸
-                # if joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0] < 1:
-                #     self.posSet(0)
-                #     self.position_var_manual[0] += cmd_tmp.robot_m2rad(
-                #         cmd_x.id, 0.005 * self.COLOR_NUM
-                #     )
-                #     self.cmd_flag[0] = True
-                #     print("b_left")
-                # elif joy_a[b_num.RIGHT_LEFT] == -1 and self.old_button[0] > -1:
-                #     self.posSet(0)
-                #     self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
-                #         cmd_x.id, 0.005 * self.COLOR_NUM
-                #     )
-                #     self.cmd_flag[0] = True
-                #     print("b_right")
-                # elif joy_a[b_num.RIGHT_LEFT] == 0 and (
-                #     self.old_button[0] > 0 or self.old_button[0] < 0
-                # ):
-                #     self.position_var_manual[0] = 0.0
-                #     self.cmd_flag[0] = True
+                # 　位置制御
+                # 　一回押すと、一回分動く仕様
+                # 　移動距離が短い場合は台形加速の恩恵がほぼないから、DIRECTで制御にする
+                # x軸
+                if joy_a[b_num.RIGHT_LEFT] == 1 and self.old_button[0] < 1:
+                    self.posSet(0)
+                    self.position_var_manual[0] += cmd_tmp.robot_m2rad(
+                        cmd_x.id, 0.005 * self.COLOR_NUM
+                    )
+                    self.cmd_flag[0] = True
+                    print("b_left")
+                elif joy_a[b_num.RIGHT_LEFT] == -1 and self.old_button[0] > -1:
+                    self.posSet(0)
+                    self.position_var_manual[0] -= cmd_tmp.robot_m2rad(
+                        cmd_x.id, 0.005 * self.COLOR_NUM
+                    )
+                    self.cmd_flag[0] = True
+                    print("b_right")
+                elif joy_a[b_num.RIGHT_LEFT] == 0 and (
+                    self.old_button[0] > 0 or self.old_button[0] < 0
+                ):
+                    self.position_var_manual[0] = 0.0
+                    self.cmd_flag[0] = True
 
-                # # y軸
-                # if joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1:
-                #     self.posSet(1)
-                #     self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
-                #         cmd_y.id, 0.005 * self.COLOR_NUM
-                #     )
-                #     self.cmd_flag[1] = True
-                #     print("b_forward")
-                # elif joy_a[b_num.UP_DOWN] == -1 and self.old_button[1] > -1:
-                #     self.posSet(1)
-                #     self.position_var_manual[1] += cmd_tmp.robot_m2rad(
-                #         cmd_y.id, 0.005 * self.COLOR_NUM
-                #     )
-                #     self.cmd_flag[1] = True
-                #     print("b_back")
-                # elif joy_a[b_num.UP_DOWN] == 0 and (
-                #     self.old_button[1] > 0 or self.old_button[1] < 0
-                # ):
-                #     self.position_var_manual[1] = 0.0
-                #     self.cmd_flag[1] = True
+                # y軸
+                if joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1:
+                    self.posSet(1)
+                    self.position_var_manual[1] -= cmd_tmp.robot_m2rad(
+                        cmd_y.id, 0.005 * self.COLOR_NUM
+                    )
+                    self.cmd_flag[1] = True
+                    print("b_forward")
+                elif joy_a[b_num.UP_DOWN] == -1 and self.old_button[1] > -1:
+                    self.posSet(1)
+                    self.position_var_manual[1] += cmd_tmp.robot_m2rad(
+                        cmd_y.id, 0.005 * self.COLOR_NUM
+                    )
+                    self.cmd_flag[1] = True
+                    print("b_back")
+                elif joy_a[b_num.UP_DOWN] == 0 and (
+                    self.old_button[1] > 0 or self.old_button[1] < 0
+                ):
+                    self.position_var_manual[1] = 0.0
+                    self.cmd_flag[1] = True
+
+                self.old_joystick[0] = joy_a[b_num.LX]
+                self.old_joystick[1] = joy_a[b_num.LY]
+                self.old_button[0] = joy_a[b_num.RIGHT_LEFT]
+                self.old_button[1] = joy_a[b_num.UP_DOWN]
 
                 ### manual if
 
-            ### 自動→手動切り替え # manual offはpauseを兼ねる
-            # manual off
-            if joy_b[b_num.A] == 1:
-                self.manual_msg.data = m_cmd.MANUAL_OFF
-                self.pause_manual = True
-                self.pauseManual()
-                self.pub_manual_command.publish(self.manual_msg)
-                self.button_count[b_num.A] = 1
-                print("b_manual_off")
-            # manual on
-            if joy_b[b_num.Y] == 1:
-                self.manual_msg.data = m_cmd.MANUAL_ON
-                self.pause_manual = False
-                self.pub_manual_command.publish(self.manual_msg)
-                print("b_manual_on")
+            
 
             # # 待機　pause
             # # 入力を受け付けない感じ#positionに現在位置を入れ続ける。
@@ -406,6 +405,21 @@ class Manual:
             #     print("restart")
 
             ### enable if
+
+        ### 自動→手動切り替え # manual offはpauseを兼ねる
+        # manual off
+        if joy_b[b_num.A] == 1:
+            self.manual_msg.data = m_cmd.MANUAL_OFF
+            self.pause_manual = True
+            self.pauseManual()
+            self.pub_manual_command.publish(self.manual_msg)
+            print("b_manual_off")
+        # manual on
+        if joy_b[b_num.Y] == 1:
+            self.manual_msg.data = m_cmd.MANUAL_ON
+            self.pause_manual = False
+            self.pub_manual_command.publish(self.manual_msg)
+            print("b_manual_on")
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
         if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
