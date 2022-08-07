@@ -3,11 +3,11 @@
 from enum import IntEnum, auto
 
 
-class NextTarget:
-    PICK = 0
-    SHOOT = 1
-    SECOND_SHOOT = 2
-    END = 2
+class NextTarget(IntEnum):
+    PICK = auto()
+    SHOOT = auto()
+    SECOND_SHOOT = auto()
+    END = auto()
 
 
 class Action(IntEnum):

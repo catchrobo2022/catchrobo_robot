@@ -33,6 +33,7 @@ class GameManager:
         init_y_m_red = rospy.get_param(name_space + "init_y_m_red")
         self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
+        self.IS_SIM = rospy.get_param("sim")
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
         self.SHOOT_HEIGHT_m = 0.101
@@ -193,6 +194,7 @@ class GameManager:
                 ### これ以上つかめなければshoot
                 next_target = NextTarget.SHOOT
             next_action = 0  # 次はSTARTから始まる
+            self._old_my_area = is_my_area
 
         if self._robot.check_permission() or pass_action:
             ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
@@ -330,7 +332,7 @@ class GameManager:
         elif next_target == NextTarget.SHOOT:
             if self._box_manager.get_open_num() == 0:
                 ### もうシュート場所がなければ終了
-                return NextTarget.END, PickAction.START
+                return NextTarget.SECOND_SHOOT, PickAction.START
             next_target, next_action = self.shoot_actions(next_action)
         elif next_target == NextTarget.SECOND_SHOOT:
             if self._on_box_manager.get_open_num() == 0:
@@ -392,7 +394,7 @@ class GameManager:
                 self.end_actions()
                 break
 
-        is_sim = rospy.get_param("sim")
+        is_sim = self.IS_SIM
         if is_sim:
             name = "sim/"
             if next_target != NextTarget.END:

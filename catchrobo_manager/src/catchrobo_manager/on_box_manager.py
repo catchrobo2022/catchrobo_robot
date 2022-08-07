@@ -11,13 +11,13 @@ from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 class OnBoxManager:
     def __init__(self, field):
         self._database = Database()
-        csv_name = field + "_shoot.csv"
+        csv_name = field + "_on_shoot.csv"
         self._database.readCsv(csv_name)
         self._calculator = TargetShootingBoxCalculator()
 
         self.EXIST_KEY = "exist"
         msg_template = [False] * self._database.getIdNum()
-        self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template, self.update_by_gui)
+        # self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template, self.update_by_gui)
 
     def get_target_id(self):
         # self.update_by_gui()
@@ -31,7 +31,7 @@ class OnBoxManager:
 
     def shoot(self, id):
         self._database.updateState(id, "exist", True)
-        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
+        # self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_open_num(self):
         return self._database.count("exist", False)
