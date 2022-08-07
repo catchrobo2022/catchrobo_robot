@@ -34,12 +34,10 @@ class GameManager:
         self.INIT_Z_m = rospy.get_param(name_space + "INIT_Z_m")
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         self.IS_SIM = rospy.get_param("sim")
+        self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
-        self.SHOOT_HEIGHT_m = 0.101
-        self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + 0.076
-        self.SECOND_SHOOT_m = self.PICK_WORK_ON_SHOOTING_BOX_m
-        self.OPEN_A_BIT_RAD = np.deg2rad(10)
+        # self.OPEN_A_BIT_RAD = np.deg2rad(10)
         self.FIELD = rospy.get_param("field")
         self.FIELD_SIGN = 1 if self.FIELD == "red" else -1
         self.INIT_Y_m = init_y_m_red * self.FIELD_SIGN
@@ -65,6 +63,8 @@ class GameManager:
         posi, _, _ = self._target_work_info
         self.INIT_X_m = posi[0]
         self.BEFORE_COMMON_AREA_Y_m = posi[1]
+        self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + posi[2]
+        self.SECOND_SHOOT_m = self.PICK_WORK_ON_SHOOTING_BOX_m
 
         self._rate = rospy.Rate(10)
         self._gui_msg = GuiMenu.NONE
