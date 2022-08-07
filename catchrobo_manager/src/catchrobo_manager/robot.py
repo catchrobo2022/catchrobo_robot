@@ -32,6 +32,8 @@ class Robot:
         self.OPEN_GRIPPER_RAD = rospy.get_param(name_space + "OPEN_GRIPPER_RAD")
         self.CLOSE_GRIPPER_RAD = rospy.get_param(name_space + "CLOSE_GRIPPER_RAD")
         finish_wait_Hz = rospy.get_param(name_space + "finish_wait_Hz")
+        self.IS_SIM = rospy.get_param("sim")
+
         ############################
 
         # self.SERVO_WAIT_s = 0.5
@@ -46,6 +48,8 @@ class Robot:
 
         # self._current_state_robot = JointState()
         self._ros_cmd_template = RosCmdTemplate()
+        if self.IS_SIM:
+            self._ros_cmd_template.set_current_state([1, 1, 1, 1])
 
         self._motors = [Motor(i, self._ros_cmd_template) for i in range(self.N_MOTOR)]
         rospy.Subscriber("error", ErrorCode, self.error_callback)
@@ -244,6 +248,8 @@ class Robot:
             # self._error = msg
 
     def ask_manual(self):
+        if self.IS_SIM:
+            return
         self.control_permission(False)
         msg = Int8()
         msg.data = ManualCommand.MANUAL_ON

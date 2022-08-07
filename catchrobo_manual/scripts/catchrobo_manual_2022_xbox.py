@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from re import X
-from signal import pause
-from tkinter import OFF
-import numpy as np
-from numpy import False_
-from rospy.core import rospyinfo
 import rospy
 
 from sensor_msgs.msg import Joy, JointState
@@ -146,10 +140,10 @@ class Manual:
 
     def ask_manual_callback(self, msg):
         ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う.
-        if msg == ManualCommand.MANUAL_OFF:  # off
+        if msg.data == ManualCommand.MANUAL_OFF:  # off
             self.pause_manual = True
             print("manual_off")
-        elif msg == ManualCommand.MANUAL_ON:  # on
+        elif msg.data == ManualCommand.MANUAL_ON:  # on
             self.pause_manual = False
             print("manual_on")
 

@@ -60,8 +60,8 @@ public:
         float epsilon = 0.01; // ジャストenableに引っかかることがあるので、ちょっと多めに取る
         float position_max_rad[] = {78.68526044, 25.67088441, 8.435758051};
         float position_min_rad[] = {0, -25.67088441, 0 - epsilon};
-        float velocity_limit_rad[] = {180, 180, 180};
-        float torque_limit_rad[] = {KT_OUT * current_limit, KT_OUT * current_limit, KT_OUT * 30};
+        // float velocity_limit_rad[] = {180, 180, 180};
+        // float torque_limit_rad[] = {KT_OUT * current_limit, KT_OUT * current_limit, KT_OUT * 30};
         for (size_t i = 0; i < motor_num_; i++)
         {
             // float pos_min = m2rad(i, position_min_m[i]);
@@ -72,7 +72,7 @@ public:
             // float torque_max = m2rad(i, torque_limit_m[i]);
 
             check_position[i].init(position_min_rad[i], position_max_rad[i]);
-            check_velocity[i].init(-velocity_limit_rad[i], velocity_limit_rad[i]);
+            // check_velocity[i].init(-velocity_limit_rad[i], velocity_limit_rad[i]);
             // check_torque[i].init(-torque_limit_rad[i], torque_limit_rad[i]);
         }
     };
