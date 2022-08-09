@@ -2230,8 +2230,7 @@
         </font>
        </property>
        <property name="text">
-        <string>2.Calib
-1st point</string>
+        <string>2.Calib</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
