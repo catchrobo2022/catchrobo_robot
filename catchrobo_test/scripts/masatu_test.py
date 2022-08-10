@@ -19,13 +19,13 @@ class TimeTest:
         rospy.Subscriber("joy", Joy, self.joy_callback, queue_size=1)
 
     def joy_callback(self, msg: Joy) -> None:
-        step = 0.1
-        UP_DOWN = 6
-        LEFT_RIGHT = 7
+        step = 0.05
+        UP_DOWN = 5
+        LEFT_RIGHT = 4
         add = msg.axes[UP_DOWN]
         self._effort += step * add
 
-        self._target_id = 0
+        self._target_id = 1
         command = self._template.generate_ros_command(
             id=self._target_id,
             mode=MyRosCmd.DIRECT_CTRL_MODE,
@@ -34,7 +34,8 @@ class TimeTest:
         command.kp = 0
         command.kd = 0
         command.effort = self._effort
-        print(command)
+        rospy.loginfo(command.effort)
+        # print(command)
         self._t = rospy.Time.now()
         self._pub.publish(command)
 
