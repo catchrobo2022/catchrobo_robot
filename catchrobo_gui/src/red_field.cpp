@@ -263,35 +263,32 @@ void Red::menu_panel(){
     }
     ui->origin->setChecked(0);
   }else if(QString("calib") == name){
-    if(QString("2.Calib\n2nd point") == btn->text()){
+    if(QString("2.Calib\n1st point") == btn->text()){
       status = 3;
-      //arrow.data = 2;
+      btn->setText("2.Calib\n2nd point");
+    }else if(QString("2.Calib\n2nd point") == btn->text()){
+      status = 4;
       btn->setText("2.Calib\n3rd point");
     }else if(QString("2.Calib\n3rd point") == btn->text()){
-      status = 4;
-      //arrow.data = 3;
+      status = 5;
       btn->setText("2.Calib\n4th point");
     }else if(QString("2.Calib\n4th point") == btn->text()){
-      status = 5;
-      //arrow.data = 1;
-      btn->setText("2.Calib\n1st point");
+      status = 6;
+      btn->setText("2.Calib");
     }else{
-      //arrow.data = 1;
-      btn->setText("2.Calib\n2nd point");
+      btn->setText("2.Calib\n1st point");
       status = 2;
     }
     ui->calib->setChecked(0);
-    //pub_arrow.publish(arrow);
   }else if(QString("init") == name){
-    status = 6;
-    //arrow.data = 0;
-    //pub_arrow.publish(arrow);
+    status = 7;
+    ui->calib->setText("2.Calib");
     ui->init->setChecked(0);
     //ui->calib->setEnabled(0);
     //ui->init->setEnabled(0);
     //ui->start->setEnabled(1);
   }else if(QString("start") == name){
-    status = 7;
+    status = 8;
     mytimer.stop();
     ti = 180.0;
     stop_ti = 0;

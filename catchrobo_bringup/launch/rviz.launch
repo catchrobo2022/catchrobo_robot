@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="field" default="blue" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/rviz_$(arg field).rviz" required="true" />
+</launch>

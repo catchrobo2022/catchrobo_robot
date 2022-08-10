@@ -85,6 +85,9 @@ class WorkManager:
         # self.update_by_gui()
         return self._database.isExist(id)
 
+    def get_remain_num_in_common(self):
+        return self._database.get_remain_num_in_common()
+
 
 if __name__ == "__main__":
     import rospy

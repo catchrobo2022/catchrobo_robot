@@ -115,6 +115,9 @@ class Robot:
         # peg_cmd.data = False
         # self._pub_peg_in_hole_cmd.publish(peg_cmd)
 
+    def set_current_limit_scale(self, scale):
+        self._ros_cmd_template.set_current_state(scale)
+
     ## robot座標系
     def go_robot_m(self, x=None, y=None, z=None, wait=True):
         ### stop flagが立ったら指示しない
