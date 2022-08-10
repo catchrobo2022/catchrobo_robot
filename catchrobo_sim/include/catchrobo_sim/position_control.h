@@ -15,7 +15,7 @@ public:
     PositionControl() : no_target_flag_(true), finish_already_notified_(false),
                         temp_target_flag_(false), final_target_position_(0), threshold_(0){};
 
-    void init(float threshold){
+    void init(float threshold, float friction){
         threshold_ = threshold;
         friction_ = 0;
     }

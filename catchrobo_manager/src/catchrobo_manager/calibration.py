@@ -24,7 +24,8 @@ class Calibration:
         self.SHOOTING_BOX_REAL_FRAME = rospy.get_param(
             name_space + "shooting_box_real_frame"
         )
-        self.TEMP_FILE = rospy.get_param(name_space + "temp_csv")
+        self.TEMP_FILE = "temp/" + self.FIELD + "_shoot.csv"
+
         # self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
         #     name_space + "shooting_box_ideal_frame"
         # )

@@ -32,4 +32,3 @@ robot:
 calibration:
   base_frame: "base/base_link"
   shooting_box_real_frame: "base/shooter"
-  temp_csv: "temp/shoot.csv"

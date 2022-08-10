@@ -97,7 +97,7 @@ class GameManager:
             self.auto_mode()
             self._game_start = True
             self._game_start_t = rospy.Time.now()
-        elif msg.data == GuiMenu.CALIBLATION:
+        elif msg.data == GuiMenu.CALIBRATION:
             self._robot.close_gripper()
         elif msg.data == GuiMenu.POINT4:
             rospy.sleep(1)

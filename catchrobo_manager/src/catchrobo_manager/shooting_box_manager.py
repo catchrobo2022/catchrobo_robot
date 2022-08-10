@@ -10,6 +10,7 @@ from catchrobo_manager.jagarico.gui_bridge import GuiBridge
 
 class ShootingBoxManager:
     def __init__(self, field):
+        self.FIELD = field
         self._database = Database()
         csv_name = field + "_shoot.csv"
         self._database.readCsv(csv_name)
@@ -49,7 +50,7 @@ class ShootingBoxManager:
         return self._database.isExist(id)
 
     def load_temp(self):
-        csv_name = "temp/shoot.csv"
+        csv_name = "temp/" + self.FIELD + "_shoot.csv"
         self._database.readCsv(csv_name)
 
 
