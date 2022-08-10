@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from catchrobo_manager.gui_menu_enum import CalibrationMenu, GuiMenu
+from catchrobo_manager.gui_menu_enum import GuiMenu
 from catchrobo_manager.jagarico.database import Database
 
 import rospy
@@ -39,7 +39,6 @@ class Calibration:
 
         self.BOX_IDS = [0, 2, 15, 17]
         self._br = tf2_ros.StaticTransformBroadcaster()
-        self._gui_msg = CalibrationMenu.NONE
 
         self._default_points, self._default_center = self.init_default_points()
         self._points = np.copy(self._default_points)

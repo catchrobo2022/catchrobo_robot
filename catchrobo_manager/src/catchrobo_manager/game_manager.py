@@ -75,7 +75,6 @@ class GameManager:
         self.SECOND_SHOOT_m = self.PICK_WORK_ON_SHOOTING_BOX_m
 
         self._rate = rospy.Rate(10)
-        self._gui_msg = GuiMenu.NONE
         # self._manual_msg = ManualCommand.NONE
 
         self._go_flag = False
@@ -89,19 +88,20 @@ class GameManager:
     ########################################################################
 
     def gui_callback(self, msg):
-        self._gui_msg = msg.data
-        if self._gui_msg == GuiMenu.ORIGIN:
+        if msg.data == GuiMenu.ORIGIN:
             self._robot.set_origin()
-        elif self._gui_msg == GuiMenu.INIT:
+        elif msg.data == GuiMenu.INIT:
             self.init_actions()
-            # elif self._gui_msg == GuiMenu.CALIBLATION:
             self._box_manager.load_temp()
-        elif self._gui_msg == GuiMenu.START:
+        elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
             self._game_start_t = rospy.Time.now()
-
-        self._gui_msg = GuiMenu.NONE
+        elif msg.data == GuiMenu.CALIBLATION:
+            self._robot.close_gripper()
+        elif msg.data == GuiMenu.POINT4:
+            rospy.sleep(1)
+            self._robot.open_gripper()
 
     def manual_callback(self, msg):
         # self._manual_msg = msg.data

@@ -137,8 +137,8 @@ private:
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }
-    void sign(float val){
-        return (val > 0) - (val<0)
+    int sign(float val){
+        return (val > 0) - (val<0);
     }
 
     // void packBeforeSetTargetCmd(int id, ControlStruct &cmd){
