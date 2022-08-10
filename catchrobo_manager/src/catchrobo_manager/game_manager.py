@@ -90,6 +90,7 @@ class GameManager:
     def gui_callback(self, msg):
         if msg.data == GuiMenu.ORIGIN:
             self._robot.set_origin()
+            self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
             self._box_manager.load_temp()
