@@ -17,6 +17,7 @@ public:
 
     void init(float threshold){
         threshold_ = threshold;
+        friction_ = 0;
     }
     void setRosCmd(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
@@ -93,6 +94,7 @@ private:
     catchrobo_msgs::MyRosCmd target_;
     float final_target_position_;
     float threshold_; //収束判定しきい値
+    float friction_;
 
     void setAccelDesigner(const catchrobo_msgs::MyRosCmd &cmd, const StateStruct &joint_state)
     {
@@ -119,8 +121,10 @@ private:
         cmd.id = target.id;
         cmd.p_des = accel_designer.x(t);
         cmd.v_des = accel_designer.v(t);
-        cmd.torque_feed_forward = target.net_inertia * accel_designer.a(t) + target.effort;
-        cmd.kp = target.kp;
+        float friction = sign(cmd.v_des) * friction_;
+
+        cmd.torque_feed_forward = target.net_inertia * accel_designer.a(t) + target.effort + friction;
+        cmd.kp = target.kp; 
         cmd.kd = target.kd;
     }
 
@@ -132,6 +136,9 @@ private:
         cmd.torque_feed_forward = target.net_inertia * 0 + target.effort;
         cmd.kp = target.kp;
         cmd.kd = target.kd;
+    }
+    void sign(float val){
+        return (val > 0) - (val<0)
     }
 
     // void packBeforeSetTargetCmd(int id, ControlStruct &cmd){

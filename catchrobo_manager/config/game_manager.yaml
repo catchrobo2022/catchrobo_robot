@@ -8,6 +8,8 @@ game_manager:
 ros_cmd:
   velocity_limit_scale: 1
   current_limit_scale : [0.2, 0.2, 0.7, 1]
+  current_limit_scale_init : [0.1, 0.1, 0.7, 1]
+  current_limit_scale_fast : [0.4, 0.4, 0.7, 1]
   KT_OUT: 0.08
   work_mass: 0.06
   # acceleration_limit_scale: 1

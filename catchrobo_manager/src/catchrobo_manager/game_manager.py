@@ -35,6 +35,14 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         self.IS_SIM = rospy.get_param("sim")
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
+        self.CURRENT_LIMIT_SCALE = rospy.get_param("ros_cmd/current_limit_scale")
+        self.CURRENT_LIMIT_SCALE_INIT = rospy.get_param(
+            "ros_cmd/current_limit_scale_init"
+        )
+        self.CURRENT_LIMIT_SCALE_FAST = rospy.get_param(
+            "ros_cmd/current_limit_scale_fast"
+        )
+
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
         # self.OPEN_A_BIT_RAD = np.deg2rad(10)
@@ -68,7 +76,7 @@ class GameManager:
 
         self._rate = rospy.Rate(10)
         self._gui_msg = GuiMenu.NONE
-        self._manual_msg = ManualCommand.NONE
+        # self._manual_msg = ManualCommand.NONE
 
         self._go_flag = False
         self._old_my_area = True
@@ -96,15 +104,19 @@ class GameManager:
         self._gui_msg = GuiMenu.NONE
 
     def manual_callback(self, msg):
-        self._manual_msg = msg.data
-        if self._manual_msg == ManualCommand.MANUAL_ON:
+        # self._manual_msg = msg.data
+        if msg.data == ManualCommand.MANUAL_ON:
             self.manunal_mode()
-        elif self._manual_msg == ManualCommand.MANUAL_OFF:
+        elif msg.data == ManualCommand.MANUAL_OFF:
             self.auto_mode()
+        elif msg.data == ManualCommand.START:
+            self.auto_mode()
+            self._game_start = True
+            self._game_start_t = rospy.Time.now()
         # elif self._manual_msg == ManualCommand.GO:
         #     # self._go_flag = True
         #     self._robot.auto_mode()
-        self._manual_msg = ManualCommand.NONE
+        # self._manual_msg = ManualCommand.NONE
 
     def auto_mode(self):
         self._robot.control_permission(True)
@@ -346,10 +358,12 @@ class GameManager:
         self._is_init_mode = True
         self.auto_mode()
         self._robot.enable()
+        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_INIT)
         self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
+        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
         self._is_init_mode = False
 
         rospy.loginfo("init action finish")
@@ -362,6 +376,12 @@ class GameManager:
         self._robot.ask_manual()
 
         rospy.loginfo("game_manager spin end")
+
+    def change_current_scale(self):
+        if self._work_manager.get_remain_num_in_common() >= 5:
+            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_FAST)
+        else:
+            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
 
     def spin(self):
         rospy.loginfo("game manager spin start")
@@ -378,6 +398,7 @@ class GameManager:
                 self._rate.sleep()
                 old_t = rospy.Time.now()
                 continue
+            self.change_current_scale()
             next_target, next_action = self.main_actions(next_target, next_action)
             t = rospy.Time.now()
             dt = t - old_t

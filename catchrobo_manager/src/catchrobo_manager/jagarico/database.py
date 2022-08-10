@@ -77,3 +77,7 @@ class Database:
 
     def getColumn(self, key):
         return self._objects[key]
+
+    def get_remain_num_in_common(self):
+        group = self._objects.groupby("my_area").sum()
+        return group.loc[False, "exist"]
