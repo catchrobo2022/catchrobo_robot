@@ -425,6 +425,13 @@ class Manual:
 
             ### enable if
 
+        #試合開始ボタン game_start
+        if joy_b[b_num.X] == 1 and joy_b[b_num.RB] == 1:
+            self.manual_msg.data = m_cmd.START
+            self.pause_manual = False
+            self.pub_manual_command.publish(self.manual_msg)
+            print("b_game_start")
+
         ### 自動→手動切り替え # manual offはpauseを兼ねる
         # manual off
         if joy_b[b_num.A] == 1:
