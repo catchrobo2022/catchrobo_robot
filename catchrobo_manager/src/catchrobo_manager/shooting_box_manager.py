@@ -19,6 +19,7 @@ class ShootingBoxManager:
         self.EXIST_KEY = "exist"
         msg_template = [False] * self._database.getIdNum()
         self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template, self.update_by_gui)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):
         # self.update_by_gui()
@@ -52,6 +53,7 @@ class ShootingBoxManager:
     def load_temp(self):
         csv_name = "temp/" + self.FIELD + "_shoot.csv"
         self._database.readCsv(csv_name)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
 
 if __name__ == "__main__":

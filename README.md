@@ -69,6 +69,7 @@ roslaunch catchrobo_bringup bringup_base.launch
 
 sudo chmod a+rw /dev/ttyACM0 
 rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+roslaunch catchrobo_bringup rviz.launch
 rosrun catchrobo_manager game_manager_node.py
 roslaunch catchrobo_test rosbag_record.launch 
 ```

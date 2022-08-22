@@ -206,6 +206,7 @@ class GameManager:
             ):
                 ### これ以上つかめなければshoot
                 next_target = NextTarget.SHOOT
+                self._old_my_area = True
             next_action = 0  # 次はSTARTから始まる
             self._old_my_area = is_my_area
 

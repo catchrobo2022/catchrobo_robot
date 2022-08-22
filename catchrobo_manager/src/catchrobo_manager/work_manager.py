@@ -23,6 +23,7 @@ class WorkManager:
         self.EXIST_KEY = "exist"
         msg_template = [1] * self._database.getIdNum()
         self._gui = GuiBridge("obj_giro", "obj_rigo", msg_template, self.update_by_gui)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):
         # self.update_by_gui()
