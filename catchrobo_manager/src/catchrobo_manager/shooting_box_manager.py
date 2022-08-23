@@ -18,12 +18,15 @@ class ShootingBoxManager:
 
         self.EXIST_KEY = "exist"
         msg_template = [False] * self._database.getIdNum()
-        self._gui = GuiBridge("gl_giro", "gl_rigo", msg_template, self.update_by_gui)
+        self._gui = GuiBridge(
+            "gl_giro", "gl_rigo", "target_box", msg_template, self.update_by_gui
+        )
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):
         # self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
+        self._gui.send_target(target_id)
         return target_id
 
     def get_target_info(self):
