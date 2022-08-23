@@ -273,6 +273,7 @@ class GameManager:
                 ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
                 next_target = NextTarget.PICK
             next_action = 0  # 次はSTARTから始まる
+            self._old_my_area = True
 
         if self._robot.check_permission() or pass_action:
             ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
@@ -329,6 +330,7 @@ class GameManager:
             self._on_box_manager.shoot(target_id)
             next_action = 0  # 次はSTARTから始まる
             next_target = NextTarget.PICK
+            self._old_my_area = True
 
         if self._robot.check_permission() or pass_action:
             ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
