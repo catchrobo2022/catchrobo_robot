@@ -92,6 +92,10 @@ class WorkManager:
     def get_remain_num_in_common(self):
         return self._database.get_remain_num_in_common()
 
+    def save_result(self):
+        csv_name = "result/" + self.FIELD + "_work.csv"
+        self._database.save_csv(csv_name)
+
 
 if __name__ == "__main__":
     import rospy

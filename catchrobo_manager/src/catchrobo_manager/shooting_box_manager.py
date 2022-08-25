@@ -58,6 +58,10 @@ class ShootingBoxManager:
         self._database.readCsv(csv_name)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
+    def save_result(self):
+        csv_name = "result/" + self.FIELD + "_shoot.csv"
+        self._database.save_csv(csv_name)
+
 
 if __name__ == "__main__":
     import rospy
