@@ -42,6 +42,7 @@ class GameManager:
         self.CURRENT_LIMIT_SCALE_FAST = rospy.get_param(
             "ros_cmd/current_limit_scale_fast"
         )
+        self.IS_CONTINUE = rospy.get_param("is_continue")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
@@ -62,6 +63,11 @@ class GameManager:
         self._work_manager = WorkManager(self.FIELD)
         self._box_manager = ShootingBoxManager(self.FIELD)
         self._on_box_manager = OnBoxManager(self.FIELD)
+
+        if self.IS_CONTINUE:
+            self._work_manager.load("result")
+            self._box_manager.load("result")
+
         self._robot = Robot(self.FIELD)
 
         self._target_work_info = self._work_manager.get_target_info()
@@ -93,7 +99,7 @@ class GameManager:
             self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
-            self._box_manager.load_temp()
+            self._box_manager.load("temp")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -419,6 +425,8 @@ class GameManager:
                 self.end_actions()
                 break
 
+        self._work_manager.save_result()
+        self._box_manager.save_result()
         is_sim = self.IS_SIM
         if is_sim:
             name = "sim/"

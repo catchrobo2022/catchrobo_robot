@@ -53,8 +53,8 @@ class ShootingBoxManager:
     def is_exist(self, id):
         return self._database.isExist(id)
 
-    def load_temp(self):
-        csv_name = "temp/" + self.FIELD + "_shoot.csv"
+    def load(self, dir_name):
+        csv_name = dir_name + "/" + self.FIELD + "_shoot.csv"
         self._database.readCsv(csv_name)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 

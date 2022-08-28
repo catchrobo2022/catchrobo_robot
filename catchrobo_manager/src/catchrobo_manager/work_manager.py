@@ -17,7 +17,8 @@ class WorkManager:
         # [TODO] targetをGUIに教える
 
         self._database = Database()
-        csv_name = field + "_jagarico.csv"
+        self.FIELD = field
+        csv_name = field + "_work.csv"
         self._database.readCsv(csv_name)
         self._calculator = TargetJagaricoCalculator()
         self.EXIST_KEY = "exist"
@@ -91,6 +92,11 @@ class WorkManager:
 
     def get_remain_num_in_common(self):
         return self._database.get_remain_num_in_common()
+
+    def load(self, dir_name):
+        csv_name = dir_name + "/" + self.FIELD + "_work.csv"
+        self._database.readCsv(csv_name)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def save_result(self):
         csv_name = "result/" + self.FIELD + "_work.csv"
