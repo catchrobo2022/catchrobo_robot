@@ -42,6 +42,7 @@ class GameManager:
         self.CURRENT_LIMIT_SCALE_FAST = rospy.get_param(
             "ros_cmd/current_limit_scale_fast"
         )
+        self.IS_CONTINUE = rospy.get_param("is_continue")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
@@ -62,6 +63,11 @@ class GameManager:
         self._work_manager = WorkManager(self.FIELD)
         self._box_manager = ShootingBoxManager(self.FIELD)
         self._on_box_manager = OnBoxManager(self.FIELD)
+
+        if self.IS_CONTINUE:
+            self._work_manager.load("result")
+            self._box_manager.load("result")
+
         self._robot = Robot(self.FIELD)
 
         self._target_work_info = self._work_manager.get_target_info()
@@ -93,7 +99,7 @@ class GameManager:
             self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
-            self._box_manager.load_temp()
+            self._box_manager.load("temp")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -206,6 +212,7 @@ class GameManager:
             ):
                 ### これ以上つかめなければshoot
                 next_target = NextTarget.SHOOT
+                self._old_my_area = True
             next_action = 0  # 次はSTARTから始まる
             self._old_my_area = is_my_area
 
@@ -272,6 +279,7 @@ class GameManager:
                 ### 次のacution まだじゃがりこを持っていたらshoot, なければじゃがりこ掴み
                 next_target = NextTarget.PICK
             next_action = 0  # 次はSTARTから始まる
+            self._old_my_area = True
 
         if self._robot.check_permission() or pass_action:
             ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
@@ -328,6 +336,7 @@ class GameManager:
             self._on_box_manager.shoot(target_id)
             next_action = 0  # 次はSTARTから始まる
             next_target = NextTarget.PICK
+            self._old_my_area = True
 
         if self._robot.check_permission() or pass_action:
             ### action中にmanualに切り替わらず、動作を完遂したら、次の動作を行う
@@ -416,6 +425,8 @@ class GameManager:
                 self.end_actions()
                 break
 
+        self._work_manager.save_result()
+        self._box_manager.save_result()
         is_sim = self.IS_SIM
         if is_sim:
             name = "sim/"
@@ -444,6 +455,8 @@ class GameManager:
         )
         df.to_csv(filename + ".csv", index=True)
         rospy.loginfo("save " + filename)
+
+        ### ca
 
 
 if __name__ == "__main__":

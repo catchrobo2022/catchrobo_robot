@@ -6,5 +6,6 @@
         <arg name="field" value="$(arg field)" />
         <arg name="sim" value="true" />
     </include>
+    <include file="$(find catchrobo_bringup)/launch/rviz.launch" />
 
 </launch>

@@ -78,7 +78,7 @@ private:
         double b = position_now - position_min;
 
         if (b < 0){
-            return;
+            b=0;
         }
         double temp = -alpha * b;
         if (target_velocity < temp)
@@ -96,7 +96,7 @@ private:
 
 
         if (b < 0){
-            return;
+            b=0;
         }
         double temp = alpha * b;
         if (target_velocity > temp)

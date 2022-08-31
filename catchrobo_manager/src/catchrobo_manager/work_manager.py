@@ -17,16 +17,21 @@ class WorkManager:
         # [TODO] targetをGUIに教える
 
         self._database = Database()
-        csv_name = field + "_jagarico.csv"
+        self.FIELD = field
+        csv_name = field + "_work.csv"
         self._database.readCsv(csv_name)
         self._calculator = TargetJagaricoCalculator()
         self.EXIST_KEY = "exist"
         msg_template = [1] * self._database.getIdNum()
-        self._gui = GuiBridge("obj_giro", "obj_rigo", msg_template, self.update_by_gui)
+        self._gui = GuiBridge(
+            "obj_giro", "obj_rigo", "target_work", msg_template, self.update_by_gui
+        )
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):
         # self.update_by_gui()
         target_id = self._calculator.calcTarget(self._database)
+        self._gui.send_target(target_id)
         return target_id
 
     def get_target_info(self):
@@ -87,6 +92,15 @@ class WorkManager:
 
     def get_remain_num_in_common(self):
         return self._database.get_remain_num_in_common()
+
+    def load(self, dir_name):
+        csv_name = dir_name + "/" + self.FIELD + "_work.csv"
+        self._database.readCsv(csv_name)
+        self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
+
+    def save_result(self):
+        csv_name = "result/" + self.FIELD + "_work.csv"
+        self._database.save_csv(csv_name)
 
 
 if __name__ == "__main__":
