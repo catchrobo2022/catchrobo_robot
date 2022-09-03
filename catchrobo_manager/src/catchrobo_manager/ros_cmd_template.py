@@ -108,6 +108,8 @@ class RosCmdTemplate:
 
         ### 動作計画で想定する最大電流
         i_max = self._datas.loc["I_max"][id] * self._current_limit_scale[id]
+        # i_max = self._current_limit_scale[id]
+        #accel_current = self._current_limit_scale[id]
 
         ### 加速度limitの算出
         if id == 3:
@@ -130,7 +132,7 @@ class RosCmdTemplate:
                 command.effort = 0
 
             acceleration_limit = (
-                self.KT_OUT * i_max - command.effort
+                self.KT_OUT * i_max #- command.effort
             ) / command.net_inertia
         command.acceleration_limit = acceleration_limit
         return command
