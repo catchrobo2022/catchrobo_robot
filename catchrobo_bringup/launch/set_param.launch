@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="sim" default="false" />
+    <param name="sim" value="$(arg sim)" />
+    <rosparam file="$(find catchrobo_manager)/config/game_manager.yaml" command="load" ns="" />
+</launch>
