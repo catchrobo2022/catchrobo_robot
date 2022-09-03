@@ -103,7 +103,7 @@ class Manual:
         # manual mode のonoff用の変数
         self.pause_manual = True
 
-        self.button_enable = True
+        self.button_enable = False
         self.cmd_flag = [False] * 3
 
         self.old_joystick = [0.0] * 3
@@ -425,7 +425,7 @@ class Manual:
 
             ### enable if
 
-        #試合開始ボタン game_start
+        # 試合開始ボタン game_start
         if joy_b[b_num.X] == 1 and joy_b[b_num.RB] == 1:
             self.manual_msg.data = m_cmd.START
             self.pause_manual = False

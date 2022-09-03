@@ -35,7 +35,7 @@ private:
             motor_manager_[i].setObstacleInfo(false, 0, 0); //// 後ろ２つの引数はdummy.使われない
         }
 
-        // 障害物に当たりそうならまずzを動かす
+        // 障害物に当たりそうならまずyを動かす
         if (aside_obstacle[0] && aside_obstacle[1])
         {
             ////障害物のz軸方向(上空or下)にいるとき.
@@ -44,7 +44,7 @@ private:
             changePositionLimitAsideObstacle(change_axis, obstacle_num, motor_manager_);
             // ROS_INFO_STREAM("z obstacle");
         }
-        else if (aside_obstacle[2] && aside_obstacle[0])
+        if (aside_obstacle[2] && aside_obstacle[0])
         {
             //// 障害物のy軸方向にいるとき,
             //// y軸の制限を変更
@@ -52,7 +52,7 @@ private:
             changePositionLimitAsideObstacle(change_axis, obstacle_num, motor_manager_);
             // ROS_INFO_STREAM("y obstacle");
         }
-        else if (aside_obstacle[1] && aside_obstacle[2])
+        if (aside_obstacle[1] && aside_obstacle[2])
         {
             int change_axis = 0;
             changePositionLimitAsideObstacle(change_axis, obstacle_num, motor_manager_);

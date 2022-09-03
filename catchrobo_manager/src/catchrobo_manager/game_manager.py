@@ -191,11 +191,12 @@ class GameManager:
         elif next_action == PickAction.MOVE_Z_ON_WORK:
             if self._robot.has_work():
                 ### じゃがりこ重ねる
-                self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
+                # self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
+                pass
         elif next_action == PickAction.OPEN_GRIPPER:
-            # self._has_work = self._robot.has_work()
-            # self._robot.set_work_num(0)
-            self._robot.open_gripper()
+            # self._robot.open_gripper()
+            self._robot.open_gripper(wait=False)
+
         elif next_action == PickAction.MOVE_Z_TO_PICK:
             self._robot.go(z=work_position[2])
         elif next_action == PickAction.PICK:
