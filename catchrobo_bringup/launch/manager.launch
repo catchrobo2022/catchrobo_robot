@@ -5,10 +5,11 @@
     <!-- <group if="$(arg rosbag)">
         <include file="$(find catchrobo_test)/launch/rosbag_record.launch" />
     </group> -->
+    <!-- <arg name="game_mode" default="normal_game" /> -->
     <arg name="continue" default="false" />
+
+    <!-- <param name="game_mode" value="$(arg game_mode)" /> -->
     <param name="is_continue" value="$(arg continue)" />
-    <arg name="accel_mode" default="normal" />
-    <param name="accel_mode" value="$(arg accel_mode)" />
 
     <node pkg="catchrobo_manager" type="game_manager_node.py" name="game_manager_node" output="screen" respawn="false" respawn_delay="0" />
 

@@ -48,8 +48,6 @@ class Robot:
 
         # self._current_state_robot = JointState()
         self._ros_cmd_template = RosCmdTemplate()
-        if self.IS_SIM:
-            self._ros_cmd_template.set_current_state([1, 1, 1, 1])
 
         self._motors = [Motor(i, self._ros_cmd_template) for i in range(self.N_MOTOR)]
         rospy.Subscriber("error", ErrorCode, self.error_callback)
@@ -115,8 +113,8 @@ class Robot:
         # peg_cmd.data = False
         # self._pub_peg_in_hole_cmd.publish(peg_cmd)
 
-    def set_current_limit_scale(self, scale):
-        self._ros_cmd_template.set_current_state(scale)
+    def set_accel_scale(self, mode):
+        self._ros_cmd_template.set_accel_scale(mode)
 
     ## robot座標系
     def go_robot_m(self, x=None, y=None, z=None, wait=True):

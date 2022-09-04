@@ -35,13 +35,6 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         self.IS_SIM = rospy.get_param("sim")
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
-        self.CURRENT_LIMIT_SCALE = rospy.get_param("ros_cmd/current_limit_scale")
-        self.CURRENT_LIMIT_SCALE_INIT = rospy.get_param(
-            "ros_cmd/current_limit_scale_init"
-        )
-        self.CURRENT_LIMIT_SCALE_FAST = rospy.get_param(
-            "ros_cmd/current_limit_scale_fast"
-        )
         self.IS_CONTINUE = rospy.get_param("is_continue")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -369,12 +362,12 @@ class GameManager:
         self._is_init_mode = True
         self.auto_mode()
         self._robot.enable()
-        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_INIT)
+        self._robot.set_accel_scale("init")
         self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
-        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
+        self._robot.set_accel_scale("normal")
         self._is_init_mode = False
 
         rospy.loginfo("init action finish")
@@ -390,9 +383,9 @@ class GameManager:
 
     def change_current_scale(self):
         if self._work_manager.get_remain_num_in_common() >= 5:
-            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_FAST)
+            self._robot.set_accel_scale("fast")
         else:
-            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
+            self._robot.set_accel_scale("normal")
 
     def spin(self):
         rospy.loginfo("game manager spin start")

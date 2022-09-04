@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="game_mode" default="normal_game" />
     <arg name="sim" default="false" />
     <param name="sim" value="$(arg sim)" />
+
+    <param name="game_mode" value="$(arg game_mode)" />
     <rosparam file="$(find catchrobo_manager)/config/game_manager.yaml" command="load" ns="" />
 </launch>
