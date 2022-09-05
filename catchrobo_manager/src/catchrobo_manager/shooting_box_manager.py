@@ -6,6 +6,7 @@ from catchrobo_manager.jagarico.target_shooting_box_calculator import (
     TargetShootingBoxCalculator,
 )
 from catchrobo_manager.jagarico.gui_bridge import GuiBridge
+import rospy
 
 
 class ShootingBoxManager:
@@ -21,6 +22,7 @@ class ShootingBoxManager:
         self._gui = GuiBridge(
             "gl_giro", "gl_rigo", "target_box", msg_template, self.update_by_gui
         )
+        rospy.sleep(0.3)
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):

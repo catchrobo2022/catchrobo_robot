@@ -112,3 +112,6 @@ float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) +
 
 ### 台形加速アルゴリズムについて
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
+
+### ワーク、シューティングBOXの配置番号
+![ワーク、シューティングBOXの配置番号](ワーク＋シューティングBOXの配置番号.png) 
