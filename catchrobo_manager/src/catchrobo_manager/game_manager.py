@@ -92,7 +92,9 @@ class GameManager:
             self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
-            self._box_manager.load("temp")
+            if not self.IS_CONTINUE:
+                rospy.loginfo("load temp box")
+                self._box_manager.load("temp")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
