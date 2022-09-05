@@ -9,6 +9,7 @@ if __name__ == "__main__":
     game_manager = GameManager()
     # while not rospy.is_shutdown():
     ### 初期化
+    rospy.sleep(0.5)
     game_manager.init()
     ### main動作
     game_manager.spin()

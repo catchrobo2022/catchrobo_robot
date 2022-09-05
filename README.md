@@ -10,7 +10,10 @@
 - joy con系
 - pip install numpy pandas
 
-### mbedへの移行
+### mbedへの反映
+https://os.mbed.com/teams/catchrobo2022/
+を使用する。
+
 1. catchrobo_sim/include/catchrobo_simをzip化する
 1. mbed compilerでプログラム名を選択し右クリック
 1. インポートを選択
@@ -45,7 +48,6 @@ ros/node_handle.h
 作成したros_libを上記の方法でインポートする。
 
 
-https://os.mbed.com/teams/catchrobo2022/
 
 
 注意事項：ノイズにより値がぶっ飛ぶことがある。原点出しはかなり近くから行う。
@@ -59,31 +61,36 @@ motorの電源を入れてからmbedを開始→rosserial開始
 ### show robot
 ```
 roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
+roslaunch catchrobo_bringup rviz.launch
 
+
+```
+### simulation
+```
+roslaunch catchrobo_bringup sim_bringup.launch 
+roslaunch catchrobo_bringup manager.launch 
 ```
 
 ### 実機
-
+- ラズパイ
 ```
-roslaunch catchrobo_bringup bringup_base.launch 
-
 sudo chmod a+rw /dev/ttyACM0 
-rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+roslaunch catchrobo_bringup raspberry.launch 
+roslaunch catchrobo_bringup manager.launch 
+```
+- PC
+```
 roslaunch catchrobo_bringup rviz.launch
-rosrun catchrobo_manager game_manager_node.py
 roslaunch catchrobo_test rosbag_record.launch 
 ```
+rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
+取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
 
-#### Xbeeあり
+#### rosbag再生
 ```
-roslaunch catchrobo_bringup bringup_base.launch 
-
-sudo chmod a+rw /dev/ttyUSB0 
-rosrun catchrobo_driver serial_node_float.py _port:=/dev/ttyUSB0 _baud:=9600
-rosrun catchrobo_test mbed_sim_test.py
+roslaunch catchrobo_test rosbag_play.launch 
+rosservice call /rosbag_play/pause_playback "data: false" 
 ```
-
-motor driverに電源を入れると現在値を取得できる->rvizのアームが動くようになる
 
 #### printfしたいなら
 ```
@@ -91,19 +98,8 @@ sudo chmod a+rw /dev/ttyACM0
 cu -s 921600 -l /dev/ttyACM0
 ```
 
-### simulation
-```
-roslaunch catchrobo_bringup sim_bringup.launch 
-rosrun catchrobo_manager game_manager_node.py 
-```
-
-
-#### mbed simulator demo
-```
-roslaunch catchrobo_bringup sim_bringup.launch field="red"  # or blue
-rosrun catchrobo_test mbed_sim_test.py # commandをpublishするだけのテストドライバ。自由に書き換え可能
-```
-
+## Knowledge
+### Simulatorについて
 シミュレーターの位置更新は下の式で実行される。kp, kdの値を変えるとそれっぽい変化をする.
 ```
 p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
@@ -114,19 +110,8 @@ p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
 float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
 ```
 
-### rosbag
-自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
-```
-roslaunch catchrobo_test rosbag_play.launch 
-rosservice call /rosbag_play/pause_playback "data: false" 
-```
-取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
-
-
-
 ### 台形加速アルゴリズムについて
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
-
-### TODO
-- GUI　ボックス　配列が多い理由
+### ワーク、シューティングBOXの配置番号
+![ワーク、シューティングBOXの配置番号](ワーク＋シューティングBOXの配置番号.png) 

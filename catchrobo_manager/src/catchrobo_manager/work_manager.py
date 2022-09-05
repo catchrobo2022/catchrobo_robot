@@ -26,6 +26,7 @@ class WorkManager:
         self._gui = GuiBridge(
             "obj_giro", "obj_rigo", "target_work", msg_template, self.update_by_gui
         )
+        rospy.sleep(0.3)  # publisher生成直後は送れないのでwait
         self._gui.sendGUI(self._database.getColumn(self.EXIST_KEY))
 
     def get_target_id(self):

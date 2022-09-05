@@ -35,13 +35,6 @@ class GameManager:
         self.WORK_HEIGHT_m = rospy.get_param(name_space + "WORK_HEIGHT_m")
         self.IS_SIM = rospy.get_param("sim")
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
-        self.CURRENT_LIMIT_SCALE = rospy.get_param("ros_cmd/current_limit_scale")
-        self.CURRENT_LIMIT_SCALE_INIT = rospy.get_param(
-            "ros_cmd/current_limit_scale_init"
-        )
-        self.CURRENT_LIMIT_SCALE_FAST = rospy.get_param(
-            "ros_cmd/current_limit_scale_fast"
-        )
         self.IS_CONTINUE = rospy.get_param("is_continue")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -99,7 +92,9 @@ class GameManager:
             self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
-            self._box_manager.load("temp")
+            if not self.IS_CONTINUE:
+                rospy.loginfo("load temp box")
+                self._box_manager.load("temp")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -191,11 +186,12 @@ class GameManager:
         elif next_action == PickAction.MOVE_Z_ON_WORK:
             if self._robot.has_work():
                 ### じゃがりこ重ねる
-                self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
+                # self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
+                pass
         elif next_action == PickAction.OPEN_GRIPPER:
-            # self._has_work = self._robot.has_work()
-            # self._robot.set_work_num(0)
-            self._robot.open_gripper()
+            # self._robot.open_gripper()
+            self._robot.open_gripper(wait=False)
+
         elif next_action == PickAction.MOVE_Z_TO_PICK:
             self._robot.go(z=work_position[2])
         elif next_action == PickAction.PICK:
@@ -368,12 +364,12 @@ class GameManager:
         self._is_init_mode = True
         self.auto_mode()
         self._robot.enable()
-        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_INIT)
+        self._robot.set_accel_scale("init")
         self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
-        self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
+        self._robot.set_accel_scale("normal")
         self._is_init_mode = False
 
         rospy.loginfo("init action finish")
@@ -389,9 +385,9 @@ class GameManager:
 
     def change_current_scale(self):
         if self._work_manager.get_remain_num_in_common() >= 5:
-            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE_FAST)
+            self._robot.set_accel_scale("fast")
         else:
-            self._robot.set_current_limit_scale(self.CURRENT_LIMIT_SCALE)
+            self._robot.set_accel_scale("normal")
 
     def spin(self):
         rospy.loginfo("game manager spin start")

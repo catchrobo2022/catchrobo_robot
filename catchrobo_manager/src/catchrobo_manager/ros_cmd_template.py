@@ -23,18 +23,24 @@ class RosCmdTemplate:
             name_space + "velocity_limit_scale"
         )
         self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
-        self._current_limit_scale = rospy.get_param(name_space + "current_limit_scale")
+
+        self.GAME_MODE = rospy.get_param("game_mode")
         self.GRAVITY = 9.80665
 
         self._rad_transform = RadTransform()
         self._datas = self.readCsv()
+        self.set_accel_scale("normal")
 
-    def set_current_state(self, scale):
-        self._current_limit_scale = scale
+    def set_accel_scale(self, mode):
+        param_name = "accel_limit_scale/" + self.GAME_MODE + "/" + mode
+        self._current_limit_scale = rospy.get_param(param_name)
 
-    def set_accerelation_limit_scale(self, accerelation_limit_scale):
-        ### [WARN] この関数は現在使えない
-        self._accerelation_limit_scale = accerelation_limit_scale
+    # def set_current_state(self, scale):
+    #     self._current_limit_scale = scale
+
+    # def set_accerelation_limit_scale(self, accerelation_limit_scale):
+    #     ### [WARN] この関数は現在使えない
+    #     self._accerelation_limit_scale = accerelation_limit_scale
 
     def readCsv(self):
         rospack = rospkg.RosPack()
@@ -109,7 +115,7 @@ class RosCmdTemplate:
         ### 動作計画で想定する最大電流
         i_max = self._datas.loc["I_max"][id] * self._current_limit_scale[id]
         # i_max = self._current_limit_scale[id]
-        #accel_current = self._current_limit_scale[id]
+        # accel_current = self._current_limit_scale[id]
 
         ### 加速度limitの算出
         if id == 3:
@@ -132,7 +138,7 @@ class RosCmdTemplate:
                 command.effort = 0
 
             acceleration_limit = (
-                self.KT_OUT * i_max #- command.effort
+                self.KT_OUT * i_max  # - command.effort
             ) / command.net_inertia
         command.acceleration_limit = acceleration_limit
         return command
