@@ -24,7 +24,6 @@ class Calibration:
         self.SHOOTING_BOX_REAL_FRAME = rospy.get_param(
             name_space + "shooting_box_real_frame"
         )
-        self.TEMP_FILE = "temp/" + self.FIELD + "_shoot.csv"
 
         # self.SHOOTING_BOX_IDEAL_FRAME = rospy.get_param(
         #     name_space + "shooting_box_ideal_frame"
@@ -33,10 +32,12 @@ class Calibration:
         # shooting_box_center_red = rospy.get_param(
         #     name_space + "shooting_box_center_red"
         # )
-        database = Database()
-        csv_name = self.FIELD + "_shoot.csv"
-        database.readCsv(csv_name)
-        self._database = database
+        self._database = Database()
+        top = "init/" + self.FIELD
+        self._database.readCsv(top + "_shoot.csv")
+
+        self._on_shoot_database = Database()
+        self._on_shoot_database.readCsv(top + "_on_shoot.csv")
 
         self.BOX_IDS = [0, 2, 15, 17]
         self._br = tf2_ros.StaticTransformBroadcaster()
@@ -96,8 +97,13 @@ class Calibration:
 
             self._database.updateState(i, "x", transformed_q[0])
             self._database.updateState(i, "y", transformed_q[1])
+            self._on_shoot_database.updateState(i, "x", transformed_q[0])
+            self._on_shoot_database.updateState(i, "y", transformed_q[1])
             # self._database.updateState(i, "z", transformed_q[2])
-        self._database.save_csv(self.TEMP_FILE)
+
+        top = "temp/" + self.FIELD
+        self._database.save_csv(top + "_shoot.csv")
+        self._on_shoot_database.save_csv(top + "_on_shoot.csv")
 
     def init_default_points(self):
         ### default値の生成。
