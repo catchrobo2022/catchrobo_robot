@@ -136,27 +136,6 @@ class GameManager:
     ### control
     ########################################################################
 
-    def temp(self, next_action: PickAction):
-        work_position, target_id, is_my_area = self._work_manager.get_target_info()
-        if target_id != self._last_target_id:
-            if (
-                next_action == PickAction.MOVE_Z_ON_WORK
-                or next_action == PickAction.OPEN_GRIPPER
-            ):
-                ## MOVE_XY_ABOVE_WORK までは目標値が更新されるので問題なし
-                next_action = PickAction.START
-            elif (
-                next_action == PickAction.MOVE_Z_TO_PICK
-                or next_action == PickAction.PICK
-            ):
-                ## gripperを開けてから目標が消えたら
-                self._robot.go(z=work_position[2])
-                self._robot.close_gripper()
-                self._robot.set_work_num(self._has_work)
-                next_action = PickAction.START
-
-        self._last_target_id = target_id
-
     def pick_actions(self, next_action: PickAction):
         pass_action = False  # 中断されようと、次に進むような動作
         next_target = NextTarget.PICK
@@ -267,7 +246,7 @@ class GameManager:
         #     self._robot.gripper(self.OPEN_A_BIT_RAD)
         elif next_action == ShootAction.MOVE_Z_TO_SHOOT:
             ### 下ろす
-            self._robot.go(z=self.SHOOT_HEIGHT_m + box_position[2])
+            self._robot.go(z=self.SHOOT_HEIGHT_m)
         elif next_action == ShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
             self._robot.ask_manual()
@@ -359,7 +338,6 @@ class GameManager:
         return next_target, next_action
 
     def main_actions(self, next_target: NextTarget, next_action: Action):
-        # rospy.loginfo("having work: {}".format(self._robot.has_work()))
         ### stop flagがたった瞬間に途中でも高速でループが終わる
         if next_target == NextTarget.PICK:
             if self._work_manager.get_remain_num() == 0:
