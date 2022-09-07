@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from dataclasses import Field
 from catchrobo_manual.manual_command import ManualCommand
 from catchrobo_manager.next_action_enum import (
     NextTarget,
@@ -53,18 +52,14 @@ class GameManager:
 
     def init(self):
         # self._use_main_thread = False
-        top = "init/{}".format(self.FIELD)
-        self._work_manager = WorkManager(top + "_work.csv")
-        self._box_manager = ShootingBoxManager(top + "_shoot.csv")
-        self._on_box_manager = ShootingBoxManager(top + "_on_shoot.csv")
-        self._work_manager.set_gui("obj_giro", "obj_rigo", "target_work")
-        self._box_manager.set_gui("gl_giro", "gl_rigo", "target_box")
+        next_target = NextTarget.PICK
+        self._work_manager = WorkManager(self.FIELD)
+        self._box_manager = ShootingBoxManager(self.FIELD)
+        self._on_box_manager = OnBoxManager(self.FIELD)
 
         if self.IS_CONTINUE:
-            top = "result/{}".format(self.FIELD)
-            self._work_manager = WorkManager(top + "_work.csv")
-            self._box_manager = ShootingBoxManager(top + "_shoot.csv")
-            self._on_box_manager = ShootingBoxManager(top + "_on_shoot.csv")
+            self._work_manager.load("result")
+            self._box_manager.load("result")
 
         self._robot = Robot(self.FIELD)
 
@@ -98,7 +93,8 @@ class GameManager:
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
             if not self.IS_CONTINUE:
-                self._box_manager.load("temp/{}_shoot.csv".format(self.FIELD))
+                rospy.loginfo("load temp box")
+                self._box_manager.load("temp")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -137,7 +133,7 @@ class GameManager:
     ########################################################################
 
     def temp(self, next_action: PickAction):
-        work_position, target_id, is_my_area = self._work_manager.get_target_info()
+        work_position, is_my_area, target_id = self._work_manager.get_target_info()
         if target_id != self._last_target_id:
             if (
                 next_action == PickAction.MOVE_Z_ON_WORK
@@ -160,7 +156,7 @@ class GameManager:
     def pick_actions(self, next_action: PickAction):
         pass_action = False  # 中断されようと、次に進むような動作
         next_target = NextTarget.PICK
-        work_position, target_id, is_my_area = self._target_work_info
+        work_position, is_my_area, target_id = self._target_work_info
 
         if not self._work_manager.is_exist(target_id):
             ### 目標ワークがGUIで消された場合
@@ -204,8 +200,15 @@ class GameManager:
             # self._robot.close_gripper()
             # self._robot.set_work_num(self._has_work + 1)
         elif next_action == PickAction.END:
-            self._work_manager.pick(target_id)
-            next_target = self.calc_next_target_after_pick(target_id)
+            next_target = self._work_manager.pick(target_id)
+            having_work = self._robot.has_work()
+            if (
+                having_work >= self.MAX_HAS_WORK
+                or having_work >= self._box_manager.get_open_num()
+            ):
+                ### これ以上つかめなければshoot
+                next_target = NextTarget.SHOOT
+                self._old_my_area = True
             next_action = 0  # 次はSTARTから始まる
             self._old_my_area = is_my_area
 
@@ -215,32 +218,11 @@ class GameManager:
 
         return next_target, next_action
 
-    def calc_next_target_after_pick(self, pick_id):
-        if (
-            (pick_id == 0)
-            or (pick_id == 19)
-            or (pick_id == 18)
-            or (pick_id == 13)
-            or (pick_id == 24)
-        ):
-            next_target = NextTarget.SHOOT
-        else:
-            next_target = NextTarget.PICK
-
-        having_work = self._robot.has_work()
-        if (
-            having_work >= self.MAX_HAS_WORK
-            or having_work >= self._box_manager.get_remain_num()
-        ):
-            ### これ以上つかめなければshoot
-            next_target = NextTarget.SHOOT
-        return next_target
-
     def shoot_actions(self, next_action: ShootAction):
         pass_action = False
         next_target = NextTarget.SHOOT
         ### 目標シューティング位置計算
-        box_position, target_id, is_my_area = self._target_shoot_info
+        box_position, target_id = self._target_shoot_info
         # box_position = self._shooting_box_transform.get_calibrated_position(
         #     box_position_raw
         # )
@@ -305,7 +287,7 @@ class GameManager:
         pass_action = False
         next_target = NextTarget.SECOND_SHOOT
         ### 目標シューティング位置計算
-        box_position, target_id, _ = self._target_second_shoot_info
+        box_position, target_id = self._target_second_shoot_info
         # box_position = self._shooting_box_transform.get_calibrated_position(
         #     box_position_raw
         # )
@@ -366,12 +348,12 @@ class GameManager:
                 return NextTarget.SHOOT, ShootAction.START
             next_target, next_action = self.pick_actions(next_action)
         elif next_target == NextTarget.SHOOT:
-            if self._box_manager.get_remain_num() == 0:
+            if self._box_manager.get_open_num() == 0:
                 ### もうシュート場所がなければ終了
                 return NextTarget.SECOND_SHOOT, PickAction.START
             next_target, next_action = self.shoot_actions(next_action)
         elif next_target == NextTarget.SECOND_SHOOT:
-            if self._on_box_manager.get_remain_num() == 0:
+            if self._on_box_manager.get_open_num() == 0:
                 return NextTarget.END, PickAction.START
             next_target, next_action = self.second_shoot_actions(next_action)
 
@@ -383,9 +365,7 @@ class GameManager:
         self.auto_mode()
         self._robot.enable()
         self._robot.set_accel_scale("init")
-        self._robot.go(z=self.INIT_Z_m)
-        self._robot.go(x=self.INIT_X_m)
-        self._robot.go(y=self.INIT_Y_m)
+        self._robot.go(self.INIT_X_m, self.INIT_Y_m, self.INIT_Z_m, wait=False)
         self._robot.open_gripper()
         self._robot.close_gripper()
         self._robot.open_gripper()
@@ -440,10 +420,9 @@ class GameManager:
             if next_target == NextTarget.END:
                 self.end_actions()
                 break
-        self.save(next_target)
 
-    def save(self, next_target):
-        self.save_obj()
+        self._work_manager.save_result()
+        self._box_manager.save_result()
         is_sim = self.IS_SIM
         if is_sim:
             name = "sim/"
@@ -452,11 +431,6 @@ class GameManager:
         else:
             name = "real/"
         self.savelog(name)
-
-    def save_obj(self):
-        self._work_manager.save_result("result/" + self.FIELD + "_work.csv")
-        self._box_manager.save_result("result/" + self.FIELD + "_shoot.csv")
-        self._box_manager.save_result("result/" + self.FIELD + "_on_shoot.csv")
 
     def savelog(self, file_name: str = ""):
         rospack = rospkg.RosPack()
