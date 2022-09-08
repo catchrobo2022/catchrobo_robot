@@ -25,7 +25,7 @@ class TimeTest:
         add = msg.axes[UP_DOWN]
         self._effort += step * add
 
-        self._target_id = 1
+        self._target_id = 2
         command = self._template.generate_ros_command(
             id=self._target_id,
             mode=MyRosCmd.DIRECT_CTRL_MODE,
