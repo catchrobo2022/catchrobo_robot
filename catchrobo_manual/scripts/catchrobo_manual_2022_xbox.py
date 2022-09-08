@@ -4,7 +4,7 @@
 import rospy
 
 from sensor_msgs.msg import Joy, JointState
-from std_msgs.msg import Int8, Float32MultiArray
+from std_msgs.msg import Int8, Float32MultiArray, Time
 
 
 from catchrobo_manager.ros_cmd_template import RosCmdTemplate
@@ -115,6 +115,11 @@ class Manual:
 
         self._joint_rad = [0] * 3
 
+        #manual time
+        self.manual_total_time=rospy.Time(0)
+        self.manual_start_time=rospy.Time(0)
+        self.manual_finish_time=rospy.Time(0)
+
         # Publisher
         self.pub_ros_cmd = rospy.Publisher("ros_cmd", MyRosCmd, queue_size=1)
         self.pub_enable_cmd = rospy.Publisher("enable_cmd", EnableCmd, queue_size=1)
@@ -123,6 +128,8 @@ class Manual:
         self.pub_manual_command = rospy.Publisher(
             manual_command_topic, Int8, queue_size=1
         )
+        
+        self.pub_manual_time=rospy.Publisher("manual_time", Time, queue_size=1)
 
         # Subscriber
         rospy.Subscriber("/joy", Joy, self.joyCallback, queue_size=1)
@@ -144,9 +151,13 @@ class Manual:
         ### [TODO] 自動制御側からも manual on offの指示が来るので、それに従う.
         if msg.data == ManualCommand.MANUAL_OFF:  # off
             self.pause_manual = True
+            self.manual_finish_time=rospy.get_time()
+            self.manual_total_time=self.manual_finish_time-self.manual_start_time
+            self.pub_manual_time.publish(self.manual_total_time)
             print("manual_off")
         elif msg.data == ManualCommand.MANUAL_ON:  # on
             self.pause_manual = False
+            self.manual_start_time=rospy.get_time()
             print("manual_on")
 
     def joyCallback(self, joy_msg):
@@ -446,12 +457,16 @@ class Manual:
             self.pauseManual()
             self.pub_manual_command.publish(self.manual_msg)
             print("b_manual_off")
+            self.manual_finish_time=rospy.get_time()
+            self.manual_total_time=self.manual_finish_time-self.manual_start_time
+            self.pub_manual_time.publish(self.manual_total_time)
         # manual on
         if joy_b[b_num.Y] == 1:
             self.manual_msg.data = m_cmd.MANUAL_ON
             self.pause_manual = False
             self.pub_manual_command.publish(self.manual_msg)
             print("b_manual_on")
+            self.manual_start_time=rospy.get_time()
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
         # if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
