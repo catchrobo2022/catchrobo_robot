@@ -2,4 +2,5 @@
 <launch>
     <arg name="field" default="blue" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/rviz_$(arg field).rviz" required="true" />
+    <node pkg="catchrobo_gui" type="motor_debug.py" name="motor_status"></node>
 </launch>

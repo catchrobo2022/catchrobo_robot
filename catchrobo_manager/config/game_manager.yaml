@@ -5,11 +5,26 @@ game_manager:
   WORK_HEIGHT_m: 0.087
   SHOOT_HEIGHT_m: 0.101
 
+accel_limit_scale:
+  normal_game:
+    normal : [0.2, 0.2, 0.2, 1]
+    init : [0.1, 0.1, 0.1, 1]
+    fast : [0.2, 0.2, 0.2, 1]
+  slow_game:
+    normal : [0.1, 0.1, 0.1, 1]
+    init : [0.1, 0.1, 0.1, 1]
+    fast : [0.1, 0.1, 0.1, 1]
+  fast_game:
+    normal : [0.3, 0.3, 0.2, 1]
+    init : [0.1, 0.1, 0.1, 1]
+    fast : [0.3, 0.3, 0.2, 1]
+  sim:
+    normal : [1, 1, 1, 1]
+    init : [0.3, 0.3, 0.2, 1]
+    fast : [1, 1, 1, 1]
+
 ros_cmd:
   velocity_limit_scale: 1
-  current_limit_scale : [0.2, 0.2, 0.7, 1]
-  current_limit_scale_init : [0.1, 0.1, 0.7, 1]
-  current_limit_scale_fast : [0.4, 0.4, 0.7, 1]
   KT_OUT: 0.08
   work_mass: 0.06
   # acceleration_limit_scale: 1
@@ -25,7 +40,7 @@ radius2meter:
 
 robot:
   robot_origin_m: [0.09045, 0.845, 0.0705]
-  OPEN_GRIPPER_RAD: 1.57079632679
+  OPEN_GRIPPER_RAD: 0.78539816
   CLOSE_GRIPPER_RAD: 0
   finish_wait_Hz: 1000
 

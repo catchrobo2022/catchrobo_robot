@@ -72,6 +72,8 @@ class Command:
 
 class Manual:
     def __init__(self, Button):
+        self.OPEN_GRIPPER_RAD = rospy.get_param("robot/OPEN_GRIPPER_RAD")
+        self.CLOSE_GRIPPER_RAD = rospy.get_param("robot/CLOSE_GRIPPER_RAD")
         # launchのparam取得
         # private paramというやつらしい#おそらくnodeタグの中だからだと思われる
         self.field_color = rospy.get_param("/field")
@@ -103,7 +105,7 @@ class Manual:
         # manual mode のonoff用の変数
         self.pause_manual = True
 
-        self.button_enable = True
+        self.button_enable = False
         self.cmd_flag = [False] * 3
 
         self.old_joystick = [0.0] * 3
@@ -322,7 +324,9 @@ class Manual:
                 # ここでpubしてる
                 if joy_b[b_num.B] == 1 and self.button_count[b_num.B] == 0:
                     self.posSet(3)
-                    cmd_g.position = cmd_tmp.robot_m2rad(cmd_g.id, 1.5)
+                    cmd_g.position = cmd_tmp.robot_m2rad(
+                        cmd_g.id, self.OPEN_GRIPPER_RAD
+                    )
                     self.pub_ros_cmd.publish(self.command.command_g)
                     self.pubCount("g")
                     self.button_count[b_num.B] = 1
@@ -331,7 +335,9 @@ class Manual:
                     self.button_count[b_num.B] = 2
                 elif joy_b[b_num.B] == 1 and self.button_count[b_num.B] == 2:
                     self.posSet(3)
-                    cmd_g.position = cmd_tmp.robot_m2rad(cmd_g.id, 0.0)
+                    cmd_g.position = cmd_tmp.robot_m2rad(
+                        cmd_g.id, self.CLOSE_GRIPPER_RAD
+                    )
                     self.pub_ros_cmd.publish(self.command.command_g)
                     self.pubCount("g")
                     self.button_count[b_num.B] = 3
@@ -425,7 +431,7 @@ class Manual:
 
             ### enable if
 
-        #試合開始ボタン game_start
+        # 試合開始ボタン game_start
         if joy_b[b_num.X] == 1 and joy_b[b_num.RB] == 1:
             self.manual_msg.data = m_cmd.START
             self.pause_manual = False
@@ -448,25 +454,32 @@ class Manual:
             print("b_manual_on")
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
+        # if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
+        #     self.command.enable_command.is_enable = False
+        #     # print(self.command.enable_command)
+        #     self.button_count[b_num.START] = 1
+        #     print("disable")
+        #     # print(self.button_count[b_num.START])
+        #     self.button_enable = False
+        # elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 1:
+        #     self.pub_enable_cmd.publish(self.command.enable_command)
+        #     self.button_count[b_num.START] = 2
+        # elif joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 2:
+        #     self.command.enable_command.is_enable = True
+        #     # print(self.command.enable_command)
+        #     self.button_count[b_num.START] = 3
+        #     print("enable")
+        #     self.button_enable = True
+        # elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 3:
+        #     self.pub_enable_cmd.publish(self.command.enable_command)
+        #     self.button_count[b_num.START] = 0
+
         if joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 0:
-            self.command.enable_command.is_enable = False
-            # print(self.command.enable_command)
-            self.button_count[b_num.START] = 1
-            print("disable")
-            # print(self.button_count[b_num.START])
-            self.button_enable = False
-        elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 1:
+            self.button_enable = not self.button_enable
+            self.command.enable_command.is_enable = self.button_enable
             self.pub_enable_cmd.publish(self.command.enable_command)
-            self.button_count[b_num.START] = 2
-        elif joy_b[b_num.START] == 1 and self.button_count[b_num.START] == 2:
-            self.command.enable_command.is_enable = True
-            # print(self.command.enable_command)
-            self.button_count[b_num.START] = 3
-            print("enable")
-            self.button_enable = True
-        elif joy_b[b_num.START] == 0 and self.button_count[b_num.START] == 3:
-            self.pub_enable_cmd.publish(self.command.enable_command)
-            self.button_count[b_num.START] = 0
+            rospy.loginfo("enable : {}".format(self.command.enable_command.is_enable))
+        self.button_count[b_num.START] = joy_b[b_num.START]
 
     # pauseのときの処理
     # gripperだけ止めない
