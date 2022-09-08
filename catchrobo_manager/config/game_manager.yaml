@@ -36,7 +36,7 @@ radius2meter:
 
 robot:
   robot_origin_m: [0.09045, 0.845, 0.0705]
-  OPEN_GRIPPER_RAD: 0.78539816
+  OPEN_GRIPPER_RAD: 1.570796327
   CLOSE_GRIPPER_RAD: 0
   finish_wait_Hz: 1000
 
