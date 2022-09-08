@@ -2,7 +2,7 @@
 <launch>
     <include file="$(find catchrobo_bringup)/launch/bringup_base.launch" />
     <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen" respawn="true" respawn_delay="1">
-        <arg name="_port" default="/dev/ttyACM0" />
-        <arg name="_baud" default="115200" />
+        <param name="port" value="/dev/ttyACM0" />
+        <param name="baud" value="115200" />
     </node>
 </launch>
