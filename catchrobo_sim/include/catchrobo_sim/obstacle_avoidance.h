@@ -201,8 +201,8 @@ public:
 
     void changePositionLimit(MotorManager (&motor_manager_)[N_MOTORS])
     {
-        avoidSurface(motor_manager_);
-        noCollisionPlan(motor_manager_);
+        // avoidSurface(motor_manager_);
+        // noCollisionPlan(motor_manager_);
     }
 };
 
