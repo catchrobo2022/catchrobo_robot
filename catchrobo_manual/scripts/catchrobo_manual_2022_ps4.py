@@ -455,32 +455,32 @@ class Manual:
             print("b_manual_on")
 
         # is_enableのon,offの処理 # ボタンを押すとon, off 切り替わる
-        # if joy_b[b_num.OPTIONS] == 1 and self.button_count[b_num.OPTIONS] == 0:
+        # if joy_b[b_num.PS] == 1 and self.button_count[b_num.PS] == 0:
         #     self.command.enable_command.is_enable = False
         #     # print(self.command.enable_command)
-        #     self.button_count[b_num.OPTIONS] = 1
+        #     self.button_count[b_num.PS] = 1
         #     print("disable")
-        #     # print(self.button_count[b_num.OPTIONS])
+        #     # print(self.button_count[b_num.PS])
         #     self.button_enable = False
-        # elif joy_b[b_num.OPTIONS] == 0 and self.button_count[b_num.OPTIONS] == 1:
+        # elif joy_b[b_num.PS] == 0 and self.button_count[b_num.PS] == 1:
         #     self.pub_enable_cmd.publish(self.command.enable_command)
-        #     self.button_count[b_num.OPTIONS] = 2
-        # elif joy_b[b_num.OPTIONS] == 1 and self.button_count[b_num.OPTIONS] == 2:
+        #     self.button_count[b_num.PS] = 2
+        # elif joy_b[b_num.PS] == 1 and self.button_count[b_num.PS] == 2:
         #     self.command.enable_command.is_enable = True
         #     # print(self.command.enable_command)
-        #     self.button_count[b_num.OPTIONS] = 3
+        #     self.button_count[b_num.PS] = 3
         #     print("enable")
         #     self.button_enable = True
-        # elif joy_b[b_num.OPTIONS] == 0 and self.button_count[b_num.OPTIONS] == 3:
+        # elif joy_b[b_num.PS] == 0 and self.button_count[b_num.PS] == 3:
         #     self.pub_enable_cmd.publish(self.command.enable_command)
-        #     self.button_count[b_num.OPTIONS] = 0
+        #     self.button_count[b_num.PS] = 0
 
-        if joy_b[b_num.OPTIONS] == 1 and self.button_count[b_num.OPTIONS] == 0:
+        if joy_b[b_num.PS] == 1 and self.button_count[b_num.PS] == 0:
             self.button_enable = not self.button_enable
             self.command.enable_command.is_enable = self.button_enable
             self.pub_enable_cmd.publish(self.command.enable_command)
             rospy.loginfo("enable : {}".format(self.command.enable_command.is_enable))
-        self.button_count[b_num.OPTIONS] = joy_b[b_num.OPTIONS]
+        self.button_count[b_num.PS] = joy_b[b_num.PS]
 
     # pauseのときの処理
     # gripperだけ止めない
