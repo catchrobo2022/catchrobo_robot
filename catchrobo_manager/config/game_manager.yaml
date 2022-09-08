@@ -18,10 +18,6 @@ accel_limit_scale:
     normal : [0.3, 0.3, 0.2, 1]
     init : [0.1, 0.1, 0.1, 1]
     fast : [0.3, 0.3, 0.2, 1]
-  sim:
-    normal : [1, 1, 1, 1]
-    init : [0.3, 0.3, 0.2, 1]
-    fast : [1, 1, 1, 1]
 
 ros_cmd:
   velocity_limit_scale: 1
@@ -40,7 +36,7 @@ radius2meter:
 
 robot:
   robot_origin_m: [0.09045, 0.845, 0.0705]
-  OPEN_GRIPPER_RAD: 0.78539816
+  OPEN_GRIPPER_RAD: 1.570796327
   CLOSE_GRIPPER_RAD: 0
   finish_wait_Hz: 1000
 
