@@ -23,7 +23,6 @@ class RosCmdTemplate:
             name_space + "velocity_limit_scale"
         )
         self.KT_OUT = rospy.get_param(name_space + "KT_OUT")
-        self.Z_EFFORT = rospy.get_param(name_space + "z_effort")
 
         self.GAME_MODE = rospy.get_param("game_mode")
         self.GRAVITY = 9.80665
@@ -134,7 +133,7 @@ class RosCmdTemplate:
 
             ### 負荷トルク
             if id == 2:
-                command.effort = r * mass * self.GRAVITY + self.Z_EFFORT
+                command.effort = r * mass * self.GRAVITY
             else:
                 command.effort = 0
 

@@ -18,16 +18,11 @@ accel_limit_scale:
     normal : [0.3, 0.3, 0.2, 1]
     init : [0.1, 0.1, 0.1, 1]
     fast : [0.3, 0.3, 0.2, 1]
-  sim:
-    normal : [1, 1, 1, 1]
-    init : [0.3, 0.3, 0.2, 1]
-    fast : [1, 1, 1, 1]
 
 ros_cmd:
   velocity_limit_scale: 1
   KT_OUT: 0.08
   work_mass: 0.06
-  z_effort: 0.4
   # acceleration_limit_scale: 1
   # current_max_A: 8
 pulley:
