@@ -172,8 +172,8 @@ class GameManager:
                 # self._robot.go(z=work_position[2] + self.WORK_HEIGHT_m)
                 pass
         elif next_action == PickAction.OPEN_GRIPPER:
-            # self._robot.open_gripper()
-            self._robot.open_gripper(wait=False)
+            self._robot.open_gripper()
+            # self._robot.open_gripper(wait=False)
 
         elif next_action == PickAction.MOVE_Z_TO_PICK:
             self._robot.go(z=work_position[2])
