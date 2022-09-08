@@ -5,14 +5,15 @@
     <arg name="debug" value="false" />
   </include> -->
 
-<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true"/> -->
-<arg name="field" default="red" /> 
-<include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
-    <arg name="field" value="$(arg field)"/>
-</include>
-<!-- <include file="$(find catchrobo_bringup)/launch/bringup_base.launch" /> -->
-<arg name="file" default="rosbag.bag"/>
-<node pkg="rosbag" type="play" name="rosbag_play" output="screen" required="true"
-         args="--pause $(find catchrobo_test)/rosbag/$(arg file)"/>  
-         
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find catchrobo_description)/config/catchrobo_display.rviz" required="true"/> -->
+  <arg name="field" default="red" />
+  <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
+    <arg name="field" value="$(arg field)" />
+  </include>
+  <include file="$(find catchrobo_bringup)/launch/set_param.launch" />
+  <include file="$(find catchrobo_bringup)/launch/rviz.launch" />
+  <!-- <include file="$(find catchrobo_bringup)/launch/bringup_base.launch" /> -->
+  <arg name="file" default="rosbag.bag" />
+  <node pkg="rosbag" type="play" name="rosbag_play" output="screen" required="true" args="--pause $(find catchrobo_test)/rosbag/$(arg file)" />
+
 </launch>
