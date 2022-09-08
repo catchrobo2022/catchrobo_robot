@@ -21,10 +21,10 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 
 // const float SPIN_FREQUENCY_s = 0.001;
 const float MBED2GRIPPER_DT = 0.1;
-const float MBED2MOTOR_DT = 0.01; // 500Hz
+const float MBED2MOTOR_DT = 0.001; // 1000Hz
 const int SERIAL_BAUD_RATE = 115200;
 const float ARRIVE_THRESHOLD_RAD[] = {0.1, 0.1, 0.1};
-const float FRICTION[] = {0.2,0,0};
+const float FRICTION[] = {0.2, 0, 0};
 const float GRIPPER_THRESHOLD_RAD = 0.1;
 const float ESTIMATE_ERROR_LIMIT_RAD = 0.5;
 
@@ -33,7 +33,6 @@ RosBridge ros_bridge;
 RobotManager robot_manager;
 GripperManager gripper_manager;
 EnableManager enable_manager;
-
 
 void enableAll(bool is_enable)
 {
@@ -103,7 +102,6 @@ void mbed2MotorDriverTimerCallback()
             // ROS_INFO_STREAM("dt " << dt.toSec() );
         }
     }
-
 }
 
 void mbed2RosTimerCallback()
@@ -184,5 +182,4 @@ int main(int argc, char **argv)
     //     // wait(SPIN_FREQUENCY_s);
     // }
     ros_bridge.spin();
-
 }
