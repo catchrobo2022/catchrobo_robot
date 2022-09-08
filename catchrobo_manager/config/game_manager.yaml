@@ -27,6 +27,7 @@ ros_cmd:
   velocity_limit_scale: 1
   KT_OUT: 0.08
   work_mass: 0.06
+  z_effort: 0.4
   # acceleration_limit_scale: 1
   # current_max_A: 8
 pulley:
