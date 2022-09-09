@@ -198,8 +198,10 @@ void Blue::send_gl_msgs(bool flag)
 
 void Blue::send_menu_msgs(bool flag)
 {
-  menu.data = status;
-  pub_menu.publish(menu);
+  if(status != 16){
+    menu.data = status;
+    pub_menu.publish(menu);
+  }
   if(flag == true){
     QTimer::singleShot(sendtime, this, SLOT(send_gl_msgs(true)));
   }
@@ -256,17 +258,17 @@ void Blue::menu_panel(){
   QPushButton * btn = dynamic_cast<QPushButton*>(sender());
   QString name = btn->objectName();
   if(QString("origin") == name){
-    if(QString("origin") == btn->text()){
+    if(QString("1.Origin") == btn->text()){
       btn->setText("Really?");
       status = 0;
     }else{
       status = 1;
-      btn->setText("origin");
+      btn->setText("1.Origin");
       //ui->origin->setEnabled(0);
       //ui->calib->setEnabled(1);
       //ui->init->setEnabled(1);
     }
-    ui->origin->setChecked(0);
+    //ui->origin->setChecked(0);
   }else if(QString("calib") == name){
     if(QString("2.Calib\n1st point") == btn->text()){
       status = 3;
@@ -286,12 +288,18 @@ void Blue::menu_panel(){
     }
     ui->calib->setChecked(0);
   }else if(QString("init") == name){
-    status = 7;
-    ui->calib->setText("2.Calib");
-    ui->init->setChecked(0);
-    //ui->calib->setEnabled(0);
-    //ui->init->setEnabled(0);
-    //ui->start->setEnabled(1);
+    if(QString("3.Init") == btn->text()){
+      btn->setText("Really?");
+      status = 16;
+    }else if(QString("Really?") == btn->text()){
+      status = 7;
+      ui->calib->setText("2.Calib");
+      //ui->init->setChecked(0);
+      //ui->calib->setEnabled(0);
+      //ui->init->setEnabled(0);
+      //ui->start->setEnabled(1);
+      btn->setText("3.Init");
+    }
   }else if(QString("start") == name){
     status = 8;
     mytimer.stop();
