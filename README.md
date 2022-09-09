@@ -6,9 +6,11 @@
 
 ## Requirement
 - sudo apt install ros-noetic-rosserial-mbed
-- jsk-plugin(入れ方忘れました)
+- jsk-plugin
 - joy con系
 - pip install numpy pandas
+- sudo apt install ros-noetic-sound-play 
+
 
 ### mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/

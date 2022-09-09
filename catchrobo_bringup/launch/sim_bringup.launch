@@ -8,6 +8,8 @@
     </include>
 
     <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
-    <include file="$(find catchrobo_bringup)/launch/rviz.launch" />
+    <include file="$(find catchrobo_bringup)/launch/rviz.launch">
+        <arg name="field" default="$(arg field)" />
+    </include>
 
 </launch>
