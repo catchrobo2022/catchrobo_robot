@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="field" default="blue" />
+    <arg name="no_joy" default="true" />
     <include file="$(find catchrobo_bringup)/launch/bringup_base.launch">
         <arg name="field" value="$(arg field)" />
-        <arg name="sim" value="true" />
+        <arg name="sim" value="$(arg no_joy)" />
     </include>
 
     <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
-    <include file="$(find catchrobo_bringup)/launch/rviz.launch" />
+    <include file="$(find catchrobo_bringup)/launch/rviz.launch">
+        <arg name="field" default="$(arg field)" />
+    </include>
 
 </launch>

@@ -5,7 +5,7 @@
 #include "catchrobo_sim/servo_manager.h"
 #include "catchrobo_sim/peg_in_hole_control.h"
 #include "catchrobo_sim/enable_manager.h"
-#include "catchrobo_sim/obstacle_avoidance.h"
+// #include "catchrobo_sim/obstacle_avoidance.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <std_msgs/Float32MultiArray.h>
@@ -123,7 +123,7 @@ public:
 
     void getMotorDrivesCommand(ControlStruct (&cmd)[N_MOTORS], ControlResult::ControlResult (&result)[N_MOTORS])
     {
-        obstacle_avoidance_.changePositionLimit(motor_manager_);
+        // obstacle_avoidance_.changePositionLimit(motor_manager_);
 
         if (!peg_in_hole_control_.isPegInHoleMode())
         {
@@ -219,7 +219,7 @@ public:
         }
     }
 
-    void init(const float (&arrive_threshold)[N_MOTORS], const float (&friction)[N_MOTORS],  float estimate_error_limit)
+    void init(const float (&arrive_threshold)[N_MOTORS], const float (&friction)[N_MOTORS], float estimate_error_limit)
     {
         for (size_t i = 0; i < motor_num_; i++)
         {
@@ -237,7 +237,7 @@ private:
     const int motor_num_;
 
     PegInHoleControl peg_in_hole_control_;
-    ObstacleAvoidance obstacle_avoidance_;
+    // ObstacleAvoidance obstacle_avoidance_;
 
     void setJointState(int i, const StateStruct &state, sensor_msgs::JointState &joint_state)
     {

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find sound_play)/soundplay_node.launch" />
+    <node pkg="catchrobo_sound" type="catchrobo_sound.py" name="catchrobo_sound" />
+</launch>

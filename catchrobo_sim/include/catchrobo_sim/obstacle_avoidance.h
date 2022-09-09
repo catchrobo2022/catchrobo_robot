@@ -5,6 +5,8 @@
 #include "motor_driver_bridge/motor_driver_struct.h"
 #include "define.h"
 
+/////跳ねる実装だったので、没になった。要検証
+
 struct Obstacle
 {
     float edge[3][2]; // x(min, max),y(min, rad),z(min, max) の順. edge[0][1]でx軸のmaxが手に入る
@@ -201,6 +203,7 @@ public:
 
     void changePositionLimit(MotorManager (&motor_manager_)[N_MOTORS])
     {
+
         // avoidSurface(motor_manager_);
         // noCollisionPlan(motor_manager_);
     }

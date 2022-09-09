@@ -6,9 +6,11 @@
 
 ## Requirement
 - sudo apt install ros-noetic-rosserial-mbed
-- jsk-plugin(入れ方忘れました)
+- jsk-plugin
 - joy con系
 - pip install numpy pandas
+- sudo apt install ros-noetic-sound-play 
+
 
 ### mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/
@@ -67,20 +69,20 @@ roslaunch catchrobo_bringup rviz.launch
 ```
 ### simulation
 ```
-roslaunch catchrobo_bringup sim_bringup.launch 
-roslaunch catchrobo_bringup manager.launch 
+roslaunch catchrobo_bringup sim_bringup.launch field:="blue" no_joy:="true"
+roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
 ```
 
 ### 実機
 - ラズパイ
 ```
 sudo chmod a+rw /dev/ttyACM0 
-roslaunch catchrobo_bringup raspberry.launch 
-roslaunch catchrobo_bringup manager.launch 
+roslaunch catchrobo_bringup raspberry.launch field:="blue"
+roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
 ```
 - PC
 ```
-roslaunch catchrobo_bringup rviz.launch
+roslaunch catchrobo_bringup rviz.launch field:="blue"
 roslaunch catchrobo_test rosbag_record.launch 
 ```
 rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
