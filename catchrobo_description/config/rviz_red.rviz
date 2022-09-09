@@ -1,0 +1,648 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /RobotModel1/Links1
+        - /TF1/Frames1
+        - /TF1/Tree1
+      Splitter Ratio: 0.5972973108291626
+    Tree Height: 371
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: ""
+  - Class: rviz/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded: ~
+      Splitter Ratio: 0.5
+    Tree Height: 371
+  - Class: rviz/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Plotter2D1
+        - /Plotter2D2
+        - /Plotter2D3
+      Splitter Ratio: 0.5
+    Tree Height: 371
+  - Class: rviz/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /TF1/Frames1
+      Splitter Ratio: 0.5
+    Tree Height: 144
+  - Class: field/Red
+    Name: Red
+  - Class: field/Red
+    Name: Red
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        arm/link0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm/link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm/link2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm/link2_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm/link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm/link_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base/fixed_shooter:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base/link_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base/shooter:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper/grasping_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        gripper/left_finger:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper/right_finger:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work0/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work1/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work10/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work11/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work12/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work13/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work14/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work15/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work16/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work17/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work2/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work3/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work4/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work5/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work6/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work7/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work8/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shot_work9/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work0/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work1/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work10/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work11/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work12/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work13/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work14/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work15/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work16/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work17/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work18/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work19/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work2/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work20/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work21/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work22/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work23/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work24/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work3/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work4/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work5/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work6/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work7/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work8/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        work9/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/TF
+      Enabled: false
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        {}
+      Update Interval: 0
+      Value: false
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor0"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor0"
+      left: 0
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor1"
+      left: 128
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor1"
+      left: 128
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor2"
+      left: 256
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: motor2"
+      left: 256
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: gripper"
+      left: 400
+      size: 128
+      stall duration: 5
+      top: 0
+      type: SAC
+    - Class: jsk_rviz_plugin/OverlayDiagnostic
+      Enabled: true
+      Name: OverlayDiagnostic
+      Topic: /diagnostics
+      Value: true
+      alpha: 0.800000011920929
+      diagnostics namespace: "motor_status: gripper"
+      left: 400
+      size: 128
+      stall duration: 5
+      top: 100
+      type: EVA
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /arrow_pub
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Buffer length: 100
+      Class: jsk_rviz_plugin/Plotter2D
+      Enabled: true
+      Name: Plotter2D
+      Show Value: true
+      Topic: /motor0_current
+      Value: true
+      auto color change: false
+      auto scale: true
+      background color: 0; 0; 0
+      backround alpha: 0
+      border: true
+      foreground alpha: 0.699999988079071
+      foreground color: 25; 255; 240
+      height: 128
+      left: 0
+      linewidth: 1
+      max color: 255; 0; 0
+      max value: 1
+      min value: -1
+      show caption: true
+      text size: 12
+      top: 250
+      update interval: 0.03999999910593033
+      width: 128
+    - Buffer length: 100
+      Class: jsk_rviz_plugin/Plotter2D
+      Enabled: true
+      Name: Plotter2D
+      Show Value: true
+      Topic: /motor1_current
+      Value: true
+      auto color change: false
+      auto scale: true
+      background color: 0; 0; 0
+      backround alpha: 0
+      border: true
+      foreground alpha: 0.699999988079071
+      foreground color: 25; 255; 240
+      height: 128
+      left: 128
+      linewidth: 1
+      max color: 255; 0; 0
+      max value: 1
+      min value: -1
+      show caption: true
+      text size: 12
+      top: 250
+      update interval: 0.03999999910593033
+      width: 128
+    - Buffer length: 100
+      Class: jsk_rviz_plugin/Plotter2D
+      Enabled: true
+      Name: Plotter2D
+      Show Value: true
+      Topic: /motor2_current
+      Value: true
+      auto color change: false
+      auto scale: true
+      background color: 0; 0; 0
+      backround alpha: 0
+      border: true
+      foreground alpha: 0.699999988079071
+      foreground color: 25; 255; 240
+      height: 128
+      left: 256
+      linewidth: 1
+      max color: 255; 0; 0
+      max value: 1
+      min value: -1
+      show caption: true
+      text size: 12
+      top: 250
+      update interval: 0.03999999910593033
+      width: 128
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: base/base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
+      Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 3.122086524963379
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: 0.5134624242782593
+        Y: 0.22417457401752472
+        Z: -0.37511444091796875
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.8997970223426819
+      Target Frame: <Fixed Frame>
+      Yaw: 1.5617964267730713
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1016
+  Hide Left Dock: false
+  Hide Right Dock: true
+  QMainWindow State: 000000ff00000000fd0000000400000000000001c20000039efc020000000ffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d00000185000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000006005200650064000000003d000001d8000001d800fffffffb000000100044006900730070006c006100790073000000021b000001c6000000c900fffffffb000000100044006900730070006c00610079007302000001d6000000cf000001c2000000cbfb000000080042006c00750065000000003d000001d80000000000000000fb00000006005200650064010000003d000001d80000000000000000fb00000006005200650064010000003d00000285000001d800fffffffb000000100044006900730070006c00610079007301000002c800000113000000c900ffffff000000010000010f0000035efc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000035e000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000051300000039fc0100000002fb0000000800540069006d0065000000000000000513000004f300fffffffb0000000800540069006d00650100000000000004500000000000000000000005700000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Red:
+    collapsed: false
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: true
+  Width: 1848
+  X: 72
+  Y: 27

@@ -17,84 +17,57 @@
     <link name="${prefix}gripper/base_link">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/visual/base.stl" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/DAE/base.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="white"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/collision/base.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/STL/base.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
 
     <joint name="${prefix}gripper/joint1" type="revolute">
       <parent link="${prefix}gripper/base_link"/>
-      <child link="${prefix}gripper/finger1"/>
-      <origin xyz="0.05 0 0" rpy="0 0 ${90*M_PI/180}"/>
+      <child link="${prefix}gripper/left_finger"/>
+      <origin xyz="0.2511 0.0365 -0.086" rpy="${90*M_PI/180} 0 ${90*M_PI/180}"/>
       <axis xyz="0 0 1"/>
       <limit lower="${0*M_PI/180}" upper="${90*M_PI/180}" effort="6"
               velocity="5" acceleration="5"/>
     </joint>
 
-    <link name="${prefix}gripper/finger1">
+    <link name="${prefix}gripper/left_finger">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/visual/finger.stl" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/DAE/left_finger.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="orange"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/collision/finger.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/STL/left_finger.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
 
-    <joint name="${prefix}gripper/joint2" type="revolute">
+    <joint name="${prefix}gripper/joint1_mimic" type="revolute">
       <parent link="${prefix}gripper/base_link"/>
-      <child link="${prefix}gripper/finger2"/>
-      <origin xyz="-0.025 -0.0433012 0" rpy="0 0 ${-30*M_PI/180}"/>
+      <child link="${prefix}gripper/right_finger"/>
+      <origin xyz="0.2511 -0.0365 -0.086" rpy="${90*M_PI/180} 0 ${90*M_PI/180}"/>
       <axis xyz="0 0 1"/>
       <limit lower="${0*M_PI/180}" upper="${90*M_PI/180}" effort="6"
               velocity="5" acceleration="5"/>
-      <mimic joint="${prefix}gripper/joint1" multiplier="1" offset="0" />
+      <mimic joint="${prefix}gripper/joint1" multiplier="-1" offset="0" />
     </joint>
 
-    <link name="${prefix}gripper/finger2">
+    <link name="${prefix}gripper/right_finger">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/visual/finger.stl" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/DAE/right_finger.dae" scale="${visual_mesh_scale}"/>
         </geometry>
-        <material name="orange"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/collision/finger.stl" scale="${collision_mesh_scale}"/>
-        </geometry>
-      </collision>
-    </link>
-
-    <joint name="${prefix}gripper/joint3" type="revolute">
-      <parent link="${prefix}gripper/base_link"/>
-      <child link="${prefix}gripper/finger3"/>
-      <origin xyz="-0.025 0.0433012 0" rpy="0 0 ${210*M_PI/180}"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="${0*M_PI/180}" upper="${90*M_PI/180}" effort="6"
-              velocity="5" acceleration="5"/>
-      <mimic joint="${prefix}gripper/joint1" multiplier="1" offset="0" />
-    </joint>
-
-    <link name="${prefix}gripper/finger3">
-      <visual>
-        <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/visual/finger.stl" scale="${visual_mesh_scale}"/>
-        </geometry>
-        <material name="orange"/>
-      </visual>
-      <collision>
-        <geometry>
-          <mesh filename="package://catchrobo_description/mesh/gripper/collision/finger.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/gripper/STL/right_finger.stl" scale="${collision_mesh_scale}"/>
         </geometry>
       </collision>
     </link>
@@ -102,7 +75,7 @@
     <joint name="${prefix}gripper/grasping_frame_joint" type="fixed">
       <parent link="${prefix}gripper/base_link"/>
       <child link="${prefix}gripper/grasping_frame"/>
-      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <origin xyz="0.2511 0 -0.1" rpy="0 0 0"/>
     </joint>
     <link name="${prefix}gripper/grasping_frame"/>
 

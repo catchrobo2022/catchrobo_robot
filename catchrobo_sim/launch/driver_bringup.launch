@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <rosparam file="$(find catchrobo_sim)/config/motor_driver_sim.yaml" command="load" ns="" />
+    <node pkg="catchrobo_sim" type="motor_driver_sim" name="motor_driver_sim0" output="screen"/>
+    <node pkg="catchrobo_sim" type="motor_driver_sim" name="motor_driver_sim1" output="screen"/>
+    <node pkg="catchrobo_sim" type="motor_driver_sim" name="motor_driver_sim2" output="screen" /> 
+    
+</launch>

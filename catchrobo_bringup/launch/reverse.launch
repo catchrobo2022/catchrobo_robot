@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="game_mode" default="normal_game" />
+    <param name="game_mode" value="$(arg game_mode)" />
+    <node pkg="catchrobo_manager" type="reverse.py" name="reverse" output="screen" respawn="false" respawn_delay="0" />
+</launch>

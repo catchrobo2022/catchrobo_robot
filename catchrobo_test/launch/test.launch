@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="field" default="blue" />
+    <arg name="sim" default="false" />
+
+    <!-- <node pkg="catchrobo_manager" type="calibration.py" name="calibration" output="screen" respawn="false" respawn_delay="0" /> -->
+    <node pkg="catchrobo_manager" type="show_for_rviz.py" name="show_for_rviz" output="screen" respawn="false" respawn_delay="0" />
+
+    <include file="$(find catchrobo_bringup)/launch/set_param.launch">
+        <arg name="sim" default="$(arg sim" />
+    </include>
+    <!-- <include file="$(find catchrobo_manual)/launch/manual_xbox.launch" /> -->
+    <include file="$(find catchrobo_description)/launch/catchrobo_display.launch">
+        <arg name="field" value="$(arg field)" />
+    </include>
+    <node pkg="joy" type="joy_node" name="joy_node" />
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen" respawn="true" respawn_delay="1">
+        <param name="port" value="/dev/ttyACM0" />
+        <param name="baud" value="115200" />
+    </node>
+
+</launch>

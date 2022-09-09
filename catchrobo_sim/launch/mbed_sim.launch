@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="catchrobo_sim" type="mbed_sim" name="mbed_sim" output="screen"/>
+</launch>

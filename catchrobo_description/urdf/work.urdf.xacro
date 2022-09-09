@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Constants -->
+  <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
+  <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
+
+  <!-- Link & Joint -->
+  <xacro:macro name="work" params="prefix parent *joint_origin">
+  
+    <joint name="${prefix}/root" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="${prefix}/base_link"/>
+    </joint>
+
+    <link name="${prefix}/base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/work/DAE/work.dae" scale="${visual_mesh_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://catchrobo_description/mesh/work/STL/work.stl" scale="${collision_mesh_scale}"/>
+        </geometry>
+      </collision>
+    </link>
+
+  </xacro:macro>
+</robot>
