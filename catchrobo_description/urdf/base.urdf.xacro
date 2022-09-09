@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Field Side Parameters-->
-  <xacro:arg name="field" default=""/>
+  <xacro:arg name="field" default="" />
   <xacro:property name="field" value="$(arg field)" />
 
   <!-- Dependencies -->
@@ -10,27 +10,27 @@
   <xacro:include filename="$(find catchrobo_description)/urdf/work.urdf.xacro" />
 
   <!-- Constants -->
-  <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0"/>
-  <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0"/>
+  <xacro:property name="visual_mesh_scale" value="1.0 1.0 1.0" />
+  <xacro:property name="collision_mesh_scale" value="1.0 1.0 1.0" />
 
   <!-- Link & Joint -->
   <xacro:macro name="base" params="parent *joint_origin">
-  
+
     <joint name="base/root" type="fixed">
-      <xacro:insert_block name="joint_origin"/>
-      <parent link="${parent}"/>
-      <child link="base/base_link"/>
+      <xacro:insert_block name="joint_origin" />
+      <parent link="${parent}" />
+      <child link="base/base_link" />
     </joint>
 
     <link name="base/base_link">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/base.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/base.dae" scale="${visual_mesh_scale}" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/base.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/base.stl" scale="${collision_mesh_scale}" />
         </geometry>
       </collision>
     </link>
@@ -38,62 +38,62 @@
 
     <!-- robot tip -->
     <joint name="base/link_tip" type="fixed">
-      <parent link="base/base_link"/>
-      <child link="base/link_tip"/>
+      <parent link="base/base_link" />
+      <child link="base/link_tip" />
       <xacro:if value="${field=='blue'}">
-        <origin xyz="0.6767 -0.845 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.6767 -0.845 0.00445" rpy="0 0 0" />
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="0.6767 0.845 0.00445" rpy="0 0 0"/>
+        <origin xyz="0.6767 0.845 0.00445" rpy="0 0 0" />
       </xacro:if>
     </joint>
-    <link name="base/link_tip"/>
+    <link name="base/link_tip" />
 
 
     <!-- shooting box tip -->
     <joint name="base/shooter_tip" type="planar">
-      <parent link="base/base_link"/>
-      <child link="base/shooter"/>
+      <parent link="base/base_link" />
+      <child link="base/shooter" />
       <xacro:if value="${field=='blue'}">
-        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0"/>
+        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0" />
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0"/>
+        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0" />
       </xacro:if>
     </joint>
     <link name="base/shooter">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}" />
         </geometry>
       </collision>
     </link>
 
     <!-- fixed shooting box tip -->
     <joint name="base/fixed_shooter_tip" type="fixed">
-      <parent link="base/base_link"/>
-      <child link="base/fixed_shooter"/>
+      <parent link="base/base_link" />
+      <child link="base/fixed_shooter" />
       <xacro:if value="${field=='blue'}">
-        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0"/>
+        <origin xyz="1.3267 1.125 0.002" rpy="0 0 0" />
       </xacro:if>
       <xacro:if value="${field=='red'}">
-        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0"/>
+        <origin xyz="1.3267 -1.125 0.002" rpy="0 0 0" />
       </xacro:if>
     </joint>
     <link name="base/fixed_shooter">
       <visual>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/DAE/shooting_box.dae" scale="${visual_mesh_scale}" />
         </geometry>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}"/>
+          <mesh filename="package://catchrobo_description/mesh/base/STL/shooting_box.stl" scale="${collision_mesh_scale}" />
         </geometry>
       </collision>
     </link>
@@ -128,7 +128,7 @@
       <origin xyz="1.2366 0 0.031" rpy="0 0 0" />
     </xacro:work>
 
-    
+
     <!-- work on blue field -->
     <xacro:if value="${field=='blue'}">
       <xacro:work prefix="work9" parent="base/base_link">
@@ -241,23 +241,23 @@
 
     <!-- work in shooting box -->
     <xacro:work prefix="shot_work0" parent="base/shooter">
-      <origin xyz="-0.1 0.25 0" rpy="0 0 0" />
+      <origin xyz="-0.1 0.251 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work1" parent="base/shooter">
-      <origin xyz="0 0.25 0" rpy="0 0 0" />
+      <origin xyz="0 0.251 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work2" parent="base/shooter">
-      <origin xyz="0.1 0.25 0" rpy="0 0 0" />
+      <origin xyz="0.1 0.251 0" rpy="0 0 0" />
     </xacro:work>
 
     <xacro:work prefix="shot_work3" parent="base/shooter">
-      <origin xyz="-0.1 0.15 0" rpy="0 0 0" />
+      <origin xyz="-0.1 0.151 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work4" parent="base/shooter">
-      <origin xyz="0 0.15 0" rpy="0 0 0" />
+      <origin xyz="0 0.151 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work5" parent="base/shooter">
-      <origin xyz="0.1 0.15 0" rpy="0 0 0" />
+      <origin xyz="0.1 0.151 0" rpy="0 0 0" />
     </xacro:work>
 
     <xacro:work prefix="shot_work6" parent="base/shooter">
@@ -281,23 +281,23 @@
     </xacro:work>
 
     <xacro:work prefix="shot_work12" parent="base/shooter">
-      <origin xyz="-0.1 -0.15 0" rpy="0 0 0" />
+      <origin xyz="-0.1 -0.151 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work13" parent="base/shooter">
-      <origin xyz="0 -0.15 0" rpy="0 0 0" />
+      <origin xyz="0 -0.151 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work14" parent="base/shooter">
-      <origin xyz="0.1 -0.15 0" rpy="0 0 0" />
+      <origin xyz="0.1 -0.151 0" rpy="0 0 0" />
     </xacro:work>
 
     <xacro:work prefix="shot_work15" parent="base/shooter">
-      <origin xyz="-0.1 -0.25 0" rpy="0 0 0" />
+      <origin xyz="-0.1 -0.251 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work16" parent="base/shooter">
-      <origin xyz="0 -0.25 0" rpy="0 0 0" />
+      <origin xyz="0 -0.251 0" rpy="0 0 0" />
     </xacro:work>
     <xacro:work prefix="shot_work17" parent="base/shooter">
-      <origin xyz="0.1 -0.25 0" rpy="0 0 0" />
+      <origin xyz="0.1 -0.251 0" rpy="0 0 0" />
     </xacro:work>
 
   </xacro:macro>

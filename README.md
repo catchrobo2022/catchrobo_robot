@@ -11,6 +11,8 @@
 - pip install numpy pandas
 - sudo apt install ros-noetic-sound-play 
 
+### Raspberry
+[ラズパイ環境構築](./doc/raspberry_setup.md)
 
 ### mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/
@@ -116,4 +118,5 @@ float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) +
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
 ### ワーク、シューティングBOXの配置番号
-![ワーク、シューティングBOXの配置番号](ワーク＋シューティングBOXの配置番号.png) 
+![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
+[座標](./doc/234_C5_2022年度フィールド修正版0725.pdf)
