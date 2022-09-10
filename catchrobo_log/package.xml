@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>catchrobo_rosbag</name>
+  <name>catchrobo_log</name>
   <version>0.0.0</version>
-  <description>The catchrobo_rosbag package</description>
+  <description>The catchrobo_log package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/catchrobo_rosbag</url> -->
+  <!-- <url type="website">http://wiki.ros.org/catchrobo_log</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->

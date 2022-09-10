@@ -4,5 +4,5 @@
     <include file="$(find catchrobo_bringup)/launch/rviz.launch">
         <arg name="field" value="$(arg field)" />
     </include>
-    <node pkg="catchrobo_rosbag" type="record.py" name="record" output="screen" respawn="false" respawn_delay="0" />
+    <node pkg="catchrobo_log" type="record.py" name="record" output="screen" respawn="false" respawn_delay="0" />
 </launch>
