@@ -17,7 +17,7 @@ class Database:
     def generate_file_path(self, csv_name):
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path("catchrobo_manager")
-        config_path = pkg_path + "/config/"
+        config_path = pkg_path + "/config/object_csv/"
         csv = config_path + csv_name
         return csv
 

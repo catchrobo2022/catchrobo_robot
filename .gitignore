@@ -2,7 +2,5 @@
 *.pyc
 *.zip
 */rosbag/*.bag
-catchrobo_test/rosbag/*.bag.*
-catchrobo_manager/log/real/*.csv
-catchrobo_manager/log/sim/*.csv
-catchrobo_manager/config/result/*
+*/log/*/*/*.csv
+catchrobo_manager/config/object_csv/result/*.csv

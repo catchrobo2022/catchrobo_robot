@@ -101,7 +101,7 @@ class Calibration:
             self._on_shoot_database.updateState(i, "y", transformed_q[1])
             # self._database.updateState(i, "z", transformed_q[2])
 
-        top = "temp/" + self.FIELD
+        top = "calibrated/" + self.FIELD
         self._database.save_csv(top + "_shoot.csv")
         self._on_shoot_database.save_csv(top + "_on_shoot.csv")
 

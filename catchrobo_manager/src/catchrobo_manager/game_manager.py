@@ -98,7 +98,9 @@ class GameManager:
         elif msg.data == GuiMenu.INIT:
             self.init_actions()
             if not self.IS_CONTINUE:
-                self._box_manager.load("temp/{}_shoot.csv".format(self.FIELD))
+                top = "calibrated/{}_".format(self.FIELD)
+                self._box_manager.load(top + "shoot.csv")
+                self._on_box_manager.load(top + "_on_shoot.csv")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -436,12 +438,12 @@ class GameManager:
         self._box_manager.save_result("result/" + self.FIELD + "_shoot.csv")
         self._box_manager.save_result("result/" + self.FIELD + "_on_shoot.csv")
 
-    def savelog(self, file_name: str = ""):
+    def savelog(self, file_name=""):
         rospack = rospkg.RosPack()
         # get the file path for rospy_tutorials
-        pkg_path = rospack.get_path("catchrobo_manager")
+        pkg_path = rospack.get_path("catchrobo_log")
 
-        data_dir = pkg_path + "/log/" + file_name
+        data_dir = pkg_path + "/log/action_time/" + file_name
         now = datetime.datetime.now()
         filename = data_dir + now.strftime("%Y%m%d_%H%M%S")
         df = pd.DataFrame(
