@@ -15,5 +15,4 @@
   <!-- <include file="$(find catchrobo_bringup)/launch/bringup_base.launch" /> -->
   <arg name="file" default="rosbag.bag" />
   <node pkg="rosbag" type="play" name="rosbag_play" output="screen" required="true" args="--pause $(find catchrobo_test)/rosbag/$(arg file)" />
-
 </launch>

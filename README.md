@@ -84,15 +84,14 @@ roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
 ```
 - PC
 ```
-roslaunch catchrobo_bringup rviz.launch field:="blue"
-roslaunch catchrobo_test rosbag_record.launch 
+roslaunch catchrobo_bringup laptop.launch field:="blue"
 ```
 rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
 取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
 
 #### rosbag再生
 ```
-roslaunch catchrobo_test rosbag_play.launch 
+roslaunch catchrobo_rosbag rosbag_play.launch 
 rosservice call /rosbag_play/pause_playback "data: false" 
 ```
 
