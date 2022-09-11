@@ -19,7 +19,7 @@ from catchrobo_manager.gui_menu_enum import GuiMenu
 import rospkg
 import rospy
 
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Bool
 
 import datetime
 import pandas as pd
@@ -37,6 +37,7 @@ class GameManager:
         self.IS_SIM = rospy.get_param("sim")
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
         self.IS_CONTINUE = rospy.get_param("is_continue")
+        # game_end_topic = rospy.get_param("game_end_topic")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
 
@@ -47,7 +48,7 @@ class GameManager:
         # shooting_box_center_raw = shooting_box_center_red * self.FIELD_SIGN
 
         # self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
-
+        # self._pub_game_end = rospy.Publisher(game_end_topic, Bool, queue_size=1)
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
         rospy.Subscriber("menu", Int8, self.gui_callback)
 
@@ -100,7 +101,7 @@ class GameManager:
             if not self.IS_CONTINUE:
                 top = "calibrated/{}_".format(self.FIELD)
                 self._box_manager.load(top + "shoot.csv")
-                self._on_box_manager.load(top + "_on_shoot.csv")
+                self._on_box_manager.load(top + "on_shoot.csv")
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -395,6 +396,8 @@ class GameManager:
         next_target = NextTarget.PICK
         next_action = PickAction.START
         while not rospy.is_shutdown():
+            if self._is_init_mode:
+                self._game_start = False
             if (
                 self._is_init_mode
                 or not self._game_start

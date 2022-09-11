@@ -4,6 +4,7 @@ game_manager:
   INIT_Z_m: 0.215
   WORK_HEIGHT_m: 0.087
   SHOOT_HEIGHT_m: 0.101
+  game_end_topic: "game_end"
 
 accel_limit_scale:
   normal_game:
