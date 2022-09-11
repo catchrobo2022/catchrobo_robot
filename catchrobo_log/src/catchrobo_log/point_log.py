@@ -92,9 +92,9 @@ class PointLog:
         top = "shot_point/" + self.FIELD
         self._database.save_csv(top + "_shoot.csv")
         diff_x = self._database.getColumn("diff_x")
-        rospy.loginfo(np.average(diff_x))
+        rospy.loginfo("diff_x: {}".format(np.average(diff_x)))
         diff_y = self._database.getColumn("diff_y")
-        rospy.loginfo(np.average(diff_y))
+        rospy.loginfo("diff_y: {}".format(np.average(diff_y)))
 
 
 if __name__ == "__main__":
