@@ -72,7 +72,7 @@ roslaunch catchrobo_bringup rviz.launch
 ### simulation
 ```
 roslaunch catchrobo_bringup sim_bringup.launch field:="blue" no_joy:="true"
-roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
+roslaunch catchrobo_bringup manager.launch continue:="false" game_mode:="normal_game"
 ```
 
 ### 実機
@@ -80,7 +80,7 @@ roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
 ```
 sudo chmod a+rw /dev/ttyACM0 
 roslaunch catchrobo_bringup raspberry.launch field:="blue"
-roslaunch catchrobo_bringup manager.launch game_mode:="normal_game"
+roslaunch catchrobo_bringup manager.launch game_mode:="normal_game" continue:="false"
 ```
 - PC
 ```
