@@ -9,7 +9,7 @@
 - jsk-plugin
 - joy con系
 - pip install numpy pandas
-- sudo apt install ros-noetic-sound-play 
+- sudo apt install mpg123 
 
 ### Raspberry
 [ラズパイ環境構築](./doc/raspberry_setup.md)

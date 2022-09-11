@@ -361,6 +361,8 @@ class GameManager:
     def init_actions(self):
         rospy.loginfo("init action start")
         self._is_init_mode = True
+        self._game_start = False
+
         self.auto_mode()
         self._robot.enable()
         self._robot.set_accel_scale("init")
@@ -396,8 +398,6 @@ class GameManager:
         next_target = NextTarget.PICK
         next_action = PickAction.START
         while not rospy.is_shutdown():
-            if self._is_init_mode:
-                self._game_start = False
             if (
                 self._is_init_mode
                 or not self._game_start
