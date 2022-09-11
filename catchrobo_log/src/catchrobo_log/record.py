@@ -30,7 +30,7 @@ class Record:
         if self._is_recording is True:
             return
         self._is_recording = True
-        subprocess.run(["roslaunch", "catchrobo_rosbag", "rosbag_record.launch"])
+        subprocess.run(["roslaunch", "catchrobo_log", "rosbag_record.launch"])
 
 
 if __name__ == "__main__":
