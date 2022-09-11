@@ -193,10 +193,8 @@ void Red::send_gl_msgs(bool flag)
 
 void Red::send_menu_msgs(bool flag)
 {
-  if(status != 16){
-    menu.data = status;
-    pub_menu.publish(menu);
-  }
+  menu.data = status;
+  pub_menu.publish(menu);
   if(flag == true){
     QTimer::singleShot(sendtime, this, SLOT(send_gl_msgs(true)));
   }

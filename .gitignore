@@ -4,3 +4,4 @@
 */rosbag/*.bag
 */log/*/*/*.csv
 catchrobo_manager/config/object_csv/result/*.csv
+catchrobo_manager/config/object_csv/shot_point/*.csv
