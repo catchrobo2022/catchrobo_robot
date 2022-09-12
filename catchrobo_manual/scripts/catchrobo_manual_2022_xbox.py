@@ -234,10 +234,10 @@ class Manual:
         )
 
         if axis == 0:
-            command.position = rad * direction * -1 + self._joint_rad[axis]
+            command.position = rad * direction * -1 *-self.COLOR_NUM+ self._joint_rad[axis]
             self.command.command_x = command
         elif axis == 1:
-            command.position = rad * direction + self._joint_rad[axis]
+            command.position = rad * direction *-self.COLOR_NUM+ self._joint_rad[axis]
             self.command.command_y = command
         elif axis == 2:
             command.position = rad * direction + self._joint_rad[axis]
