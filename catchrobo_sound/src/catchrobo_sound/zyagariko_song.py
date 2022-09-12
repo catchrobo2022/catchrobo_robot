@@ -44,13 +44,13 @@ class Sound:
         riko_sound = "riko.mp3"
         self._sound_list = [
             zyaga_sound,
-            zyaga_sound,
-            riko_sound,
-            riko_sound,
-            zyaga_sound,
-            riko_sound,
+            # zyaga_sound,
+            # riko_sound,
+            # riko_sound,
+            # zyaga_sound,
+            # riko_sound,
         ]
-        self._manual_alert = "get.mp3"
+        self._manual_alert = "short_get.mp3"
 
         startup = "1_startup.mp3"
         origin = "2_origin.mp3"
