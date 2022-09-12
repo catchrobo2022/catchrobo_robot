@@ -6,6 +6,5 @@
     </include>
     <node pkg="catchrobo_log" type="record.py" name="record" output="screen" respawn="false" respawn_delay="0" />
     <node pkg="catchrobo_log" type="point_log.py" name="poing_log" output="screen" respawn="false" respawn_delay="0" />
-    <!-- <node pkg="catchrobo_gui" type="voice.py" name="voice" output="screen" respawn="false" respawn_delay="0" /> -->
-    <node pkg="catchrobo_sound" type="zyagariko_song.py" name="zyagariko_song" output="screen" respawn="false" respawn_delay="0" />
+    <!-- <node pkg="catchrobo_sound" type="zyagariko_song.py" name="zyagariko_song" output="screen" respawn="false" respawn_delay="0" /> -->
 </launch>
