@@ -42,7 +42,11 @@ class Sound:
         self._sound_id = 0
         zyaga_sound = "zyaga.mp3"
         riko_sound = "riko.mp3"
-        self._sound_list = ["short_get.mp3"]
+
+        pi = "pi_.mp3"
+        # self._sound_list = [ka]
+        # rospy.loginfo(self._sound_list)
+        self._sound_list = [pi] + [None] * 100
 
         # self._sound_list = [
         #     zyaga_sound,
@@ -52,7 +56,8 @@ class Sound:
         #     # zyaga_sound,
         #     # riko_sound,
         # ]
-        self._manual_alert = "pi_sound.mp3"
+        self._manual_sound_list = ["goal1.mp3"] + [None] * 100
+        self._manual_sound_id = 0
 
         startup = "1_startup.mp3"
         origin = "2_origin.mp3"
@@ -77,6 +82,8 @@ class Sound:
             start,
         ]
         self._gui_sound = None
+        self._current_sound = None
+        self._sound_timer = rospy.Time.now()
 
         self._is_manual = False
         self._soundhandle = SoundClient()
@@ -100,6 +107,8 @@ class Sound:
     def manual_callback(self, msg):
         if msg.data == ManualCommand.MANUAL_ON:
             self._is_manual = True
+            self._soundhandle.stop()
+            self._manual_sound_id = 0
         elif msg.data == ManualCommand.MANUAL_OFF:
             self._is_manual = False
 
@@ -123,8 +132,11 @@ class Sound:
 
     def manual_alert(self):
         if self._is_manual:
-            rospy.loginfo("manual_alert")
-            return self._manual_alert
+            # rospy.loginfo("manual_alert")
+            sound = self._manual_sound_list[self._manual_sound_id]
+            self._manual_sound_id += 1
+            self._manual_sound_id %= len(self._manual_sound_list)
+            return sound
         return None
 
     def running_alert(self):
@@ -132,7 +144,7 @@ class Sound:
         if sum(self._running_list) == 0:
             ##収束したあとは音を鳴らさない
             return None
-        rospy.loginfo("running_alert")
+        # rospy.loginfo("running_alert")
 
         sound = self._sound_list[self._sound_id]
         self._sound_id += 1
@@ -156,17 +168,26 @@ class Sound:
         old_sound = None
         while not rospy.is_shutdown():
             sound = self.decide_sound()
+            # rospy.loginfo(sound)
             if sound is not None:
-
                 self._soundhandle.play(sound)
-                ### [WARN] 再生が終わる前に再生し出すとコマンドラインに打ち込んだ文字が見えなくなる
                 self._soundhandle.wait()
+                # rospy.sleep(0.5)
 
-                for i in range(100):
-                    if not rospy.is_shutdown() and sound == self.decide_sound():
-                        rospy.sleep(0.01)
-                    else:
-                        break
+                # for i in range(100):
+                #     if not rospy.is_shutdown() and sound == self.decide_sound():
+                #         rospy.sleep(0.01)
+                #     else:
+                #         break
+            #     if sound != self._current_sound:
+            #         self._soundhandle.stop()
+            #         self._soundhandle.play(sound)
+
+            # self._current_sound = sound
+
+            #     ### [WARN] 再生が終わる前に再生し出すとコマンドラインに打ち込んだ文字が見えなくなる
+            #     self._soundhandle.stop()
+
             rate.sleep()
 
 

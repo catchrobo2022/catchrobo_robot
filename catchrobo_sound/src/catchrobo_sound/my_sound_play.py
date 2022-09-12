@@ -11,6 +11,7 @@ class SoundClient:
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path("catchrobo_sound")
         self._sound_path = pkg_path + "/sound/"
+        self._wr = None
 
     def play(self, t):
         PATH = os.path.dirname(__file__)
@@ -20,5 +21,7 @@ class SoundClient:
     def wait(self):
         self._wr.wait()
 
-    def __delete__(self):
+    def stop(self):
+        if self._wr is None:
+            return
         self._wr.terminate()
