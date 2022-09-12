@@ -41,7 +41,7 @@ class PointLog:
         # rospy.loginfo("Game start")
         if self._main_start is True:
             return
-        top = "calibrated/{}".format(self.FIELD)
+        top = "init/{}".format(self.FIELD)
         self._database = Database()
         self._database.readCsv(top + "_shoot.csv")
         self._database.add_column("picked_x", 0)
