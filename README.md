@@ -6,9 +6,13 @@
 
 ## Requirement
 - sudo apt install ros-noetic-rosserial-mbed
-- jsk-plugin(入れ方忘れました)
+- jsk-plugin
 - joy con系
 - pip install numpy pandas
+- sudo apt install mpg123 
+
+### Raspberry
+[ラズパイ環境構築](./doc/raspberry_setup.md)
 
 ### mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/
@@ -67,28 +71,27 @@ roslaunch catchrobo_bringup rviz.launch
 ```
 ### simulation
 ```
-roslaunch catchrobo_bringup sim_bringup.launch 
-roslaunch catchrobo_bringup manager.launch 
+roslaunch catchrobo_bringup sim_bringup.launch field:="blue" no_joy:="true"
+roslaunch catchrobo_bringup manager.launch continue:="false" game_mode:="normal_game"
 ```
 
 ### 実機
 - ラズパイ
 ```
 sudo chmod a+rw /dev/ttyACM0 
-roslaunch catchrobo_bringup raspberry.launch 
-roslaunch catchrobo_bringup manager.launch 
+roslaunch catchrobo_bringup raspberry.launch field:="blue"
+roslaunch catchrobo_bringup manager.launch game_mode:="normal_game" continue:="false"
 ```
 - PC
 ```
-roslaunch catchrobo_bringup rviz.launch
-roslaunch catchrobo_test rosbag_record.launch 
+roslaunch catchrobo_bringup laptop.launch field:="blue"
 ```
 rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
 取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
 
 #### rosbag再生
 ```
-roslaunch catchrobo_test rosbag_play.launch 
+roslaunch catchrobo_log rosbag_play.launch 
 rosservice call /rosbag_play/pause_playback "data: false" 
 ```
 
@@ -114,4 +117,5 @@ float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) +
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
 ### ワーク、シューティングBOXの配置番号
-![ワーク、シューティングBOXの配置番号](ワーク＋シューティングBOXの配置番号.png) 
+![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
+[座標](./doc/234_C5_2022年度フィールド修正版0725.pdf)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from textwrap import fill
 import pandas as pd
 import numpy as np
 import threading
@@ -17,7 +18,7 @@ class Database:
     def generate_file_path(self, csv_name):
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path("catchrobo_manager")
-        config_path = pkg_path + "/config/"
+        config_path = pkg_path + "/config/object_csv/"
         csv = config_path + csv_name
         return csv
 
@@ -81,3 +82,6 @@ class Database:
     def get_remain_num_in_common(self):
         group = self._objects.groupby("my_area").sum()
         return group.loc[False, "exist"]
+
+    def add_column(self, name, fill_val):
+        self._objects[name] = fill_val
