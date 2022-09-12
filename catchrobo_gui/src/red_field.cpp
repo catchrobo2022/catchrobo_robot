@@ -352,9 +352,9 @@ void Red::timer(){
 
 void Red::countdown(){
   ti -= 1;
-  if(stop_ti == 0){
+  //if(stop_ti == 0){
     this->timer();
-  }
+  //}
 }
 
 void Red::marker_obj(int num){

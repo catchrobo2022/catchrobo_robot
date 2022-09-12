@@ -357,9 +357,9 @@ void Blue::timer(){
 
 void Blue::countdown(){
   ti -= 1;
-  if(stop_ti == 0){
+  //if(stop_ti == 0){
     this->timer();
-  }
+  //}
 }
 
 void Blue::marker_obj(int num){
