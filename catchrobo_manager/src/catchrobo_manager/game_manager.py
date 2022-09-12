@@ -50,7 +50,7 @@ class GameManager:
         # self._shooting_box_transform = ShootingBoxTransform(shooting_box_center_raw)
         # self._pub_game_end = rospy.Publisher(game_end_topic, Bool, queue_size=1)
         rospy.Subscriber("manual_command", Int8, self.manual_callback)
-        rospy.Subscriber("menu", Int8, self.gui_callback)
+        rospy.Subscriber("menu", Int8, self.gui_callback, queue_size=1)
 
     def init(self):
         # self._use_main_thread = False
