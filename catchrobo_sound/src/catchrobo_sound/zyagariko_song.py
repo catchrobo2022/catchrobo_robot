@@ -42,15 +42,17 @@ class Sound:
         self._sound_id = 0
         zyaga_sound = "zyaga.mp3"
         riko_sound = "riko.mp3"
-        self._sound_list = [
-            zyaga_sound,
-            # zyaga_sound,
-            # riko_sound,
-            # riko_sound,
-            # zyaga_sound,
-            # riko_sound,
-        ]
-        self._manual_alert = "short_get.mp3"
+        self._sound_list = ["short_get.mp3"]
+
+        # self._sound_list = [
+        #     zyaga_sound,
+        #     # zyaga_sound,
+        #     # riko_sound,
+        #     # riko_sound,
+        #     # zyaga_sound,
+        #     # riko_sound,
+        # ]
+        self._manual_alert = "pi_sound.mp3"
 
         startup = "1_startup.mp3"
         origin = "2_origin.mp3"
@@ -151,12 +153,20 @@ class Sound:
 
     def spin(self):
         rate = rospy.Rate(100)
+        old_sound = None
         while not rospy.is_shutdown():
             sound = self.decide_sound()
             if sound is not None:
+
                 self._soundhandle.play(sound)
                 ### [WARN] 再生が終わる前に再生し出すとコマンドラインに打ち込んだ文字が見えなくなる
                 self._soundhandle.wait()
+
+                for i in range(100):
+                    if not rospy.is_shutdown() and sound == self.decide_sound():
+                        rospy.sleep(0.01)
+                    else:
+                        break
             rate.sleep()
 
 
