@@ -84,7 +84,7 @@ class GameManager:
 
         self._go_flag = False
         self._old_my_area = True
-        self._is_init_mode = True
+        self._is_init_mode = False
         self._game_start = False
         self._log = []
 
@@ -97,11 +97,9 @@ class GameManager:
             self._robot.set_origin()
             self._robot.open_gripper()
         elif msg.data == GuiMenu.INIT:
-            self.init_actions()
-            if not self.IS_CONTINUE:
-                top = "calibrated/{}_".format(self.FIELD)
-                self._box_manager.load(top + "shoot.csv")
-                self._on_box_manager.load(top + "on_shoot.csv")
+            self._is_init_mode = True
+            self._game_start = False
+            # self.init_actions()
         elif msg.data == GuiMenu.START:
             self.auto_mode()
             self._game_start = True
@@ -111,6 +109,7 @@ class GameManager:
         elif msg.data == GuiMenu.POINT4:
             rospy.sleep(1)
             self._robot.open_gripper()
+
 
     def manual_callback(self, msg):
         # self._manual_msg = msg.data
@@ -374,6 +373,11 @@ class GameManager:
         self._robot.open_gripper()
         self._robot.set_accel_scale("normal")
         self._is_init_mode = False
+        if not self.IS_CONTINUE:
+            top = "calibrated/{}_".format(self.FIELD)
+            self._box_manager.load(top + "shoot.csv")
+            self._on_box_manager.load(top + "on_shoot.csv")
+
 
         rospy.loginfo("init action finish")
 
@@ -398,6 +402,8 @@ class GameManager:
         next_target = NextTarget.PICK
         next_action = PickAction.START
         while not rospy.is_shutdown():
+            if self._is_init_mode:
+                self.init_actions()
             if (
                 self._is_init_mode
                 or not self._game_start
