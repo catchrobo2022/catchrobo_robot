@@ -6,59 +6,49 @@
 
 ## Requirement
 - sudo apt install ros-noetic-rosserial-mbed
-- jsk-plugin
-- joy con系
+- sudo apt install ros-noetic-jsk-visualization
+- sudo apt-get install ros-noetic-joy
+- sudo apt-get install ros-noetic-joystick-drivers
 - pip install numpy pandas
 - sudo apt install mpg123 
 
 ### Raspberry
 [ラズパイ環境構築](./doc/raspberry_setup.md)
 
+### laptop
+- gedit ~/.bashrc ###複数PCでROSを使うとき用．一台だけならlocalhostでいいが，複数台のときはmasterのIPを指定する必要がある
+```
+#export ROS_MASTER_URI=http://localhost:11311  # for simulation
+export ROS_MASTER_URI=http://catchrobo:11311
+export ROS_IP=$(hostname -I | cut -d' ' -f1)
+```
+- sudo gedit /etc/hosts ###ホスト名の登録．192.168....と打つ代わりにcatchroboで認識するようになる
+```
+192.168.24.11 catchrobo
+```
+
 ### mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/
 を使用する。
 
 1. catchrobo_sim/include/catchrobo_simをzip化する
+1. ros_libを作成（catchrobo_msgを編集していなければ省略可能)
+    1. rosrun rosserial_mbed make_libraries.py <コードの生成場所。どこでもいい>
+    1. round関数がmbedにないので ros_lib/ros/duration.h　およびros_lib/ros/time.hのclassの中に以下の関数を追加する
+        ```
+        double round(double number) { return number < 0.0 ? ceil(number - 0.5): floor(number + 0.5); };
+        ```
+    1. ros/node_handle.hを編集し，Serial通信のバッファサイズを増やす
+        ```
+         int INPUT_SIZE = 1024,
+         int OUTPUT_SIZE = 1024>
+        ```
+    1. zip化する
 1. mbed compilerでプログラム名を選択し右クリック
 1. インポートを選択
 1. アップロードタブを選択
 1. 下にあるChoose Fileから作成したzipを選択
 1. ライブラリとしてインポートする(古いものがある場合には、削除してからインポートする)
-
-- msgが変化した場合
-``` 
-rosrun rosserial_mbed make_libraries.py <コードの生成場所。どこでもいい>
-```
-作成後、round関数がmbedにないらしいので ros_lib/ros/duration.h　およびros_lib/ros/time.h　のclassの中に
-```
- double round(double number) { return number < 0.0 ? ceil(number - 0.5): floor(number + 0.5); };
-```
-を追加する。
-
-MbedHardware.hに
-```
-    #ifdef USE_XBEE
-    :iostream(p13, p14)      //Xbee
-    #else
-    :iostream(USBTX, USBRX) //有線
-    #endif
-```
-ros/node_handle.h
-```
-         int INPUT_SIZE = 1024,
-         int OUTPUT_SIZE = 1024>
-```
-
-作成したros_libを上記の方法でインポートする。
-
-
-
-
-注意事項：ノイズにより値がぶっ飛ぶことがある。原点出しはかなり近くから行う。
-motorの電源を入れてからmbedを開始→rosserial開始
-の流れにすることで、初期値をほぼ0とできる。
-
-
 
 
 ## How to use
@@ -119,3 +109,17 @@ https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 ### ワーク、シューティングBOXの配置番号
 ![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
 [座標](./doc/234_C5_2022年度フィールド修正版0725.pdf)
+
+### Xbeeについて
+通信が安定しないため没となった．
+使い方は以下の通り  
+- mbedオンラインコンパイラで
+ros_lib/MbedHardware.hに以下の関数を追加する
+```
+#ifdef USE_XBEE
+:iostream(p13, p14)      //Xbee
+#else
+:iostream(USBTX, USBRX) //有線
+#endif
+```
+- catchrobo_driverのserial_node_float.pyを使う. /dev/ttyUSB0のポートになると思われる
