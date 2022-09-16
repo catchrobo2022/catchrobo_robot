@@ -58,14 +58,15 @@ class GameManager:
         self._work_manager = WorkManager(top + "_work.csv")
         self._box_manager = ShootingBoxManager(top + "_shoot.csv")
         self._on_box_manager = ShootingBoxManager(top + "_on_shoot.csv")
-        self._work_manager.set_gui("obj_giro", "obj_rigo", "target_work")
-        self._box_manager.set_gui("gl_giro", "gl_rigo", "target_box")
 
         if self.IS_CONTINUE:
             top = "result/{}".format(self.FIELD)
             self._work_manager = WorkManager(top + "_work.csv")
             self._box_manager = ShootingBoxManager(top + "_shoot.csv")
             self._on_box_manager = ShootingBoxManager(top + "_on_shoot.csv")
+
+        self._work_manager.set_gui("obj_giro", "obj_rigo", "target_work")
+        self._box_manager.set_gui("gl_giro", "gl_rigo", "target_box")
 
         self._robot = Robot(self.FIELD)
 
@@ -109,7 +110,6 @@ class GameManager:
         elif msg.data == GuiMenu.POINT4:
             rospy.sleep(1)
             self._robot.open_gripper()
-
 
     def manual_callback(self, msg):
         # self._manual_msg = msg.data
@@ -377,7 +377,6 @@ class GameManager:
             top = "calibrated/{}_".format(self.FIELD)
             self._box_manager.load(top + "shoot.csv")
             self._on_box_manager.load(top + "on_shoot.csv")
-
 
         rospy.loginfo("init action finish")
 
