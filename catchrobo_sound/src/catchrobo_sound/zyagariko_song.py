@@ -60,6 +60,7 @@ class Sound:
         self._manual_sound_id = 0
 
         startup = "1_startup.mp3"
+        origin_start = "start_origin.mp3"
         origin = "2_origin.mp3"
         calib = "3_calib_start.mp3"
         calib_1st = "4_calib_1st_point.mp3"
@@ -71,8 +72,8 @@ class Sound:
         start = "10_game_start.mp3"
         done = "11_game_done.mp3"
         self._gui_sound_list = [
+            origin_start,
             origin,
-            None,
             calib,
             calib_1st,
             calib_2nd,
@@ -116,6 +117,7 @@ class Sound:
         if msg.data == 16:
             self._gui_sound = self._gui_sound_list[GuiMenu.INIT]
             return
+        # if msg.data ==
         if msg.data > GuiMenu.START or msg.data == GuiMenu.INIT:
             self._gui_sound = None
             return
