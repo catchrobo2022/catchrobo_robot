@@ -68,6 +68,8 @@ roslaunch catchrobo_bringup manager.launch continue:="false" game_mode:="normal_
 ### 実機
 - ラズパイ
 ```
+ssh root@catchrobo
+password : catchrobo
 sudo chmod a+rw /dev/ttyACM0 
 roslaunch catchrobo_bringup raspberry.launch field:="blue"
 roslaunch catchrobo_bringup manager.launch game_mode:="normal_game" continue:="false"
