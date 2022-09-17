@@ -103,6 +103,7 @@ class Robot:
 
     def control_permission(self, ok: bool):
         self._control_permission = ok
+
         # if ok is False:
         #     ### motorを止める
         #     for i in range(len(self._motors)):
@@ -254,6 +255,12 @@ class Robot:
         self.control_permission(False)
         msg = Int8()
         msg.data = ManualCommand.MANUAL_ON
+        self._pub_manual_command.publish(msg)
+
+    def ask_auto(self):
+        self.control_permission(True)
+        msg = Int8()
+        msg.data = ManualCommand.MANUAL_OFF
         self._pub_manual_command.publish(msg)
 
     def check_permission(self):

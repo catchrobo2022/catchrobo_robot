@@ -129,11 +129,13 @@ class GameManager:
         # self._manual_msg = ManualCommand.NONE
 
     def auto_mode(self):
-        self._robot.control_permission(True)
+        self._robot.ask_auto()
+        # self._robot.control_permission(True)
         rospy.loginfo("auto mode")
 
     def manunal_mode(self):
-        self._robot.control_permission(False)
+        # self._robot.control_permission(False)
+        self._robot.ask_manual()
         rospy.loginfo("manual mode")
 
     ########################################################################
