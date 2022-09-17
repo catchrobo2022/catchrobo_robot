@@ -83,7 +83,7 @@ rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
 
 #### rosbag再生
 ```
-roslaunch catchrobo_log rosbag_play.launch 
+roslaunch catchrobo_log rosbag_play.launch field:="blue" file:="xxx.bag"
 rosservice call /rosbag_play/pause_playback "data: false" 
 ```
 

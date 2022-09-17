@@ -351,6 +351,9 @@ class GameManager:
             if self._box_manager.get_remain_num() == 0:
                 ### もうシュート場所がなければ終了
                 return NextTarget.END, PickAction.START
+            if self._robot.has_work() == 0 and next_action == PickAction.START:
+                return NextTarget.END, PickAction.START
+
             next_target, next_action = self.shoot_actions(next_action)
         # elif next_target == NextTarget.SECOND_SHOOT:
         #     if self._on_box_manager.get_remain_num() == 0:
