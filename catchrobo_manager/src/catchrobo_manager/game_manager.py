@@ -325,9 +325,9 @@ class GameManager:
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
         # elif next_action == ShootAction.OPEN_A_BIT:
         #     self._robot.gripper(self.OPEN_A_BIT_RAD)
-        # elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
-        #     ### 下ろす
-        #     self._robot.go(z=self.SECOND_SHOOT_m)
+        elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
+            ### 下ろす
+            self._robot.go(z=self.SECOND_SHOOT_m)
         elif next_action == SecondShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
             self._robot.ask_manual()

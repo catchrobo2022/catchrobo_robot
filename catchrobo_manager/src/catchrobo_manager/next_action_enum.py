@@ -42,7 +42,7 @@ class SecondShootAction(Action):
     START = 1
     MOVE_Z_SAFE = auto()  # 上空へ上がる
     MOVE_XY_ABOVE_BOX = auto()  # 穴上へxy移動
-    # MOVE_Z_TO_SHOOT = auto()  # 下ろす
+    MOVE_Z_TO_SHOOT = auto()  # 下ろす
     PEG_IN_HOLE = auto()
     SHOOT = auto()
     END = auto()
