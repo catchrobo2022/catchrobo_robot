@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find catchrobo_log)/launch/rosbag_play.launch" />
+    <node pkg="catchrobo_log" type="point_log.py" name="poing_log" output="screen" respawn="false" respawn_delay="0" />
+
+</launch>

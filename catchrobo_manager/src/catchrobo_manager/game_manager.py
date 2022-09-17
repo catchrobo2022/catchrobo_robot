@@ -74,7 +74,9 @@ class GameManager:
         self._target_shoot_info = self._box_manager.get_target_info()
         self._target_second_shoot_info = self._on_box_manager.get_target_info()
 
-        posi, _, _ = self._target_work_info
+        # posi, _, _ = self._target_work_info
+
+        posi = self._work_manager._database.getPosi(24)
         self.INIT_X_m = posi[0]
         self.BEFORE_COMMON_AREA_Y_m = posi[1]
         self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + posi[2]
@@ -348,12 +350,12 @@ class GameManager:
         elif next_target == NextTarget.SHOOT:
             if self._box_manager.get_remain_num() == 0:
                 ### もうシュート場所がなければ終了
-                return NextTarget.SECOND_SHOOT, PickAction.START
-            next_target, next_action = self.shoot_actions(next_action)
-        elif next_target == NextTarget.SECOND_SHOOT:
-            if self._on_box_manager.get_remain_num() == 0:
                 return NextTarget.END, PickAction.START
-            next_target, next_action = self.second_shoot_actions(next_action)
+            next_target, next_action = self.shoot_actions(next_action)
+        # elif next_target == NextTarget.SECOND_SHOOT:
+        #     if self._on_box_manager.get_remain_num() == 0:
+        #         return NextTarget.END, PickAction.START
+        # next_target, next_action = self.second_shoot_actions(next_action)
 
         return next_target, next_action
 
