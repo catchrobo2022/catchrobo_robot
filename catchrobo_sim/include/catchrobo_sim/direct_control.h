@@ -22,6 +22,11 @@ public:
     {
         //// accel_curveを入れると、速度の誤差が大きいため変な動きをする
         command.id = target_.id;
+        //// 差が大きい場合は急に動いて危ないので、目標値を更新しない。[TODO]引数にとる.
+        if (fabs(target_.position - state.position) > 0.5)
+        {
+            target_.position = state.position;
+        }
         command.p_des = target_.position;
         command.v_des = target_.velocity;
         command.torque_feed_forward = target_.effort;

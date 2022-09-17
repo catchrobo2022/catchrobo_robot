@@ -21,7 +21,7 @@ const float MBED2ROS_DT = 0.01; // 10Hz
 
 // const float SPIN_FREQUENCY_s = 0.001;
 const float MBED2GRIPPER_DT = 0.1;
-const float MBED2MOTOR_DT = 0.001; // 1000Hz
+const float MBED2MOTOR_DT = 0.005; // 1000Hz
 const int SERIAL_BAUD_RATE = 115200;
 const float ARRIVE_THRESHOLD_RAD[] = {0.1, 0.1, 0.1};
 const float FRICTION[] = {0.2, 0, 0};

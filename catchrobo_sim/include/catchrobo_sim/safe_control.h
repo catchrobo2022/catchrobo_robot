@@ -23,7 +23,11 @@ public:
         float position_max = 0;
         calcPositionLimit(target, position_min, position_max);
         ControlBarrierFunctions(position_min, position_max, state, command);
-        boundIn(position_min, position_max, target.velocity_limit, command);
+
+        positionBound(state.position, position_min, position_max, command);
+        bound(-target.velocity_limit, target.velocity_limit, command.v_des);
+
+        // boundIn(position_min, position_max, target.velocity_limit, command);
         // if (target.id == 2)
         // {
         //     ROS_INFO_STREAM(position_min);
@@ -66,8 +70,44 @@ private:
     void boundIn(float position_min, float position_max, float velocity_limit, ControlStruct &command)
     {
         //[min, max] にコマンドを入れる
-        bound(position_min, position_max, command.p_des);
+        // bound(position_min, position_max, command.p_des);
+        // positionBoind(position)
         bound(-velocity_limit, velocity_limit, command.v_des);
+    }
+
+    void positionBound(double position_now, float position_min, float position_max, ControlStruct &command)
+    {
+        if (position_now - position_min > 0) //現在値が領域内
+        {
+
+            if (command.p_des < position_min) //目標値が外なら内側に入れる
+            {
+                command.p_des = position_min;
+            }
+        }
+        else
+        {
+            if (position_now - command.p_des > 0) //現在地が領域外
+            {
+                command.p_des = position_now; //外にいく方向の指示はしない
+            }
+        }
+
+        if (position_max - position_now > 0) //現在値が領域内
+        {
+
+            if (command.p_des > position_max) //目標値が外なら内側に入れる
+            {
+                command.p_des = position_max;
+            }
+        }
+        else
+        {
+            if (position_now - command.p_des < 0) //現在地が領域外
+            {
+                command.p_des = position_now; //外にいく方向の指示はしない
+            }
+        }
     }
 
     void minPositionCBF(double position_now, double position_min, double alpha, float &target_velocity)
@@ -77,8 +117,9 @@ private:
         ////<=> target_velocity >= - alpha(b)
         double b = position_now - position_min;
 
-        if (b < 0){
-            b=0;
+        if (b < 0)
+        {
+            b = 0;
         }
         double temp = -alpha * b;
         if (target_velocity < temp)
@@ -94,9 +135,9 @@ private:
         ////<=>  alpha(b) >= target_velocity
         double b = position_max - position_now;
 
-
-        if (b < 0){
-            b=0;
+        if (b < 0)
+        {
+            b = 0;
         }
         double temp = alpha * b;
         if (target_velocity > temp)

@@ -2,6 +2,6 @@
 <launch>
     <!--  rosbagファイル名に撮影日時を加える場合
          <node name="rosbag_record" pkg="rosbag" type="record" output="screen" args="record -o $(find catchrobo_test)/rosbag/rosbag -a -x '(.*)/compressed(.*)'"/>  -->
-    <node name="rosbag_record" pkg="rosbag" type="record" output="screen" args="record -O $(find catchrobo_log)/rosbag/rosbag -a -x '(.*)/compressed(.*)'" />
+    <node name="rosbag_record" pkg="rosbag" type="record" output="screen" args="record -o $(find catchrobo_log)/rosbag/rosbag -a -x '(.*)/compressed(.*)'" />
 
 </launch>

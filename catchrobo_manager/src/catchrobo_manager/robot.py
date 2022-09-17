@@ -103,6 +103,7 @@ class Robot:
 
     def control_permission(self, ok: bool):
         self._control_permission = ok
+
         # if ok is False:
         #     ### motorを止める
         #     for i in range(len(self._motors)):
@@ -168,19 +169,19 @@ class Robot:
             # rospy.sleep(self.SERVO_WAIT_s)
             self.wait_arrive(3)
 
-    def peg_in_hole(self):
-        if not self._control_permission:
-            return
-        current_state_robot = self._current_state_robot.position
-        peg_cmd = self._ros_cmd_template.generate_peg_in_hole_command(
-            current_state_robot
-        )
-        self._pub_peg_in_hole_cmd.publish(peg_cmd)
-        for i in range(3):
-            self._motors[i].direct_control(current_state_robot[i], 0, self._has_work)
+    # def peg_in_hole(self):
+    #     if not self._control_permission:
+    #         return
+    #     current_state_robot = self._current_state_robot.position
+    #     peg_cmd = self._ros_cmd_template.generate_peg_in_hole_command(
+    #         current_state_robot
+    #     )
+    #     self._pub_peg_in_hole_cmd.publish(peg_cmd)
+    #     for i in range(3):
+    #         self._motors[i].direct_control(current_state_robot[i], 0, self._has_work)
 
-        for i in range(len(self._motors)):
-            self.wait_arrive(i)
+    #     for i in range(len(self._motors)):
+    #         self.wait_arrive(i)
 
     def wait_arrive(self, id):
         while (
@@ -254,6 +255,12 @@ class Robot:
         self.control_permission(False)
         msg = Int8()
         msg.data = ManualCommand.MANUAL_ON
+        self._pub_manual_command.publish(msg)
+
+    def ask_auto(self):
+        self.control_permission(True)
+        msg = Int8()
+        msg.data = ManualCommand.MANUAL_OFF
         self._pub_manual_command.publish(msg)
 
     def check_permission(self):
