@@ -1,6 +1,5 @@
 //   #define USE_MBED
 
-// #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
@@ -41,11 +40,6 @@ void enableAll(bool is_enable)
         motor_driver_bridge.enableMotor(i, is_enable);
         wait(0.1);
     }
-}
-
-void pegInHoleCallback(const std_msgs::Bool &input)
-{
-    robot_manager.setPegInHoleCmd(input);
 }
 
 void motorDriverCallback(const StateStruct &input)
@@ -153,7 +147,7 @@ int main(int argc, char **argv)
     robot_manager.init(ARRIVE_THRESHOLD_RAD, FRICTION, ESTIMATE_ERROR_LIMIT_RAD);
     gripper_manager.init(GRIPPER_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
 
-    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
+    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback);
 
     int motor_directions[] = {-1, -1, -1, 1};
     motor_driver_bridge.init(motorDriverCallback, motor_directions);
@@ -176,10 +170,5 @@ int main(int argc, char **argv)
     Ticker ticker_gripper;
     ticker_gripper.attach(&gripperTimerCallback, MBED2GRIPPER_DT);
 
-    // while (1)
-    // {
-    //     ros_bridge.spinOnce();
-    //     // wait(SPIN_FREQUENCY_s);
-    // }
     ros_bridge.spin();
 }
