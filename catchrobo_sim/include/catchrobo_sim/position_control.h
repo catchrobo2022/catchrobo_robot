@@ -15,7 +15,8 @@ public:
     PositionControl() : no_target_flag_(true), finish_already_notified_(false),
                         temp_target_flag_(false), final_target_position_(0), threshold_(0){};
 
-    void init(float threshold, float friction){
+    void init(float threshold, float friction)
+    {
         threshold_ = threshold;
         friction_ = 0;
     }
@@ -85,6 +86,12 @@ public:
     }
     void setDt(float dt) {}
 
+    bool isArrived(const StateStruct &state)
+    {
+        bool ret = fabs(target_.position - state.position) < threshold_;
+        return ret;
+    }
+
 private:
     bool no_target_flag_;
     bool finish_already_notified_;
@@ -124,7 +131,7 @@ private:
         float friction = sign(cmd.v_des) * friction_;
 
         cmd.torque_feed_forward = target.net_inertia * accel_designer.a(t) + target.effort + friction;
-        cmd.kp = target.kp; 
+        cmd.kp = target.kp;
         cmd.kd = target.kd;
     }
 
@@ -137,8 +144,9 @@ private:
         cmd.kp = target.kp;
         cmd.kd = target.kd;
     }
-    int sign(float val){
-        return (val > 0) - (val<0);
+    int sign(float val)
+    {
+        return (val > 0) - (val < 0);
     }
 
     // void packBeforeSetTargetCmd(int id, ControlStruct &cmd){
