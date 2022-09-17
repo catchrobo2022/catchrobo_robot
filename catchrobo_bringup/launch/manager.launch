@@ -7,6 +7,9 @@
     </group> -->
     <arg name="continue" default="false" />
     <arg name="game_mode" default="normal_game" />
+    <arg name="skip" default="false" />
+    <param name="skip" value="$(arg skip)" />
+
 
     <param name="game_mode" value="$(arg game_mode)" />
     <param name="is_continue" value="$(arg continue)" />
