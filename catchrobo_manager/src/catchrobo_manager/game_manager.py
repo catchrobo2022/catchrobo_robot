@@ -209,6 +209,10 @@ class GameManager:
             or (pick_id == 24)
         ):
             next_target = NextTarget.SHOOT
+        elif self._work_manager.get_remain_num_in_common() == 0 and (
+            0 <= pick_id and pick_id <= 8
+        ):
+            next_target = NextTarget.SHOOT
         else:
             next_target = NextTarget.PICK
 
