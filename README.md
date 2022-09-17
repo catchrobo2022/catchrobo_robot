@@ -72,14 +72,17 @@ ssh root@catchrobo
 password : catchrobo
 sudo chmod a+rw /dev/ttyACM0 
 roslaunch catchrobo_bringup raspberry.launch field:="blue"
-roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
 ```
 - PC
 ```
 roslaunch catchrobo_bringup laptop.launch field:="blue"
 ```
-rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ)
-取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す
+- ラズパイ2(rvizの表示を待つ。nodeが立ってからtopic投げる必要があるため)
+```
+roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
+```
+<!-- rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ) -->
+<!-- 取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す -->
 
 #### rosbag再生
 ```
