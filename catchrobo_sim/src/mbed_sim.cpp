@@ -1,6 +1,5 @@
 //   #define USE_MBED
 
-// #define USE_XBEE
 #ifdef USE_MBED
 #include "mbed.h"
 #include "motor_driver_bridge/motor_driver_bridge_mbed.h"
@@ -43,11 +42,6 @@ void enableAll(bool is_enable)
     }
 }
 
-void pegInHoleCallback(const std_msgs::Bool &input)
-{
-    robot_manager.setPegInHoleCmd(input);
-}
-
 void motorDriverCallback(const StateStruct &input)
 {
     robot_manager.setCurrentState(input);
@@ -55,6 +49,25 @@ void motorDriverCallback(const StateStruct &input)
 
 void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 {
+    if (command.mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE)
+    {
+        bool result[N_MOTORS] = {};
+        robot_manager.arriveCheck(result);
+        for (int i = 0; i < N_MOTORS; i++)
+        {
+            if (result[i])
+            {
+                catchrobo_msgs::ErrorCode error;
+                error.id = i;
+                error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+                ros_bridge.publishError(error);
+                // ros_bridge.publishFinishFlag(i);
+                // ros::Duration dt = ros::Time::now() - t;
+                // ROS_INFO_STREAM("dt " << dt.toSec() );
+            }
+        }
+        return;
+    }
     robot_manager.setRosCmd(command);
     gripper_manager.setRosCmd(command);
 }
@@ -153,7 +166,7 @@ int main(int argc, char **argv)
     robot_manager.init(ARRIVE_THRESHOLD_RAD, FRICTION, ESTIMATE_ERROR_LIMIT_RAD);
     gripper_manager.init(GRIPPER_THRESHOLD_RAD, ESTIMATE_ERROR_LIMIT_RAD);
 
-    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback, pegInHoleCallback);
+    ros_bridge.init(SERIAL_BAUD_RATE, rosCallback, enableCallback);
 
     int motor_directions[] = {-1, -1, -1, 1};
     motor_driver_bridge.init(motorDriverCallback, motor_directions);
@@ -176,10 +189,5 @@ int main(int argc, char **argv)
     Ticker ticker_gripper;
     ticker_gripper.attach(&gripperTimerCallback, MBED2GRIPPER_DT);
 
-    // while (1)
-    // {
-    //     ros_bridge.spinOnce();
-    //     // wait(SPIN_FREQUENCY_s);
-    // }
     ros_bridge.spin();
 }

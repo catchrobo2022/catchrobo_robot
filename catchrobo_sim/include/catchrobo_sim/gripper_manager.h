@@ -3,7 +3,6 @@
 #include "catchrobo_sim/define.h"
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
-#include "catchrobo_sim/peg_in_hole_control.h"
 #include "catchrobo_sim/enable_manager.h"
 #include "catchrobo_sim/obstacle_avoidance.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
@@ -37,8 +36,6 @@ public:
             servo_manager_.resetT();
         }
     };
-
-    // void setPegInHoleCmd(const catchrobo_msgs)
 
     void getMotorDrivesCommand(ControlStruct &cmd, ControlResult::ControlResult &result)
     {
