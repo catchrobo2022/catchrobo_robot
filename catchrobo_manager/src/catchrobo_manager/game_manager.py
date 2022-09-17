@@ -37,6 +37,7 @@ class GameManager:
         self.IS_SIM = rospy.get_param("sim")
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
         self.IS_CONTINUE = rospy.get_param("is_continue")
+        self.SKIP_MODE = rospy.get_param("skip")
         # game_end_topic = rospy.get_param("game_end_topic")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -164,7 +165,9 @@ class GameManager:
         elif next_action == PickAction.MOVE_Z_SAFE:
             self._robot.go(z=self.INIT_Z_m)
         elif next_action == PickAction.STOP_BEFORE_COMMON:
-            if is_my_area == False and self._old_my_area == True:
+            if self.SKIP_MODE:
+                pass_action = True
+            elif is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
                 self._robot.ask_manual()
@@ -258,9 +261,12 @@ class GameManager:
             ### 下ろす
             self._robot.go(z=self.SHOOT_HEIGHT_m)
         elif next_action == ShootAction.PEG_IN_HOLE:
-            ## グリグリ(手動)
-            self._robot.ask_manual()
-            pass_action = True
+            if self.SKIP_MODE and target_id == 2:
+                pass_action = True
+            else:
+                ## グリグリ(手動)
+                self._robot.ask_manual()
+                pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
             # shoot
@@ -319,9 +325,9 @@ class GameManager:
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
         # elif next_action == ShootAction.OPEN_A_BIT:
         #     self._robot.gripper(self.OPEN_A_BIT_RAD)
-        elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
-            ### 下ろす
-            self._robot.go(z=self.SECOND_SHOOT_m)
+        # elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
+        #     ### 下ろす
+        #     self._robot.go(z=self.SECOND_SHOOT_m)
         elif next_action == SecondShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
             self._robot.ask_manual()
@@ -356,15 +362,14 @@ class GameManager:
         elif next_target == NextTarget.SHOOT:
             if self._box_manager.get_remain_num() == 0:
                 ### もうシュート場所がなければ終了
-                return NextTarget.END, PickAction.START
+                return NextTarget.SECOND_SHOOT, PickAction.START
+            next_target, next_action = self.shoot_actions(next_action)
+        elif next_target == NextTarget.SECOND_SHOOT:
             if self._robot.has_work() == 0 and next_action == PickAction.START:
                 return NextTarget.END, PickAction.START
-
-            next_target, next_action = self.shoot_actions(next_action)
-        # elif next_target == NextTarget.SECOND_SHOOT:
-        #     if self._on_box_manager.get_remain_num() == 0:
-        #         return NextTarget.END, PickAction.START
-        # next_target, next_action = self.second_shoot_actions(next_action)
+            if self._on_box_manager.get_remain_num() == 0:
+                return NextTarget.END, PickAction.START
+            next_target, next_action = self.second_shoot_actions(next_action)
 
         return next_target, next_action
 
