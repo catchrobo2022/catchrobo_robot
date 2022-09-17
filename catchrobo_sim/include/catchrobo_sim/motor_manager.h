@@ -2,7 +2,7 @@
 
 #include "catchrobo_sim/position_control.h"
 // #include "catchrobo_sim/position_control_with_CBF.h"
-#include "catchrobo_sim/direct_control.h"
+// #include "catchrobo_sim/direct_control.h"
 #include "catchrobo_sim/velocity_control.h"
 #include "catchrobo_sim/safe_control.h"
 #include "catchrobo_sim/go_origin_control.h"
@@ -50,10 +50,10 @@ public:
             // direct_control_.setRosCmd(ros_cmd_, current_state_);
             velocity_control_.setRosCmd(ros_cmd_, current_state_);
             break;
-        case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            // direct_control_.setRosCmd(ros_cmd_, current_state_);
-            direct_control_.setRosCmd(ros_cmd_, current_state_);
-            break;
+        // case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
+        //     // direct_control_.setRosCmd(ros_cmd_, current_state_);
+        //     // direct_control_.setRosCmd(ros_cmd_, current_state_);
+        //     break;
         case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
             go_origin_control_.setOffset(no_offset_state_, ros_cmd_, offset_);
 
@@ -98,10 +98,10 @@ public:
             safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
             break;
 
-        case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
-            direct_control_.getCmd(current_state_, old_command_, command, result);
-            safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
-            break;
+            // case catchrobo_msgs::MyRosCmd::DIRECT_CTRL_MODE:
+            //     direct_control_.getCmd(current_state_, old_command_, command, result);
+            //     safe_control_.getSafeCmd(current_state_, ros_cmd_, old_command_, command);
+            //     break;
 
             // case catchrobo_msgs::MyRosCmd::GO_ORIGIN_MODE:
             //     ////原点だしではoffset無しの値がほしい
@@ -211,7 +211,7 @@ private:
 
     PositionControl position_control_;
     // PositionControlWithCBF position_control_;
-    DirectControl direct_control_;
+    // DirectControl direct_control_;
     VelocityControl velocity_control_;
     SafeControl safe_control_;
     GoOriginControl go_origin_control_;
