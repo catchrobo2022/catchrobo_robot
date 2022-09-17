@@ -382,6 +382,7 @@ class GameManager:
             top = "calibrated/{}_".format(self.FIELD)
             self._box_manager.load(top + "shoot.csv")
             self._on_box_manager.load(top + "on_shoot.csv")
+        self._game_start = False
 
         rospy.loginfo("init action finish")
 
