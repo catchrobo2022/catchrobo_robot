@@ -45,7 +45,9 @@ class Command:
             robot_position=0.0,
             robot_end_velocity=0.0,
         )  # gripperのg
-        self.echo=self.template.generate_ros_command()
+        self.echo = self.template.generate_ros_command(
+            id=3, mode=MyRosCmd.PEG_IN_HOLE_MODE, robot_position=0
+        )
 
         self.command_array = MyRosCmdArray()  # MyRosCmdArray型の自作msg型のインスタンス
         self.manualInput()
@@ -512,7 +514,6 @@ class Manual:
 
         # echo用
         if joy_b[b_num.RT] == 1 and self.button_count[b_num.RT] == 0:
-            self.command.echo.mode=MyRosCmd.PEG_IN_HOLE_MODE
             self.pub_ros_cmd.publish(self.command.echo)
         self.button_count[b_num.RT] = joy_b[b_num.RT]
 

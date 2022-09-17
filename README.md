@@ -72,7 +72,7 @@ ssh root@catchrobo
 password : catchrobo
 sudo chmod a+rw /dev/ttyACM0 
 roslaunch catchrobo_bringup raspberry.launch field:="blue"
-roslaunch catchrobo_bringup manager.launch game_mode:="normal_game" continue:="false"
+roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
 ```
 - PC
 ```

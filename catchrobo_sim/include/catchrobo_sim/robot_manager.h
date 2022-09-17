@@ -185,6 +185,15 @@ public:
         }
     }
 
+    void arriveCheck(bool (&is_arrived)[N_MOTORS])
+    {
+        ControlStruct cmd[N_MOTORS];
+        for (size_t i = 0; i < motor_num_; i++)
+        {
+            is_arrived[i] = motor_manager_[i].isArrived();
+        }
+    }
+
 private:
     MotorManager motor_manager_[N_MOTORS];
     sensor_msgs::JointState joint_state_;   // JointState型

@@ -190,6 +190,16 @@ public:
         error_limit_ = estimate_error_limit;
     }
 
+    bool isArrived()
+    {
+        bool ret = false;
+        if (ros_cmd_.mode == catchrobo_msgs::MyRosCmd::POSITION_CTRL_MODE)
+        {
+            ret = position_control_.isArrived(current_state_);
+        }
+        return ret;
+    }
+
 protected:
     float t_;
 

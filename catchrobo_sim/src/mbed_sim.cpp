@@ -49,6 +49,25 @@ void motorDriverCallback(const StateStruct &input)
 
 void rosCallback(const catchrobo_msgs::MyRosCmd &command)
 {
+    if (command.mode == catchrobo_msgs::MyRosCmd::PEG_IN_HOLE_MODE)
+    {
+        bool result[N_MOTORS] = {};
+        robot_manager.arriveCheck(result);
+        for (int i = 0; i < N_MOTORS; i++)
+        {
+            if (result[i])
+            {
+                catchrobo_msgs::ErrorCode error;
+                error.id = i;
+                error.error_code = catchrobo_msgs::ErrorCode::FINISH;
+                ros_bridge.publishError(error);
+                // ros_bridge.publishFinishFlag(i);
+                // ros::Duration dt = ros::Time::now() - t;
+                // ROS_INFO_STREAM("dt " << dt.toSec() );
+            }
+        }
+        return;
+    }
     robot_manager.setRosCmd(command);
     gripper_manager.setRosCmd(command);
 }
