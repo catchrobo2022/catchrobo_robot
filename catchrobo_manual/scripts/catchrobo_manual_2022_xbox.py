@@ -392,7 +392,7 @@ class Manual:
                     self.old_button[0] > 0 or self.old_button[0] < 0
                 ):
                     self.position_var_manual[0] = 0.0
-                    self.cmd_flag[0] = True
+                    # self.cmd_flag[0] = True
 
                 # y軸
                 if joy_a[b_num.UP_DOWN] == 1 and self.old_button[1] < 1:
@@ -416,7 +416,7 @@ class Manual:
                     self.old_button[1] > 0 or self.old_button[1] < 0
                 ):
                     self.position_var_manual[1] = 0.0
-                    self.cmd_flag[1] = True
+                    # self.cmd_flag[1] = True
 
                 self.old_joystick[0] = joy_a[b_num.LX]
                 self.old_joystick[1] = joy_a[b_num.LY]
