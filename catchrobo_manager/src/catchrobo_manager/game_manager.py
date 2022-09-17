@@ -319,9 +319,9 @@ class GameManager:
             self._robot.go(x=box_position[0], y=box_position[1], z=self.INIT_Z_m)
         # elif next_action == ShootAction.OPEN_A_BIT:
         #     self._robot.gripper(self.OPEN_A_BIT_RAD)
-        elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
-            ### 下ろす
-            self._robot.go(z=self.SECOND_SHOOT_m)
+        # elif next_action == SecondShootAction.MOVE_Z_TO_SHOOT:
+        #     ### 下ろす
+        #     self._robot.go(z=self.SECOND_SHOOT_m)
         elif next_action == SecondShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
             self._robot.ask_manual()
@@ -356,15 +356,14 @@ class GameManager:
         elif next_target == NextTarget.SHOOT:
             if self._box_manager.get_remain_num() == 0:
                 ### もうシュート場所がなければ終了
-                return NextTarget.END, PickAction.START
+                return NextTarget.SECOND_SHOOT, PickAction.START
+            next_target, next_action = self.shoot_actions(next_action)
+        elif next_target == NextTarget.SECOND_SHOOT:
             if self._robot.has_work() == 0 and next_action == PickAction.START:
                 return NextTarget.END, PickAction.START
-
-            next_target, next_action = self.shoot_actions(next_action)
-        # elif next_target == NextTarget.SECOND_SHOOT:
-        #     if self._on_box_manager.get_remain_num() == 0:
-        #         return NextTarget.END, PickAction.START
-        # next_target, next_action = self.second_shoot_actions(next_action)
+            if self._on_box_manager.get_remain_num() == 0:
+                return NextTarget.END, PickAction.START
+            next_target, next_action = self.second_shoot_actions(next_action)
 
         return next_target, next_action
 
