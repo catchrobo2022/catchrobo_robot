@@ -45,6 +45,7 @@ class Command:
             robot_position=0.0,
             robot_end_velocity=0.0,
         )  # gripperのg
+        self.echo=self.template.generate_ros_command()
 
         self.command_array = MyRosCmdArray()  # MyRosCmdArray型の自作msg型のインスタンス
         self.manualInput()
@@ -508,6 +509,12 @@ class Manual:
             self.pub_enable_cmd.publish(self.command.enable_command)
             rospy.loginfo("enable : {}".format(self.command.enable_command.is_enable))
         self.button_count[b_num.START] = joy_b[b_num.START]
+
+        # echo用
+        if joy_b[b_num.RT] == 1 and self.button_count[b_num.RT] == 0:
+            self.command.echo.mode=MyRosCmd.PEG_IN_HOLE_MODE
+            self.pub_ros_cmd.publish(self.command.echo)
+        self.button_count[b_num.RT] = joy_b[b_num.RT]
 
     # pauseのときの処理
     # gripperだけ止めない
