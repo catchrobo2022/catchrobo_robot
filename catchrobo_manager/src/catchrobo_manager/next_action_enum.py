@@ -18,6 +18,7 @@ class PickAction(Action):
     START = 1
     MOVE_Z_SAFE = auto()  # 上空へ上がる
     STOP_BEFORE_COMMON = auto()  # 共通エリア前で一時停止
+    GO_COMMON_ASIDE = auto()
     MOVE_XY_ABOVE_WORK = auto()  # ワーク上空へ移動
     MOVE_Z_ON_WORK = auto()  # ワークを重ねる
     OPEN_GRIPPER = auto()  # グリッパー開く
