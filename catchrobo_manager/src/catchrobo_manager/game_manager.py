@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import Field
+from xml.etree.ElementTree import PI
 from catchrobo_manual.manual_command import ManualCommand
 from catchrobo_manager.next_action_enum import (
     NextTarget,
@@ -38,6 +39,8 @@ class GameManager:
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
         self.IS_CONTINUE = rospy.get_param("is_continue")
         self.SKIP_MODE = rospy.get_param("skip")
+
+        self._first_picked = False
         # game_end_topic = rospy.get_param("game_end_topic")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -82,6 +85,10 @@ class GameManager:
         self.BEFORE_COMMON_AREA_Y_m = posi[1]
         self.PICK_WORK_ON_SHOOTING_BOX_m = self.WORK_HEIGHT_m + posi[2]
         self.SECOND_SHOOT_m = self.PICK_WORK_ON_SHOOTING_BOX_m
+
+        posi = self._box_manager._database.getPosi(2)
+        self.COMMON_ASIDE_X_m = posi[0]
+        self.COMMON_ASIDE_Y_m = 0
 
         self._rate = rospy.Rate(10)
         # self._manual_msg = ManualCommand.NONE
@@ -165,14 +172,23 @@ class GameManager:
         elif next_action == PickAction.MOVE_Z_SAFE:
             self._robot.go(z=self.INIT_Z_m)
         elif next_action == PickAction.STOP_BEFORE_COMMON:
-            if self.SKIP_MODE:
-                pass_action = True
-            elif is_my_area == False and self._old_my_area == True:
+            if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
-                self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
+                ### 一時停止（次は斜め移動になる）
+                # self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
                 self._robot.ask_manual()
                 pass_action = True
-            self._old_my_area = is_my_area
+        elif next_action == PickAction.GO_COMMON_ASIDE:
+            rospy.loginfo("go aside")
+            if is_my_area == False and self._old_my_area == True:
+                rospy.loginfo("go aside2")
+
+                ### 新たに共通エリアに入る場合
+                ### 一時停止（次は斜め移動になる）
+                self._robot.go(x=self.COMMON_ASIDE_X_m, y=self.COMMON_ASIDE_Y_m)
+                self._robot.ask_manual()
+            pass_action = True
+
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
             self._robot.go(x=work_position[0], y=work_position[1])
         elif next_action == PickAction.MOVE_Z_ON_WORK:
@@ -261,7 +277,9 @@ class GameManager:
             ### 下ろす
             self._robot.go(z=self.SHOOT_HEIGHT_m)
         elif next_action == ShootAction.PEG_IN_HOLE:
-            if self.SKIP_MODE and target_id == 2:
+            if self._first_picked is False and target_id == 2:
+                ### 初回だけスキップ
+                self._first_picked = True
                 pass_action = True
             else:
                 ## グリグリ(手動)
