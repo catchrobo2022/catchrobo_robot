@@ -38,6 +38,7 @@ class GameManager:
         self.SHOOT_HEIGHT_m = rospy.get_param(name_space + "SHOOT_HEIGHT_m")
         self.IS_CONTINUE = rospy.get_param("is_continue")
         self.SKIP_MODE = rospy.get_param("skip")
+        self._first_picked = False
         # game_end_topic = rospy.get_param("game_end_topic")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -165,11 +166,10 @@ class GameManager:
         elif next_action == PickAction.MOVE_Z_SAFE:
             self._robot.go(z=self.INIT_Z_m)
         elif next_action == PickAction.STOP_BEFORE_COMMON:
-            if self.SKIP_MODE:
-                pass_action = True
-            elif is_my_area == False and self._old_my_area == True:
+            if is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
-                self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
+                ### 一時停止（次は斜め移動になる）
+                # self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
                 self._robot.ask_manual()
                 pass_action = True
             self._old_my_area = is_my_area
@@ -261,7 +261,9 @@ class GameManager:
             ### 下ろす
             self._robot.go(z=self.SHOOT_HEIGHT_m)
         elif next_action == ShootAction.PEG_IN_HOLE:
-            if self.SKIP_MODE and target_id == 2:
+            if self._first_picked is False and target_id == 2:
+                ### 初回だけスキップ
+                self._first_picked = True
                 pass_action = True
             else:
                 ## グリグリ(手動)
