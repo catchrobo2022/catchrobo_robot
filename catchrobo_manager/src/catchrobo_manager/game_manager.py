@@ -41,6 +41,8 @@ class GameManager:
         self.SKIP_MODE = rospy.get_param("skip")
 
         self._first_picked = False
+        self._in_aside_common = False
+        self._entered_aside = False
         # game_end_topic = rospy.get_param("game_end_topic")
 
         # shooting_box_center_red = rospy.get_param("calibration/shooting_box_center_red")
@@ -179,17 +181,23 @@ class GameManager:
                 self._robot.ask_manual()
                 pass_action = True
         elif next_action == PickAction.GO_COMMON_ASIDE:
-            rospy.loginfo("go aside")
-            if is_my_area == False and self._old_my_area == True:
-                rospy.loginfo("go aside2")
-
-                ### 新たに共通エリアに入る場合
-                ### 一時停止（次は斜め移動になる）
-                self._robot.go(x=self.COMMON_ASIDE_X_m, y=self.COMMON_ASIDE_Y_m)
-                self._robot.ask_manual()
+            if self._entered_aside is False:
+                if is_my_area == False and self._old_my_area == True:
+                    self._entered_aside = True
+                    ### 新たに共通エリアに入る場合
+                    ### 一時停止（次は斜め移動になる）
+                    self._robot.go(x=self.COMMON_ASIDE_X_m, y=self.COMMON_ASIDE_Y_m)
+                    self._in_aside_common = True
+                    self._robot.ask_manual()
             pass_action = True
 
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
+            if (
+                is_my_area == True and self._old_my_area == False
+            ) or self._in_aside_common:
+                self._robot.go(y=work_position[1])
+                self._robot.go(x=work_position[0])
+                self._in_aside_common = False
             self._robot.go(x=work_position[0], y=work_position[1])
         elif next_action == PickAction.MOVE_Z_ON_WORK:
             if self._robot.has_work():

@@ -20,6 +20,8 @@ class PickAction(Action):
     STOP_BEFORE_COMMON = auto()  # 共通エリア前で一時停止
     GO_COMMON_ASIDE = auto()
     MOVE_XY_ABOVE_WORK = auto()  # ワーク上空へ移動
+    # MOVE_Y_ABOVE_WORK = auto()  # ワーク上空へ移動
+    # MOVE_X_ABOVE_WORK = auto()  # ワーク上空へ移動
     MOVE_Z_ON_WORK = auto()  # ワークを重ねる
     OPEN_GRIPPER = auto()  # グリッパー開く
     MOVE_Z_TO_PICK = auto()  # ワークをつかめる位置へ向かう
