@@ -170,7 +170,7 @@ class GameManager:
             elif is_my_area == False and self._old_my_area == True:
                 ### 新たに共通エリアに入る場合
                 self._robot.go(x=work_position[0], y=self.BEFORE_COMMON_AREA_Y_m)
-                self._robot.ask_manual()
+                # self._robot.ask_manual()
                 pass_action = True
             self._old_my_area = is_my_area
         elif next_action == PickAction.MOVE_XY_ABOVE_WORK:
@@ -265,7 +265,7 @@ class GameManager:
                 pass_action = True
             else:
                 ## グリグリ(手動)
-                self._robot.ask_manual()
+                # self._robot.ask_manual()
                 pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()
@@ -330,7 +330,7 @@ class GameManager:
             self._robot.go(z=self.SECOND_SHOOT_m)
         elif next_action == SecondShootAction.PEG_IN_HOLE:
             ## グリグリ(手動)
-            self._robot.ask_manual()
+            # self._robot.ask_manual()
             pass_action = True
             ### ぐりぐり
             # self._robot.peg_in_hole()

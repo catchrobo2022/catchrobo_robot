@@ -19,6 +19,10 @@ accel_limit_scale:
     normal : [0.3, 0.3, 0.2, 1]
     init : [0.1, 0.1, 0.1, 1]
     fast : [0.3, 0.3, 0.2, 1]
+  super_fast:
+    normal : [0.4, 0.4, 0.25, 1]
+    init : [0.1, 0.1, 0.1, 1]
+    fast : [0.4, 0.4, 0.25, 1]
 
 ros_cmd:
   velocity_limit_scale: 1

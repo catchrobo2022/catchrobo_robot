@@ -1,5 +1,6 @@
 # Catchrobo 2021 ROS Package
-
+戦績：ベスト8 
+敗因：共通エリアでの攻防
 ## Environment
 - ubuntu 20
 - ros noetic
