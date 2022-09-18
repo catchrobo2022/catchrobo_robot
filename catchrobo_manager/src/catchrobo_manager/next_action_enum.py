@@ -7,6 +7,7 @@ class NextTarget(IntEnum):
     PICK = auto()
     SHOOT = auto()
     SECOND_SHOOT = auto()
+    WAIT_NEW = auto()
     END = auto()
 
 
