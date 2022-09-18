@@ -390,7 +390,7 @@ class GameManager:
                 ### もうシュート場所がなければ終了
                 return NextTarget.SECOND_SHOOT, PickAction.START
             if self._robot.has_work() == 0 and next_action == PickAction.START:
-                return NextTarget.PICK, PickAction.START
+                return NextTarget.END, PickAction.START
 
             next_target, next_action = self.shoot_actions(next_action)
         elif next_target == NextTarget.SECOND_SHOOT:
