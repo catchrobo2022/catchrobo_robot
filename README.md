@@ -1,5 +1,9 @@
 # Catchrobo 2021 ROS Package
 
+
+
+
+
 ## Environment
 - ubuntu 20
 - ros noetic
@@ -12,22 +16,24 @@
 - pip install numpy pandas
 - sudo apt install mpg123 
 
-### Raspberry
+
+## Raspberry
 [ラズパイ環境構築](./doc/raspberry_setup.md)
 
-### laptop
+## GUI用PC
 - gedit ~/.bashrc ###複数PCでROSを使うとき用．一台だけならlocalhostでいいが，複数台のときはmasterのIPを指定する必要がある
 ```
 #export ROS_MASTER_URI=http://localhost:11311  # for simulation
+#export ROS_IP=127.0.0.1                       # for simulation
 export ROS_MASTER_URI=http://catchrobo:11311
 export ROS_IP=$(hostname -I | cut -d' ' -f1)
 ```
 - sudo gedit /etc/hosts ###ホスト名の登録．192.168....と打つ代わりにcatchroboで認識するようになる
 ```
-192.168.24.11 catchrobo
+192.168.xxx.xxx catchrobo
 ```
 
-### mbedへの反映
+## mbedへの反映
 https://os.mbed.com/teams/catchrobo2022/
 を使用する。
 
@@ -56,13 +62,11 @@ https://os.mbed.com/teams/catchrobo2022/
 ```
 roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
 roslaunch catchrobo_bringup rviz.launch
-
-
 ```
 ### simulation
 ```
 roslaunch catchrobo_bringup sim_bringup.launch field:="blue" no_joy:="true"
-roslaunch catchrobo_bringup manager.launch continue:="false" game_mode:="normal_game"
+roslaunch catchrobo_bringup manager.launch continue:="false" game_mode:="slow_game"
 ```
 
 ### 実機
@@ -81,27 +85,30 @@ roslaunch catchrobo_bringup laptop.launch field:="blue"
 ```
 roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
 ```
-<!-- rosbagは自動でcatchrobo_test/rosbagに保存される(最新のもののみ) -->
-<!-- 取っておきたければrosbagを別名で保存し、rosbag_playにfile引数で渡す -->
 
-#### rosbag再生
+### rosbag再生
 ```
 roslaunch catchrobo_log rosbag_play.launch field:="blue" file:="xxx.bag"
 rosservice call /rosbag_play/pause_playback "data: false" 
 ```
 
-#### printfしたいなら
+### printfしたいなら
 ```
 sudo chmod a+rw /dev/ttyACM0 
 cu -s 921600 -l /dev/ttyACM0
 ```
 
 ## Knowledge
-### Simulatorについて
-シミュレーターの位置更新は下の式で実行される。kp, kdの値を変えるとそれっぽい変化をする.
+### 全体構成
+![全体構成](./doc/catchrobo_全体図.png) 
+### モータードライバーシミュレーター
+モータードライバーシミュレーターの位置更新は下の式で実行される。kp = 0のときは停止する.　速度入力、加速度入力はsimulatorでは考慮しない機体の動作に反映しない
 ```
-p += cmd.kp * (cmd.p - p) + cmd.kd * cmd.v * dt
+velocity = (cmd.p_des - p)/dt
+position = cmd.p_des
+torque = cmd_.torque_feed_forward;
 ```
+
 
 実機のモタドラは以下のダイナミクスで動く
 ```
