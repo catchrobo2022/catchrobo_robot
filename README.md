@@ -1,12 +1,8 @@
 # Catchrobo 2021 ROS Package
 
-
-
-
-
 ## Environment
 - ubuntu 20
-- ros noetic
+- ROS noetic
 
 ## Requirement
 - sudo apt install ros-noetic-rosserial-mbed
@@ -18,7 +14,7 @@
 
 
 ## Raspberry
-[ラズパイ環境構築](./doc/raspberry_setup.md)
+[ラズパイ環境構築方法はこちら](./doc/raspberry_setup.md)
 
 ## GUI用PC
 - gedit ~/.bashrc ###複数PCでROSを使うとき用．一台だけならlocalhostでいいが，複数台のときはmasterのIPを指定する必要がある
@@ -97,19 +93,19 @@ rosservice call /rosbag_play/pause_playback "data: false"
 sudo chmod a+rw /dev/ttyACM0 
 cu -s 921600 -l /dev/ttyACM0
 ```
+cu -s 9600 -l /dev/ttyACM0
 
 ## Knowledge
-### 全体構成
-![全体構成](./doc/catchrobo_全体図.png) 
-### モータードライバーシミュレーター
-モータードライバーシミュレーターの位置更新は下の式で実行される。kp = 0のときは停止する.　速度入力、加速度入力はsimulatorでは考慮しない機体の動作に反映しない
+### シミュレーターについて
+- mbed LPC1768側プログラムは[catchrobo_sim](catchrobo_sim)パッケージで実装している。
+[catchrobo_sim/include/catchrobo_sim](catchrobo_sim/include/catchrobo_sim)と[catchrobo_sim/src/mbed_sim.cpp](catchrobo_sim/src/mbed_sim.cpp)をmbedに実装する。
+CAN通信等、simulatorで動かない部分だけを[catchrobo_sim/include/sim_only](catchrobo_sim/include/sim_only)に入れている。
+- モータードライバーシミュレーターの位置更新は下の式で実行される。kp = 0のときは停止する.　速度入力、加速度入力はsimulatorでは考慮しない機体の動作に反映しない
 ```
 velocity = (cmd.p_des - p)/dt
 position = cmd.p_des
 torque = cmd_.torque_feed_forward;
-```
-
-
+``` 
 実機のモタドラは以下のダイナミクスで動く
 ```
 float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
@@ -117,6 +113,9 @@ float torque_ref = controller->kp*(controller->p_des - controller->theta_mech) +
 
 ### 台形加速アルゴリズムについて
 https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
+### 全体構成
+![全体構成](./doc/catchrobo_全体図.png) 
+![rqt_graph](./doc/rosgraph.svg)
 
 ### ワーク、シューティングBOXの配置番号
 ![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
