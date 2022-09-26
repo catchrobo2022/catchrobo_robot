@@ -4,7 +4,7 @@
 - ubuntu 20
 - ROS noetic
 
-## Requirement
+## シミュレーター環境構築
 - sudo apt install ros-noetic-rosserial-mbed
 - sudo apt install ros-noetic-jsk-visualization
 - sudo apt-get install ros-noetic-joy
@@ -14,11 +14,11 @@
 - git clone --depth 1 https://github.com/catchrobo2022/catchrobo_robot.git
 
 
-
-## Raspberry
+## 実機の環境構築
+### Raspberry
 [ラズパイ環境構築方法はこちら](./doc/raspberry_setup.md)
 
-## GUI用PC
+### GUI用PC
 - gedit ~/.bashrc ###複数PCでROSを使うとき用．一台だけならlocalhostでいいが，複数台のときはmasterのIPを指定する必要がある
 ```
 #export ROS_MASTER_URI=http://localhost:11311  # for simulation
@@ -31,12 +31,13 @@ export ROS_IP=$(hostname -I | cut -d' ' -f1)
 192.168.xxx.xxx catchrobo
 ```
 
-## mbedへの反映
-https://os.mbed.com/teams/catchrobo2022/
+### mbed LPC1768
+軌道計画、原点出し等の処理はmbed LPC1768によって行う. これは、モータードライバーへの高HzでのCAN通信が必要なためである。プログラムとしては
+https://os.mbed.com/teams/catchrobo2022/code/catchrobo2022_mbed/
 を使用する。
 
-1. catchrobo_sim/include/catchrobo_simをzip化する
-1. ros_libを作成（catchrobo_msgを編集していなければ省略可能)
+1. [catchrobo_sim/include/catchrobo_sim](catchrobo_sim/include/catchrobo_sim)をzip化する
+1. ros_libを作成（[catchrobo_msg](catchrobo_msg)を編集していなければ省略可能)
     1. rosrun rosserial_mbed make_libraries.py <コードの生成場所。どこでもいい>
     1. round関数がmbedにないので ros_lib/ros/duration.h　およびros_lib/ros/time.hのclassの中に以下の関数を追加する
         ```
@@ -53,6 +54,17 @@ https://os.mbed.com/teams/catchrobo2022/
 1. アップロードタブを選択
 1. 下にあるChoose Fileから作成したzipを選択
 1. ライブラリとしてインポートする(古いものがある場合には、削除してからインポートする)
+
+
+### NUCLEO F446RE
+ブラシレスモーター制御用マイコン. https://os.mbed.com/teams/catchrobo2022/code/CatchroboJointController/
+を利用する。  
+新モーターを使う場合には、キャリブレーションが必要。PCと接続して、printfに従う
+
+### NUCLEO F303k8
+グリッパー操作用マイコン. https://os.mbed.com/teams/catchrobo2022/code/CatchroboGripper/
+を利用する。  
+[WARN] 起動後に必ずリセットが必要. CAN通信できないとsegmentation errorを起こす？
 
 
 ## How to use
@@ -121,7 +133,7 @@ https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
 ### ワーク、シューティングBOXの配置番号
 ![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
-[座標](./doc/234_C5_2022年度フィールド修正版0725.pdf)
+[座標pdfはこちら](./doc/234_C5_2022年度フィールド修正版0725.pdf)
 
 ### Xbeeについて
 通信が安定しないため没となった．

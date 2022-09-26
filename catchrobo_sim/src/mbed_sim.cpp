@@ -11,16 +11,15 @@ const float MBED2ROS_DT = 0.1; // 10Hz
 #include "sim_only/motor_driver_bridge_sim.h"
 #include "sim_only/ros_bridge_sim.h"
 #include "sim_only/ticker_sim.h"
-const float MBED2ROS_DT = 0.01; // 10Hz
+const float MBED2ROS_DT = 0.01;
 #endif
 
 #include <std_msgs/Float32MultiArray.h>
 #include "catchrobo_sim/robot_manager.h"
 #include "catchrobo_sim/gripper_manager.h"
 
-// const float SPIN_FREQUENCY_s = 0.001;
 const float MBED2GRIPPER_DT = 0.1;
-const float MBED2MOTOR_DT = 0.005; // 1000Hz
+const float MBED2MOTOR_DT = 0.005; // 200Hz
 const int SERIAL_BAUD_RATE = 115200;
 const float ARRIVE_THRESHOLD_RAD[] = {0.1, 0.1, 0.1};
 const float FRICTION[] = {0.2, 0, 0};
