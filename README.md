@@ -11,6 +11,8 @@
 - sudo apt-get install ros-noetic-joystick-drivers
 - pip install numpy pandas
 - sudo apt install mpg123 
+- git clone --depth 1 https://github.com/catchrobo2022/catchrobo_robot.git
+
 
 
 ## Raspberry

@@ -1,10 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <!-- <arg name="rosbag" default="true" /> -->
-
-    <!-- <group if="$(arg rosbag)">
-        <include file="$(find catchrobo_test)/launch/rosbag_record.launch" />
-    </group> -->
     <arg name="continue" default="false" />
     <arg name="game_mode" default="normal_game" />
     <arg name="skip" default="false" />

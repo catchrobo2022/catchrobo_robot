@@ -4,7 +4,6 @@
 #include "catchrobo_sim/motor_manager.h"
 #include "catchrobo_sim/servo_manager.h"
 #include "catchrobo_sim/enable_manager.h"
-#include "catchrobo_sim/obstacle_avoidance.h"
 #include "motor_driver_bridge/motor_driver_struct.h"
 
 #include <std_msgs/Float32MultiArray.h>

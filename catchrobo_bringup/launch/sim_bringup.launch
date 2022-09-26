@@ -9,7 +9,8 @@
 
     <include file="$(find catchrobo_sim)/launch/sim_bringup.launch" />
     <include file="$(find catchrobo_bringup)/launch/laptop.launch">
-        <arg name="field" default="$(arg field)" />
+        <arg name="field" value="$(arg field)" />
+        <arg name="rosbag" value="false" />
     </include>
 
 </launch>
