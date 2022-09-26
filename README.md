@@ -57,7 +57,7 @@ https://os.mbed.com/teams/catchrobo2022/
 ### show robot
 ```
 roslaunch catchrobo_description catchrobo_display.launch gui:=True field:=red
-roslaunch catchrobo_bringup rviz.launch
+roslaunch catchrobo_bringup rviz.launch field:=red
 ```
 ### simulation
 ```
@@ -72,14 +72,11 @@ ssh root@catchrobo
 password : catchrobo
 sudo chmod a+rw /dev/ttyACM0 
 roslaunch catchrobo_bringup raspberry.launch field:="blue"
+roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
 ```
-- PC
+- GUI用PC
 ```
 roslaunch catchrobo_bringup laptop.launch field:="blue"
-```
-- ラズパイ2(rvizの表示を待つ。nodeが立ってからtopic投げる必要があるため)
-```
-roslaunch catchrobo_bringup manager.launch game_mode:="slow_game" continue:="false"
 ```
 
 ### rosbag再生
@@ -88,19 +85,22 @@ roslaunch catchrobo_log rosbag_play.launch field:="blue" file:="xxx.bag"
 rosservice call /rosbag_play/pause_playback "data: false" 
 ```
 
-### printfしたいなら
+### mbedのprintf debug用コマンド
 ```
 sudo chmod a+rw /dev/ttyACM0 
 cu -s 921600 -l /dev/ttyACM0
 ```
+baudrate 9600のときは
+```
 cu -s 9600 -l /dev/ttyACM0
+```
 
 ## Knowledge
 ### シミュレーターについて
-- mbed LPC1768側プログラムは[catchrobo_sim](catchrobo_sim)パッケージで実装している。
-[catchrobo_sim/include/catchrobo_sim](catchrobo_sim/include/catchrobo_sim)と[catchrobo_sim/src/mbed_sim.cpp](catchrobo_sim/src/mbed_sim.cpp)をmbedに実装する。
-CAN通信等、simulatorで動かない部分だけを[catchrobo_sim/include/sim_only](catchrobo_sim/include/sim_only)に入れている。
-- モータードライバーシミュレーターの位置更新は下の式で実行される。kp = 0のときは停止する.　速度入力、加速度入力はsimulatorでは考慮しない機体の動作に反映しない
+- [catchrobo_description](catchrobo_description)でURDFを定義している
+- [catchrobo_manager/src/catchrobo_manager/radius2meter.py](catchrobo_manager/src/catchrobo_manager/radius2meter.py)でmbedから来る関節角度情報をrvizが受け付ける形に変換している
+- mbed LPC1768側プログラムは[catchrobo_sim](catchrobo_sim)パッケージで実装しているプログラムと一致。故にシミュレーターでの動作検証が可能
+- [モータードライバーシミュレーター](catchrobo_sim/src/motor_driver_sim.cpp)の位置更新は下の式で実行される。kp = 0のときは停止する.　速度入力、加速度入力はsimulatorでは考慮しない機体の動作に反映しない
 ```
 velocity = (cmd.p_des - p)/dt
 position = cmd.p_des
