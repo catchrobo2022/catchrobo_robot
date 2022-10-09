@@ -1,5 +1,13 @@
 # Catchrobo 2021 ROS Package
 
+## Movie
+### rviz動画
+画像をクリックするとgoogle フォトリンクへ飛びます
+[![rviz動画はこちら](./doc/catchrobo_simulator_Moment.jpg)](https://photos.app.goo.gl/e1TemZAGbyiW9dbw7)  
+### 実機動作
+画像をクリックすると動画を掲載しているツイートへ飛びます
+[![実機動作の動画](./doc/movie_Moment.jpg)](https://twitter.com/rnmT0/status/1571847154460925953?s=20&t=lVTM75y_ALP0gFoCZXnTqA)
+
 ## Environment
 - ubuntu 20
 - ROS noetic
@@ -136,14 +144,6 @@ https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
 ### 座標系
 [座標pdfはこちら](./doc/234_C5_2022年度フィールド修正版0725.pdf)
-
-### Movie
-#### rviz動画
-画像をクリックするとgoogle フォトリンクへ飛びます
-[![rviz動画はこちら](./doc/catchrobo_simulator_Moment.jpg)](https://photos.app.goo.gl/e1TemZAGbyiW9dbw7)  
-#### 実機動作
-画像をクリックすると動画を掲載しているツイートへ飛びます
-[![実機動作の動画](./doc/movie_Moment.jpg)](https://twitter.com/rnmT0/status/1571847154460925953?s=20&t=lVTM75y_ALP0gFoCZXnTqA)
 
 
 ### Xbeeについて
