@@ -133,7 +133,17 @@ https://www.kerislab.jp/posts/2018-04-29-accel-designer4/
 
 ### ワーク、シューティングBOXの配置番号
 ![ワーク、シューティングBOXの配置番号](./doc/ワーク＋シューティングBOXの配置番号.png) 
+
+### 座標系
 [座標pdfはこちら](./doc/234_C5_2022年度フィールド修正版0725.pdf)
+
+### movie
+https://photos.app.goo.gl/e1TemZAGbyiW9dbw7
+
+<blockquote class=”twitter-tweet” data-conversation=”none”><a href=”https://twitter.com/rnmT0/status/1571847154460925953?s=20&t=lVTM75y_ALP0gFoCZXnTqA”></a></blockquote>
+
+
+
 
 ### Xbeeについて
 通信が安定しないため没となった．
